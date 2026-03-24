@@ -1,5 +1,4 @@
 using BanterBotSports.BL.Services.Interfaces;
-using BanterBotSports.DAL;
 using BanterBotSports.DAL.Repositories.Interfaces;
 using BanterBotSports.Entities;
 using BanterBotSports.Entities.Enums;
@@ -14,19 +13,32 @@ namespace BanterBotSports.BL.Services;
 public class JornadaService : IJornadaService
 {
     private readonly IJornadaRepository _jornadaRepository;
-    private readonly AppDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
 
     /// <summary>
     /// Raised when a jornada transitions to Finalizada.
-    /// Consumers attach an async handler to trigger banter dispatch or score settlement.
+    /// Consumers subscribe to trigger banter dispatch or score settlement.
     /// </summary>
-    public Func<Jornada, Task>? JornadaFinalizada;
+    public event Func<Jornada, Task>? JornadaFinalizada;
 
-    public JornadaService(IJornadaRepository jornadaRepository, AppDbContext context)
+    public JornadaService(IJornadaRepository jornadaRepository, IUnitOfWork unitOfWork)
     {
+        ArgumentNullException.ThrowIfNull(jornadaRepository);
+        ArgumentNullException.ThrowIfNull(unitOfWork);
+
         _jornadaRepository = jornadaRepository;
-        _context = context;
+        _unitOfWork = unitOfWork;
     }
+
+    // ─── Queries ─────────────────────────────────────────────────────────────
+
+    public Task<Jornada?> GetDetalleAsync(int jornadaId)
+        => _jornadaRepository.GetByIdWithDetailsAsync(jornadaId);
+
+    public Task<IReadOnlyList<Jornada>> GetByTorneoIdAsync(int torneoId)
+        => _jornadaRepository.GetByTorneoIdAsync(torneoId);
+
+    // ─── State transitions ────────────────────────────────────────────────────
 
     public async Task AbrirJornadaAsync(int jornadaId)
     {
@@ -40,7 +52,7 @@ public class JornadaService : IJornadaService
 
         jornada.Estado = EstadoJornada.Abierta;
         await _jornadaRepository.UpdateAsync(jornada);
-        await _context.SaveChangesAsync();
+        await _unitOfWork.SaveAsync();
     }
 
     public async Task CerrarJornadaAsync(int jornadaId)
@@ -55,7 +67,7 @@ public class JornadaService : IJornadaService
 
         jornada.Estado = EstadoJornada.Cerrada;
         await _jornadaRepository.UpdateAsync(jornada);
-        await _context.SaveChangesAsync();
+        await _unitOfWork.SaveAsync();
     }
 
     public async Task FinalizarJornadaAsync(int jornadaId)
@@ -70,7 +82,7 @@ public class JornadaService : IJornadaService
 
         jornada.Estado = EstadoJornada.Finalizada;
         await _jornadaRepository.UpdateAsync(jornada);
-        await _context.SaveChangesAsync();
+        await _unitOfWork.SaveAsync();
 
         // Notify subscribers (e.g. BanterAI dispatch, score settlement)
         if (JornadaFinalizada is not null)

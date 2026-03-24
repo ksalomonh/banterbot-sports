@@ -29,6 +29,11 @@ public class ParticipanteRepository : IParticipanteRepository
         => await _context.Participantes
             .FirstOrDefaultAsync(p => p.TorneoId == torneoId && p.UserId == userId);
 
+    public async Task<IReadOnlyList<Participante>> GetByUserIdAsync(string userId)
+        => await _context.Participantes
+            .Where(p => p.UserId == userId)
+            .ToListAsync();
+
     public Task<Participante> AddAsync(Participante participante)
     {
         _context.Participantes.Add(participante);

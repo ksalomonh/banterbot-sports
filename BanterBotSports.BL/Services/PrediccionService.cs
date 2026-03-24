@@ -1,5 +1,4 @@
 using BanterBotSports.BL.Services.Interfaces;
-using BanterBotSports.DAL;
 using BanterBotSports.DAL.Repositories.Interfaces;
 using BanterBotSports.Entities;
 
@@ -14,16 +13,27 @@ public class PrediccionService : IPrediccionService
 {
     private readonly IPrediccionRepository _prediccionRepository;
     private readonly IJornadaRepository _jornadaRepository;
-    private readonly AppDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
 
     public PrediccionService(
         IPrediccionRepository prediccionRepository,
         IJornadaRepository jornadaRepository,
-        AppDbContext context)
+        IUnitOfWork unitOfWork)
     {
+        ArgumentNullException.ThrowIfNull(prediccionRepository);
+        ArgumentNullException.ThrowIfNull(jornadaRepository);
+        ArgumentNullException.ThrowIfNull(unitOfWork);
+
         _prediccionRepository = prediccionRepository;
         _jornadaRepository = jornadaRepository;
-        _context = context;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task<IReadOnlyDictionary<int, PrediccionPartido>> GetPorJornadaYParticipanteAsync(int jornadaId, int participanteId)
+    {
+        var predicciones = await _prediccionRepository
+            .GetPrediccionesByJornadaAndParticipanteAsync(jornadaId, participanteId);
+        return predicciones.ToDictionary(pp => pp.PartidoId);
     }
 
     public async Task GuardarPrediccionAsync(
@@ -61,7 +71,7 @@ public class PrediccionService : IPrediccionService
             await _prediccionRepository.AddPrediccionPartidoAsync(prediccion);
         }
 
-        await _context.SaveChangesAsync();
+        await _unitOfWork.SaveAsync();
     }
 
     public async Task<IReadOnlyList<PrediccionJornada>> GetByJornadaAsync(int jornadaId)
@@ -78,13 +88,8 @@ public class PrediccionService : IPrediccionService
         var jornada = await _jornadaRepository.GetByIdWithDetailsAsync(jornadaId)
             ?? throw new InvalidOperationException($"Jornada {jornadaId} no encontrada.");
 
-        // Fetch all predicciones for every partido in the jornada grouped by participant
-        var prediccionesPorPartido = new List<PrediccionPartido>();
-        foreach (var partido in jornada.Partidos)
-        {
-            var preds = await _prediccionRepository.GetPrediccionesByPartidoAsync(partido.Id);
-            prediccionesPorPartido.AddRange(preds);
-        }
+        // Single query to fetch all predicciones for every partido in the jornada
+        var prediccionesPorPartido = await _prediccionRepository.GetPrediccionesByJornadaIdAsync(jornadaId);
 
         // Group by participante and sum goals
         var goalsByParticipante = prediccionesPorPartido
@@ -113,6 +118,6 @@ public class PrediccionService : IPrediccionService
             }
         }
 
-        await _context.SaveChangesAsync();
+        await _unitOfWork.SaveAsync();
     }
 }

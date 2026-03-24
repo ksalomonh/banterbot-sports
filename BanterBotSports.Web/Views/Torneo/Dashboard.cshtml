@@ -1,0 +1,114 @@
+@using BanterBotSports.Entities
+@using BanterBotSports.Entities.Enums
+@using BanterBotSports.BL.Models
+@model Torneo
+@{
+    ViewData["Title"] = Model.Nombre;
+    var ranking = ViewBag.Ranking as IReadOnlyList<RankingParticipante> ?? Array.Empty<RankingParticipante>();
+    var jornadas = ViewBag.Jornadas as IReadOnlyList<Jornada> ?? Array.Empty<Jornada>();
+    var esOrganizador = (bool)(ViewBag.EsOrganizador ?? false);
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>@Model.Nombre</h2>
+    <div>
+        <span class="badge bg-primary fs-6">@Model.Estado</span>
+        @if (esOrganizador)
+        {
+            <a asp-action="Invitar" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary ms-2">
+                Generar Invitación
+            </a>
+        }
+    </div>
+</div>
+
+<div class="row g-3">
+    <!-- Ranking Table -->
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold">Ranking</span>
+                <span class="badge bg-secondary" id="ranking-updated-badge" style="display:none">Actualizado</span>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-sm table-hover mb-0" id="ranking-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Participante</th>
+                            <th class="text-end">Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ranking-body">
+                        @foreach (var entry in ranking)
+                        {
+                            <tr>
+                                <td>@entry.Posicion</td>
+                                <td>@entry.NombreDisplay</td>
+                                <td class="text-end">@entry.PuntosTotal</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jornadas List -->
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header fw-bold">Jornadas</div>
+            <div class="list-group list-group-flush">
+                @foreach (var jornada in jornadas)
+                {
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Jornada @jornada.Numero</strong>
+                            <span class="badge bg-secondary ms-2">@jornada.Estado</span>
+                        </div>
+                        <div>
+                            <a asp-controller="Jornada" asp-action="Detalle" asp-route-id="@jornada.Id"
+                               class="btn btn-sm btn-outline-primary">
+                                Ver
+                            </a>
+                            @if (jornada.Estado == EstadoJornada.Abierta)
+                            {
+                                <a asp-controller="Prediccion" asp-action="Form" asp-route-jornadaId="@jornada.Id"
+                                   class="btn btn-sm btn-success ms-1">
+                                    Predecir
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@10.0.0/dist/browser/signalr.min.js"></script>
+<script>
+    const torneoId = @Model.Id;
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/torneoHub?torneoId=" + torneoId)
+        .withAutomaticReconnect()
+        .build();
+
+    connection.on("RankingActualizado", (newRanking) => {
+        const tbody = document.getElementById("ranking-body");
+        tbody.innerHTML = "";
+        newRanking.forEach(entry => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td>${entry.posicion}</td><td>${entry.nombreDisplay}</td><td class="text-end">${entry.puntosTotal}</td>`;
+            tbody.appendChild(tr);
+        });
+
+        const badge = document.getElementById("ranking-updated-badge");
+        badge.style.display = "inline";
+        setTimeout(() => badge.style.display = "none", 3000);
+    });
+
+    connection.start().catch(err => console.error("SignalR connection error:", err));
+</script>
+}

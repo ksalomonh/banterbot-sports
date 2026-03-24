@@ -1,0 +1,42 @@
+@model IEnumerable<BanterBotSports.Entities.Torneo>
+@{
+    ViewData["Title"] = "Mis Torneos";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Mis Torneos</h2>
+    <a asp-action="Nuevo" class="btn btn-primary">+ Nuevo Torneo</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No estás inscripto en ningún torneo todavía.
+        <a asp-action="Nuevo">Creá uno</a> o pedile al organizador un link de invitación.
+    </div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-3 g-3">
+        @foreach (var torneo in Model)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@torneo.Nombre</h5>
+                        <p class="card-text">
+                            <span class="badge bg-secondary">@torneo.Estado</span>
+                            <br />
+                            <small class="text-muted">@torneo.NumJornadas jornadas</small>
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <a asp-action="Dashboard" asp-route-id="@torneo.Id" class="btn btn-sm btn-outline-primary">
+                            Ver Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
