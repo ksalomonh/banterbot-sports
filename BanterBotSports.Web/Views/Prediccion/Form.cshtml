@@ -1,0 +1,162 @@
+@using BanterBotSports.Entities
+@using BanterBotSports.Entities.Enums
+@model Jornada
+@{
+    ViewData["Title"] = $"Predicciones — Jornada {Model.Numero}";
+    var esCerrada = (bool)(ViewBag.EsCerrada ?? false);
+    var pastDeadline = (bool)(ViewBag.PastDeadline ?? false);
+    var existingPredictions = ViewBag.ExistingPredictions as Dictionary<int, PrediccionPartido>
+                              ?? new Dictionary<int, PrediccionPartido>();
+    var torneo = ViewBag.Torneo as Torneo;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2>Predicciones — Jornada @Model.Numero</h2>
+        @if (torneo is not null)
+        {
+            <small class="text-muted">
+                <a asp-controller="Torneo" asp-action="Dashboard" asp-route-id="@torneo.Id">@torneo.Nombre</a>
+            </small>
+        }
+    </div>
+    <span class="badge bg-primary fs-6">@Model.Estado</span>
+</div>
+
+@if (Model.DeadlineUtc.HasValue)
+{
+    var deadlineLocal = Model.DeadlineUtc.Value.ToLocalTime();
+    var isClose = deadlineLocal - DateTime.Now < TimeSpan.FromHours(2);
+    <div class="alert @(pastDeadline ? "alert-danger" : isClose ? "alert-warning" : "alert-info")">
+        @if (pastDeadline)
+        {
+            <strong>El plazo para predicciones ya venció.</strong>
+        }
+        else
+        {
+            <strong>Cierre:</strong> @deadlineLocal.ToString("dd/MM/yyyy HH:mm")
+            @if (isClose) { <span class="ms-2 text-danger fw-bold">¡Quedan menos de 2 horas!</span> }
+        }
+    </div>
+}
+
+@if (esCerrada || pastDeadline)
+{
+    <!-- Read-only mode: show saved predictions -->
+    <div class="card">
+        <div class="card-header fw-bold">Tus predicciones (solo lectura)</div>
+        <div class="list-group list-group-flush">
+            @foreach (var partido in Model.Partidos.OrderBy(p => p.KickOffUtc))
+            {
+                var pred = existingPredictions.GetValueOrDefault(partido.Id);
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>@partido.Equipo1 vs @partido.Equipo2</span>
+                        <span>
+                            @if (pred is not null)
+                            {
+                                <strong>@pred.GolesEquipo1 - @pred.GolesEquipo2</strong>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Sin predicción</span>
+                            }
+                        </span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div asp-validation-summary="All" class="alert alert-danger" style="display:@(ViewContext.ViewData.ModelState.IsValid ? "none" : "block")"></div>
+
+    <form asp-action="Form" asp-route-jornadaId="@Model.Id" method="post">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">Partidos</span>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="toggle-goles-jornada" />
+                        <label class="form-check-label" for="toggle-goles-jornada">
+                            Ver total goles jornada
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group list-group-flush">
+                @foreach (var partido in Model.Partidos.OrderBy(p => p.KickOffUtc))
+                {
+                    var pred = existingPredictions.GetValueOrDefault(partido.Id);
+                    <div class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-md-5">
+                                <strong>@partido.Equipo1</strong>
+                                <br />
+                                <small class="text-muted">@partido.KickOffUtc.ToLocalTime().ToString("dd/MM HH:mm")</small>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group input-group-sm">
+                                    <input type="number"
+                                           name="predicciones[@partido.Id][0]"
+                                           class="form-control text-center goles-input"
+                                           value="@(pred?.GolesEquipo1 ?? 0)"
+                                           min="0" max="20" required />
+                                    <span class="input-group-text">-</span>
+                                    <input type="number"
+                                           name="predicciones[@partido.Id][1]"
+                                           class="form-control text-center goles-input"
+                                           value="@(pred?.GolesEquipo2 ?? 0)"
+                                           min="0" max="20" required />
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <strong>@partido.Equipo2</strong>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="card-footer">
+                <div id="total-goles-display" class="text-muted mb-2" style="display:none">
+                    Total goles pronosticados: <strong id="total-goles-valor">0</strong>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar Predicciones</button>
+                <a asp-controller="Torneo" asp-action="Dashboard" asp-route-id="@Model.TorneoId"
+                   class="btn btn-secondary ms-2">Cancelar</a>
+            </div>
+        </div>
+    </form>
+}
+
+@section Scripts {
+<script>
+    // Auto-sum goles toggle
+    const toggleGoles = document.getElementById("toggle-goles-jornada");
+    const totalDisplay = document.getElementById("total-goles-display");
+    const totalValor = document.getElementById("total-goles-valor");
+
+    function updateTotal() {
+        const inputs = document.querySelectorAll(".goles-input");
+        let total = 0;
+        inputs.forEach(i => total += parseInt(i.value) || 0);
+        if (totalValor) totalValor.textContent = total;
+    }
+
+    if (toggleGoles) {
+        toggleGoles.addEventListener("change", () => {
+            if (totalDisplay) {
+                totalDisplay.style.display = toggleGoles.checked ? "block" : "none";
+            }
+            if (toggleGoles.checked) updateTotal();
+        });
+    }
+
+    document.querySelectorAll(".goles-input").forEach(input => {
+        input.addEventListener("input", () => {
+            if (toggleGoles?.checked) updateTotal();
+        });
+    });
+</script>
+}
