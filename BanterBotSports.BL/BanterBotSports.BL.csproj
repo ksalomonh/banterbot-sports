@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BanterBotSports.Entities\BanterBotSports.Entities.csproj" />
+    <ProjectReference Include="..\BanterBotSports.DAL\BanterBotSports.DAL.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
