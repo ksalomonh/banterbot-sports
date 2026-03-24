@@ -34,6 +34,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
+// ─── Data Protection (signed/encrypted tokens for invites) ──────────────────
+builder.Services.AddDataProtection();
+
 // ─── Unit of Work (Scoped) ───────────────────────────────────────────────────
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -46,6 +49,7 @@ builder.Services.AddScoped<IPrediccionRepository, PrediccionRepository>();
 builder.Services.AddScoped<IUsuarioTelegramRepository, UsuarioTelegramRepository>();
 
 // ─── BL Services (Scoped) ────────────────────────────────────────────────────
+builder.Services.AddScoped<ITorneoService, TorneoService>();
 builder.Services.AddScoped<IPuntuacionService, PuntuacionService>();
 builder.Services.AddScoped<IPremioService, PremioService>();
 builder.Services.AddScoped<IPrediccionService, PrediccionService>();
@@ -66,7 +70,7 @@ builder.Services.AddSingleton<ITelegramBotService, TelegramBotService>();
 // ─── BanterAI Services (Scoped) ──────────────────────────────────────────────
 builder.Services.AddScoped<IPrediccionExtractionService, PrediccionExtractionService>();
 builder.Services.AddScoped<IBanterEngine, BanterEngine>();
-builder.Services.AddScoped<BanterDispatchService>();
+builder.Services.AddScoped<IBanterDispatchService, BanterDispatchService>();
 
 // ─── Telegram Update Handler + Background Queue ──────────────────────────────
 builder.Services.AddScoped<ITelegramUpdateHandler, TelegramUpdateHandler>();

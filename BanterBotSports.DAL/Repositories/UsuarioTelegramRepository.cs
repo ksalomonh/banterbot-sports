@@ -35,4 +35,12 @@ public class UsuarioTelegramRepository : IUsuarioTelegramRepository
         _context.UsuariosTelegram.Update(usuarioTelegram);
         return Task.CompletedTask;
     }
+
+    public async Task<IReadOnlyDictionary<string, long>> GetTelegramIdsByUserIdsAsync(IEnumerable<string> userIds)
+    {
+        var ids = userIds.ToList();
+        return await _context.UsuariosTelegram
+            .Where(u => ids.Contains(u.UserId))
+            .ToDictionaryAsync(u => u.UserId, u => u.TelegramUserId);
+    }
 }

@@ -1,8 +1,7 @@
-using BanterBotSports.DAL;
+using BanterBotSports.DAL.Repositories.Interfaces;
 using BanterBotSports.Entities;
 using BanterBotSports.Entities.DTOs;
 using BanterBotSports.Integrations.Telegram;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace BanterBotSports.BanterAI;
@@ -11,11 +10,13 @@ namespace BanterBotSports.BanterAI;
 /// Dispatches AI-generated banter to each participante after a jornada is finalized.
 /// Invoked directly by the JornadaFinalizada callback — NOT a hosted service.
 /// </summary>
-public class BanterDispatchService
+public class BanterDispatchService : IBanterDispatchService
 {
     private readonly IBanterEngine _banterEngine;
     private readonly ITelegramBotService _telegramBotService;
-    private readonly AppDbContext _context;
+    private readonly ITorneoRepository _torneoRepository;
+    private readonly IPartidoRepository _partidoRepository;
+    private readonly IUsuarioTelegramRepository _usuarioTelegramRepository;
     private readonly ILogger<BanterDispatchService> _logger;
 
     private const int MaxBanterLength = 280;
@@ -23,17 +24,23 @@ public class BanterDispatchService
     public BanterDispatchService(
         IBanterEngine banterEngine,
         ITelegramBotService telegramBotService,
-        AppDbContext context,
+        ITorneoRepository torneoRepository,
+        IPartidoRepository partidoRepository,
+        IUsuarioTelegramRepository usuarioTelegramRepository,
         ILogger<BanterDispatchService> logger)
     {
         ArgumentNullException.ThrowIfNull(banterEngine);
         ArgumentNullException.ThrowIfNull(telegramBotService);
-        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(torneoRepository);
+        ArgumentNullException.ThrowIfNull(partidoRepository);
+        ArgumentNullException.ThrowIfNull(usuarioTelegramRepository);
         ArgumentNullException.ThrowIfNull(logger);
 
         _banterEngine = banterEngine;
         _telegramBotService = telegramBotService;
-        _context = context;
+        _torneoRepository = torneoRepository;
+        _partidoRepository = partidoRepository;
+        _usuarioTelegramRepository = usuarioTelegramRepository;
         _logger = logger;
     }
 
@@ -45,10 +52,8 @@ public class BanterDispatchService
         _logger.LogInformation("BanterDispatchService: dispatching banter for jornada {JornadaId} (#{Numero}).",
             jornada.Id, jornada.Numero);
 
-        // Load torneo with participantes
-        var torneo = await _context.Torneos
-            .Include(t => t.Participantes)
-            .FirstOrDefaultAsync(t => t.Id == jornada.TorneoId);
+        // Load torneo with participantes via repository
+        var torneo = await _torneoRepository.GetByIdWithDetailsAsync(jornada.TorneoId);
 
         if (torneo is null)
         {
@@ -56,11 +61,8 @@ public class BanterDispatchService
             return;
         }
 
-        // Load partidos with their predictions for this jornada using explicit loading
-        var partidos = await _context.Partidos
-            .Where(p => p.JornadaId == jornada.Id)
-            .Include(p => p.PrediccionesPartido)
-            .ToListAsync();
+        // Load partidos with their predictions for this jornada — single query via repository
+        var partidos = await _partidoRepository.GetByJornadaWithPrediccionesAsync(jornada.Id);
 
         // Build ranking: sum of PuntosObtenidos per participante
         var puntosPorParticipante = partidos
@@ -73,11 +75,9 @@ public class BanterDispatchService
             .Select((kv, index) => (ParticipanteId: kv.Key, Puntos: kv.Value, Posicion: index + 1))
             .ToList();
 
-        // Load all Telegram users for this torneo in a single query
+        // Load all Telegram users for this torneo in a single batch query
         var userIds = torneo.Participantes.Select(p => p.UserId).ToList();
-        var telegramUsers = await _context.UsuariosTelegram
-            .Where(u => userIds.Contains(u.UserId))
-            .ToDictionaryAsync(u => u.UserId, u => u.TelegramUserId);
+        var telegramUsers = await _usuarioTelegramRepository.GetTelegramIdsByUserIdsAsync(userIds);
 
         foreach (var participante in torneo.Participantes)
         {

@@ -8,7 +8,9 @@ public interface IPrediccionRepository
     Task<PrediccionPartido?> GetPrediccionPartidoAsync(int partidoId, int participanteId);
     Task<IReadOnlyList<PrediccionPartido>> GetPrediccionesByPartidoAsync(int partidoId);
     Task<IReadOnlyList<PrediccionPartido>> GetPrediccionesByParticipanteAsync(int participanteId);
+    Task<IReadOnlyList<PrediccionPartido>> GetPrediccionesByJornadaIdAsync(int jornadaId);
     Task<IReadOnlyList<PrediccionPartido>> GetPrediccionesByJornadaAndParticipanteAsync(int jornadaId, int participanteId);
+    Task<IReadOnlyDictionary<int, int>> GetPuntosTotalesPorParticipanteAsync(IEnumerable<int> participanteIds);
     Task<PrediccionPartido> AddPrediccionPartidoAsync(PrediccionPartido prediccion);
     Task UpdatePrediccionPartidoAsync(PrediccionPartido prediccion);
 

@@ -27,6 +27,13 @@ public class PartidoRepository : IPartidoRepository
             .OrderBy(p => p.KickOffUtc)
             .ToListAsync();
 
+    public async Task<IReadOnlyList<Partido>> GetByJornadaWithPrediccionesAsync(int jornadaId)
+        => await _context.Partidos
+            .Where(p => p.JornadaId == jornadaId)
+            .Include(p => p.PrediccionesPartido)
+            .OrderBy(p => p.KickOffUtc)
+            .ToListAsync();
+
     public async Task<IReadOnlyList<Partido>> GetByEstadoAsync(EstadoPartido estado)
         => await _context.Partidos
             .Where(p => p.Estado == estado)

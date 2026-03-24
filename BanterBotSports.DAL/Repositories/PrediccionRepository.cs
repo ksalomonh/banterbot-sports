@@ -33,11 +33,33 @@ public class PrediccionRepository : IPrediccionRepository
             .Where(pp => pp.ParticipanteId == participanteId)
             .ToListAsync();
 
+    public async Task<IReadOnlyList<PrediccionPartido>> GetPrediccionesByJornadaIdAsync(int jornadaId)
+        => await _context.PrediccionesPartido
+            .Include(pp => pp.Partido)
+            .Where(pp => pp.Partido.JornadaId == jornadaId)
+            .ToListAsync();
+
     public async Task<IReadOnlyList<PrediccionPartido>> GetPrediccionesByJornadaAndParticipanteAsync(int jornadaId, int participanteId)
         => await _context.PrediccionesPartido
             .Include(pp => pp.Partido)
             .Where(pp => pp.Partido.JornadaId == jornadaId && pp.ParticipanteId == participanteId)
             .ToListAsync();
+
+    public async Task<IReadOnlyDictionary<int, int>> GetPuntosTotalesPorParticipanteAsync(IEnumerable<int> participanteIds)
+    {
+        var ids = participanteIds.ToList();
+        var result = await _context.PrediccionesPartido
+            .Where(pp => ids.Contains(pp.ParticipanteId))
+            .GroupBy(pp => pp.ParticipanteId)
+            .Select(g => new { ParticipanteId = g.Key, Total = g.Sum(pp => pp.PuntosObtenidos ?? 0) })
+            .ToDictionaryAsync(x => x.ParticipanteId, x => x.Total);
+
+        // Ensure every requested participante is present even if no predictions yet
+        foreach (var id in ids.Where(id => !result.ContainsKey(id)))
+            result[id] = 0;
+
+        return result;
+    }
 
     public Task<PrediccionPartido> AddPrediccionPartidoAsync(PrediccionPartido prediccion)
     {

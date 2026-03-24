@@ -32,6 +32,12 @@ public class TorneoRepository : ITorneoRepository
             .Where(t => t.OrganizadorId == organizadorId)
             .ToListAsync();
 
+    public async Task<IReadOnlyList<Torneo>> GetTorneosByParticipanteAsync(string userId)
+        => await _context.Participantes
+            .Where(p => p.UserId == userId)
+            .Select(p => p.Torneo!)
+            .ToListAsync();
+
     public Task<Torneo> AddAsync(Torneo torneo)
     {
         _context.Torneos.Add(torneo);
