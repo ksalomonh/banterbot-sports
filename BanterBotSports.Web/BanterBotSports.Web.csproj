@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\BanterBotSports.BL\BanterBotSports.BL.csproj" />
+    <ProjectReference Include="..\BanterBotSports.DAL\BanterBotSports.DAL.csproj" />
+    <ProjectReference Include="..\BanterBotSports.Entities\BanterBotSports.Entities.csproj" />
+    <ProjectReference Include="..\BanterBotSports.BanterAI\BanterBotSports.BanterAI.csproj" />
+    <ProjectReference Include="..\BanterBotSports.Integrations\BanterBotSports.Integrations.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="BanterBotSports.BanterAI/BanterBotSports.BanterAI.csproj" />
+  <Project Path="BanterBotSports.BL/BanterBotSports.BL.csproj" />
+  <Project Path="BanterBotSports.DAL/BanterBotSports.DAL.csproj" />
+  <Project Path="BanterBotSports.Entities/BanterBotSports.Entities.csproj" />
+  <Project Path="BanterBotSports.Integrations/BanterBotSports.Integrations.csproj" />
+  <Project Path="BanterBotSports.Tests/BanterBotSports.Tests.csproj" />
+  <Project Path="BanterBotSports.Web/BanterBotSports.Web.csproj" />
+</Solution>
