@@ -1,6 +1,8 @@
 using BanterBotSports.BanterAI;
+using BanterBotSports.BL.Services;
 using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL;
+using BanterBotSports.DAL.Repositories;
 using BanterBotSports.DAL.Repositories.Interfaces;
 using BanterBotSports.Integrations.ApiFootball;
 using BanterBotSports.Integrations.Hosted;
@@ -9,10 +11,6 @@ using BanterBotSports.Web.Hubs;
 using BanterBotSports.Web.Telegram;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
-// Import concrete implementations
-using BanterBotSports.BL.Services;
-using BanterBotSports.DAL.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,12 +34,16 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
+// ─── Unit of Work (Scoped) ───────────────────────────────────────────────────
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 // ─── Repositories (Scoped) ───────────────────────────────────────────────────
 builder.Services.AddScoped<ITorneoRepository, TorneoRepository>();
 builder.Services.AddScoped<IJornadaRepository, JornadaRepository>();
 builder.Services.AddScoped<IPartidoRepository, PartidoRepository>();
 builder.Services.AddScoped<IParticipanteRepository, ParticipanteRepository>();
 builder.Services.AddScoped<IPrediccionRepository, PrediccionRepository>();
+builder.Services.AddScoped<IUsuarioTelegramRepository, UsuarioTelegramRepository>();
 
 // ─── BL Services (Scoped) ────────────────────────────────────────────────────
 builder.Services.AddScoped<IPuntuacionService, PuntuacionService>();
@@ -49,6 +51,7 @@ builder.Services.AddScoped<IPremioService, PremioService>();
 builder.Services.AddScoped<IPrediccionService, PrediccionService>();
 builder.Services.AddScoped<IPartidoService, PartidoService>();
 builder.Services.AddScoped<IJornadaService, JornadaService>();
+builder.Services.AddScoped<ITelegramVinculacionService, TelegramVinculacionService>();
 
 // ─── Named HttpClients ───────────────────────────────────────────────────────
 builder.Services.AddHttpClient("ApiFootball");
@@ -65,10 +68,12 @@ builder.Services.AddScoped<IPrediccionExtractionService, PrediccionExtractionSer
 builder.Services.AddScoped<IBanterEngine, BanterEngine>();
 builder.Services.AddScoped<BanterDispatchService>();
 
-// ─── Telegram Update Handler ─────────────────────────────────────────────────
+// ─── Telegram Update Handler + Background Queue ──────────────────────────────
 builder.Services.AddScoped<ITelegramUpdateHandler, TelegramUpdateHandler>();
+builder.Services.AddSingleton<TelegramUpdateQueue>();
 
 // ─── Background Services ─────────────────────────────────────────────────────
+builder.Services.AddHostedService<TelegramUpdateWorker>();
 builder.Services.AddHostedService<DeadlineEnforcerService>();
 builder.Services.AddHostedService<ResultSyncService>();
 

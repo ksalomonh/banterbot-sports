@@ -10,6 +10,7 @@ public interface IJornadaRepository
     Task<IReadOnlyList<Jornada>> GetAllAsync();
     Task<IReadOnlyList<Jornada>> GetByTorneoIdAsync(int torneoId);
     Task<IReadOnlyList<Jornada>> GetByEstadoAsync(EstadoJornada estado);
+    Task<Jornada?> GetByTorneoAndEstadoAsync(int torneoId, EstadoJornada estado);
     Task<Jornada> AddAsync(Jornada jornada);
     Task UpdateAsync(Jornada jornada);
 }

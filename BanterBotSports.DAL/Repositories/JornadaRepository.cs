@@ -39,6 +39,10 @@ public class JornadaRepository : IJornadaRepository
             .Where(j => j.Estado == estado)
             .ToListAsync();
 
+    public Task<Jornada?> GetByTorneoAndEstadoAsync(int torneoId, EstadoJornada estado)
+        => _context.Jornadas
+            .FirstOrDefaultAsync(j => j.TorneoId == torneoId && j.Estado == estado);
+
     public Task<Jornada> AddAsync(Jornada jornada)
     {
         _context.Jornadas.Add(jornada);
