@@ -1,0 +1,60 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+labels: ["enhancement", "status:needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Feature Request
+
+        > **Workflow:**
+        > 1. Submit issue → gets `status:needs-review`
+        > 2. Maintainer reviews → adds `status:approved`
+        > 3. Only then can a PR be opened
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Pre-flight Checks
+      options:
+        - label: I searched existing issues and this is not a duplicate
+          required: true
+        - label: I understand this needs `status:approved` before a PR can be opened
+          required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Description
+      placeholder: What pain point does this solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      placeholder: How should it work from the user's perspective?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected Layer
+      options:
+        - BanterBotSports.Web
+        - BanterBotSports.BL (Scoring / Prizes)
+        - BanterBotSports.DAL
+        - BanterBotSports.Entities
+        - BanterBotSports.BanterAI
+        - BanterBotSports.Integrations (Telegram / API-Football / Whisper)
+        - GitHub Actions / CI
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
