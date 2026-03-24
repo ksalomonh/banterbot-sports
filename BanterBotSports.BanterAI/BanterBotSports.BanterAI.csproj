@@ -2,10 +2,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BanterBotSports.Entities\BanterBotSports.Entities.csproj" />
+    <ProjectReference Include="..\BanterBotSports.DAL\BanterBotSports.DAL.csproj" />
+    <ProjectReference Include="..\BanterBotSports.BL\BanterBotSports.BL.csproj" />
+    <ProjectReference Include="..\BanterBotSports.Integrations\BanterBotSports.Integrations.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Anthropic.SDK" Version="5.10.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -2,10 +2,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BanterBotSports.Entities\BanterBotSports.Entities.csproj" />
+    <ProjectReference Include="..\BanterBotSports.BL\BanterBotSports.BL.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Telegram.Bot" Version="22.9.5.3" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
   </ItemGroup>
 
   <PropertyGroup>

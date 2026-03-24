@@ -32,6 +32,12 @@ public class PartidoRepository : IPartidoRepository
             .Where(p => p.Estado == estado)
             .ToListAsync();
 
+    public async Task<IReadOnlyList<Partido>> GetByKickOffRangeAsync(DateTimeOffset from, DateTimeOffset to)
+        => await _context.Partidos
+            .Where(p => p.ExternalId != null && p.KickOffUtc >= from && p.KickOffUtc <= to)
+            .OrderBy(p => p.KickOffUtc)
+            .ToListAsync();
+
     public async Task<Partido?> GetByExternalIdAsync(string externalId)
         => await _context.Partidos
             .FirstOrDefaultAsync(p => p.ExternalId == externalId);
