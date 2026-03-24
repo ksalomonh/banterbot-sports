@@ -6,7 +6,10 @@
 - Entity Framework Core 10 + PostgreSQL (Npgsql)
 - ASP.NET Core Identity
 - SignalR
-- Claude API (Banter Engine)
+- Claude API (claude-haiku-4-5-20251001) — Banter Engine + prediction extraction
+- Telegram.Bot — Telegram Bot API SDK
+- OpenAI Whisper API — voice message transcription
+- API-Football — match catalog and live results
 
 ## Architecture
 Layered architecture inherited from legacy app:
@@ -14,7 +17,8 @@ Layered architecture inherited from legacy app:
 - `*.BL` — Business Logic, Services, calculation engine
 - `*.DAL` — EF Core DbContext, Repositories, Migrations
 - `*.Entities` — Domain entities, ViewModels, DTOs
-- `*.BanterAI` — Claude API integration, banter generation
+- `*.BanterAI` — Claude API integration, banter generation, prediction extraction from free text
+- `*.Integrations` — External service clients: API-Football, Telegram Bot (Telegram.Bot), Whisper transcription
 
 ## C# Conventions
 - Use `async/await` for all I/O operations — no sync-over-async
@@ -43,6 +47,14 @@ Layered architecture inherited from legacy app:
 - Always validate AI output before storing or displaying
 - System prompt must include guardrails: friendly tone, no offensive content
 - Keep banter messages under 280 characters
+
+## Integrations Layer Rules
+- API-Football responses MUST be cached in PostgreSQL — never hit API on every request
+- Telegram webhook handler must respond within 5 seconds (Telegram timeout) — offload heavy work to background jobs
+- Voice messages: always delete temp audio file after transcription
+- Whisper transcription result must pass through Claude for prediction extraction — never parse raw transcription directly
+- All external HTTP clients registered via `IHttpClientFactory` with named clients
+- Never expose API keys in code — always via `IConfiguration` / environment variables
 
 ## Commits
 - Use conventional commits: `feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`
