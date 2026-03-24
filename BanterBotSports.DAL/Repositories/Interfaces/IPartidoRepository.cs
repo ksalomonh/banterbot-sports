@@ -9,6 +9,7 @@ public interface IPartidoRepository
     Task<IReadOnlyList<Partido>> GetAllAsync();
     Task<IReadOnlyList<Partido>> GetByJornadaIdAsync(int jornadaId);
     Task<IReadOnlyList<Partido>> GetByEstadoAsync(EstadoPartido estado);
+    Task<IReadOnlyList<Partido>> GetByKickOffRangeAsync(DateTimeOffset from, DateTimeOffset to);
     Task<Partido?> GetByExternalIdAsync(string externalId);
     Task<Partido> AddAsync(Partido partido);
     Task UpdateAsync(Partido partido);
