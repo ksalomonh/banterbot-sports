@@ -39,6 +39,9 @@ public class BanterEngine : IBanterEngine
 
     public async Task<string> GenerateBanterAsync(ParticipanteStats stats, Torneo torneo)
     {
+        ArgumentNullException.ThrowIfNull(stats);
+        ArgumentNullException.ThrowIfNull(torneo);
+
         try
         {
             var userMessage = BuildUserMessage(stats, torneo);
@@ -49,7 +52,7 @@ public class BanterEngine : IBanterEngine
                 MaxTokens = 300,
                 System = new List<SystemMessage>
                 {
-                    new SystemMessage { Text = SystemPrompt }
+                    new SystemMessage(SystemPrompt)
                 },
                 Messages = new List<Message>
                 {

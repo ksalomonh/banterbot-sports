@@ -66,6 +66,9 @@ public class PrediccionExtractionService : IPrediccionExtractionService
 
     public async Task<ExtractionResult> ExtractAsync(string text, IReadOnlyList<PartidoDto> partidos)
     {
+        ArgumentNullException.ThrowIfNull(text);
+        ArgumentNullException.ThrowIfNull(partidos);
+
         try
         {
             var userMessage = BuildUserMessage(text, partidos);
@@ -74,7 +77,7 @@ public class PrediccionExtractionService : IPrediccionExtractionService
             {
                 Model = ModelId,
                 MaxTokens = 1024,
-                System = [new SystemMessage { Text = SystemPrompt }],
+                System = [new SystemMessage(SystemPrompt)],
                 Messages =
                 [
                     new Message
@@ -141,7 +144,7 @@ public class PrediccionExtractionService : IPrediccionExtractionService
                     PartidoId: p.MatchId,
                     GolesEquipo1: p.LocalGoals,
                     GolesEquipo2: p.VisitanteGoals,
-                    Fuente: FuentePrediccion.Texto
+                    Fuente: FuentePrediccion.Telegram
                 ))
                 .ToList();
 
