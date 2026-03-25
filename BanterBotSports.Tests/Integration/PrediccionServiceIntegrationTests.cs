@@ -40,7 +40,7 @@ public class PrediccionServiceIntegrationTests : IAsyncLifetime
 
         var prediccionRepo = new PrediccionRepository(_context);
         var jornadaRepo = new JornadaRepository(_context);
-        _prediccionService = new PrediccionService(prediccionRepo, jornadaRepo, _context);
+        _prediccionService = new PrediccionService(prediccionRepo, jornadaRepo, new UnitOfWork(_context));
     }
 
     public async Task DisposeAsync()
