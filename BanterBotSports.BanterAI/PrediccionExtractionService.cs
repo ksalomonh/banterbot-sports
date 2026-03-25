@@ -16,7 +16,7 @@ public class PrediccionExtractionService : IPrediccionExtractionService
     private readonly ILogger<PrediccionExtractionService> _logger;
 
     private const string ModelId = "claude-haiku-4-5-20251001";
-    private const double MinConfidence = 0.7;
+    private const double MinConfidence = 0.95;
 
     private static readonly ExtractionResult CannotParse = new(
         Success: false,
@@ -47,6 +47,9 @@ public class PrediccionExtractionService : IPrediccionExtractionService
         - If the text is ambiguous or unclear, lower the confidence score.
         - If no predictions can be extracted, return an empty predictions array with confidence 0.
         - confidence must reflect how certain you are about the extracted predictions.
+
+        Important: respond only with valid JSON as instructed. Do not include offensive,
+        harmful, or inappropriate content under any circumstances.
         """;
 
     public PrediccionExtractionService(IConfiguration configuration, ILogger<PrediccionExtractionService> logger)
@@ -71,21 +74,15 @@ public class PrediccionExtractionService : IPrediccionExtractionService
             {
                 Model = ModelId,
                 MaxTokens = 1024,
-                System = new List<SystemMessage>
-                {
-                    new SystemMessage { Text = SystemPrompt }
-                },
-                Messages = new List<Message>
-                {
+                System = [new SystemMessage { Text = SystemPrompt }],
+                Messages =
+                [
                     new Message
                     {
                         Role = RoleType.User,
-                        Content = new List<ContentBase>
-                        {
-                            new TextContent { Text = userMessage }
-                        }
+                        Content = [new TextContent { Text = userMessage }]
                     }
-                }
+                ]
             };
 
             var response = await _client.Messages.GetClaudeMessageAsync(parameters);
@@ -162,24 +159,24 @@ public class PrediccionExtractionService : IPrediccionExtractionService
         }
     }
 
-    private sealed class ExtractionResponseJson
+    private sealed record ExtractionResponseJson
     {
         [JsonPropertyName("predictions")]
-        public List<PredictionJson> Predictions { get; set; } = new();
+        public List<PredictionJson> Predictions { get; init; } = new();
 
         [JsonPropertyName("confidence")]
-        public double Confidence { get; set; }
+        public double Confidence { get; init; }
     }
 
-    private sealed class PredictionJson
+    private sealed record PredictionJson
     {
         [JsonPropertyName("matchId")]
-        public int MatchId { get; set; }
+        public int MatchId { get; init; }
 
         [JsonPropertyName("localGoals")]
-        public int LocalGoals { get; set; }
+        public int LocalGoals { get; init; }
 
         [JsonPropertyName("visitanteGoals")]
-        public int VisitanteGoals { get; set; }
+        public int VisitanteGoals { get; init; }
     }
 }
