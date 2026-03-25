@@ -2,6 +2,7 @@ using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL.Repositories.Interfaces;
 using BanterBotSports.Entities.Enums;
 using BanterBotSports.Integrations.ApiFootball;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -13,10 +14,7 @@ namespace BanterBotSports.Integrations.Hosted;
 /// </summary>
 public class ResultSyncService : IHostedService, IAsyncDisposable
 {
-    private readonly IPartidoRepository _partidoRepository;
-    private readonly IApiFootballClient _apiFootballClient;
-    private readonly IPartidoService _partidoService;
-    private readonly IPuntuacionService _puntuacionService;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<ResultSyncService> _logger;
 
     private readonly TimeSpan _interval = TimeSpan.FromMinutes(5);
@@ -25,22 +23,13 @@ public class ResultSyncService : IHostedService, IAsyncDisposable
     private CancellationTokenSource? _cts;
 
     public ResultSyncService(
-        IPartidoRepository partidoRepository,
-        IApiFootballClient apiFootballClient,
-        IPartidoService partidoService,
-        IPuntuacionService puntuacionService,
+        IServiceScopeFactory scopeFactory,
         ILogger<ResultSyncService> logger)
     {
-        ArgumentNullException.ThrowIfNull(partidoRepository);
-        ArgumentNullException.ThrowIfNull(apiFootballClient);
-        ArgumentNullException.ThrowIfNull(partidoService);
-        ArgumentNullException.ThrowIfNull(puntuacionService);
+        ArgumentNullException.ThrowIfNull(scopeFactory);
         ArgumentNullException.ThrowIfNull(logger);
 
-        _partidoRepository = partidoRepository;
-        _apiFootballClient = apiFootballClient;
-        _partidoService = partidoService;
-        _puntuacionService = puntuacionService;
+        _scopeFactory = scopeFactory;
         _logger = logger;
     }
 
@@ -82,7 +71,12 @@ public class ResultSyncService : IHostedService, IAsyncDisposable
     {
         try
         {
-            var activeMatches = await _partidoRepository.GetByEstadoAsync(EstadoPartido.EnCurso);
+            await using var scope = _scopeFactory.CreateAsyncScope();
+            var partidoRepository = scope.ServiceProvider.GetRequiredService<IPartidoRepository>();
+            var partidoService = scope.ServiceProvider.GetRequiredService<IPartidoService>();
+            var apiFootballClient = scope.ServiceProvider.GetRequiredService<IApiFootballClient>();
+
+            var activeMatches = await partidoRepository.GetByEstadoAsync(EstadoPartido.EnCurso);
 
             if (activeMatches.Count == 0)
                 return;
@@ -98,7 +92,7 @@ public class ResultSyncService : IHostedService, IAsyncDisposable
 
                 try
                 {
-                    var liveScore = await _apiFootballClient.GetLiveScoreAsync(externalId);
+                    var liveScore = await apiFootballClient.GetLiveScoreAsync(externalId);
 
                     if (liveScore is null)
                         continue;
@@ -114,7 +108,7 @@ public class ResultSyncService : IHostedService, IAsyncDisposable
                     var goles1 = liveScore.GolesEquipo1 ?? partido.GolesEquipo1Oficial ?? 0;
                     var goles2 = liveScore.GolesEquipo2 ?? partido.GolesEquipo2Oficial ?? 0;
 
-                    await _partidoService.ActualizarResultadoAsync(
+                    await partidoService.ActualizarResultadoAsync(
                         partidoId: partido.Id,
                         golesEquipo1: goles1,
                         golesEquipo2: goles2,
