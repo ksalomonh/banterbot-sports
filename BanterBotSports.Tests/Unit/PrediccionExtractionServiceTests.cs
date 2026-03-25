@@ -172,7 +172,7 @@ public class PrediccionExtractionServiceTests
               "predictions": [
                 { "matchId": 99, "localGoals": 2, "visitanteGoals": 1 }
               ],
-              "confidence": 0.9
+              "confidence": 0.96
             }
             """;
         var sut = BuildSut();
@@ -194,7 +194,7 @@ public class PrediccionExtractionServiceTests
               "predictions": [
                 { "matchId": 5, "localGoals": 0, "visitanteGoals": 2 }
               ],
-              "confidence": 0.88
+              "confidence": 0.96
             }
             Hope this helps!
             """;
