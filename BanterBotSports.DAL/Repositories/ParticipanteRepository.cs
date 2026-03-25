@@ -14,6 +14,17 @@ public class ParticipanteRepository : IParticipanteRepository
         _context = context;
     }
 
+    public async Task<IReadOnlyDictionary<string, string>> GetDisplayNamesByIdsAsync(IReadOnlyList<string> userIds)
+    {
+        ArgumentNullException.ThrowIfNull(userIds);
+
+        return await _context.Users
+            .Where(u => userIds.Contains(u.Id))
+            .ToDictionaryAsync(
+                u => u.Id,
+                u => u.NombreDisplay ?? u.UserName ?? u.Id);
+    }
+
     public async Task<Participante?> GetByIdAsync(int id)
         => await _context.Participantes.FindAsync(id);
 

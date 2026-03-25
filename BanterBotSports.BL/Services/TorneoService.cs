@@ -4,8 +4,6 @@ using BanterBotSports.DAL.Repositories.Interfaces;
 using BanterBotSports.Entities;
 using BanterBotSports.Entities.Enums;
 using BanterBotSports.Entities.ViewModels;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace BanterBotSports.BL.Services;
 
@@ -19,7 +17,6 @@ public class TorneoService : ITorneoService
     private readonly IParticipanteRepository _participanteRepository;
     private readonly IJornadaRepository _jornadaRepository;
     private readonly IPrediccionRepository _prediccionRepository;
-    private readonly UserManager<AppUser> _userManager;
     private readonly IUnitOfWork _unitOfWork;
 
     public TorneoService(
@@ -27,21 +24,18 @@ public class TorneoService : ITorneoService
         IParticipanteRepository participanteRepository,
         IJornadaRepository jornadaRepository,
         IPrediccionRepository prediccionRepository,
-        UserManager<AppUser> userManager,
         IUnitOfWork unitOfWork)
     {
         ArgumentNullException.ThrowIfNull(torneoRepository);
         ArgumentNullException.ThrowIfNull(participanteRepository);
         ArgumentNullException.ThrowIfNull(jornadaRepository);
         ArgumentNullException.ThrowIfNull(prediccionRepository);
-        ArgumentNullException.ThrowIfNull(userManager);
         ArgumentNullException.ThrowIfNull(unitOfWork);
 
         _torneoRepository = torneoRepository;
         _participanteRepository = participanteRepository;
         _jornadaRepository = jornadaRepository;
         _prediccionRepository = prediccionRepository;
-        _userManager = userManager;
         _unitOfWork = unitOfWork;
     }
 
@@ -50,6 +44,10 @@ public class TorneoService : ITorneoService
     {
         ArgumentNullException.ThrowIfNull(model);
         ArgumentException.ThrowIfNullOrWhiteSpace(organizadorId);
+
+        var totalPorcentaje = model.ConfiguracionPremios.Sum(p => p.Porcentaje);
+        if (totalPorcentaje != 100)
+            throw new InvalidOperationException("Los porcentajes de premios deben sumar 100%");
 
         var torneo = new Torneo
         {
@@ -146,11 +144,9 @@ public class TorneoService : ITorneoService
         var puntosPorParticipante = await _prediccionRepository
             .GetPuntosTotalesPorParticipanteAsync(participanteIds);
 
-        // Resolve display names in one query
+        // Resolve display names in one query — delegated to DAL to avoid EF Core in BL
         var userIds = torneo.Participantes.Select(p => p.UserId).ToList();
-        var users = await _userManager.Users
-            .Where(u => userIds.Contains(u.Id))
-            .ToDictionaryAsync(u => u.Id, u => u.NombreDisplay ?? u.UserName ?? u.Id);
+        var users = await _participanteRepository.GetDisplayNamesByIdsAsync(userIds);
 
         return torneo.Participantes
             .Select(p => new
