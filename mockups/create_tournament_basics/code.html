@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Midnight Stadium - Create Tournament</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-container": "#00cffc",
+              "surface-container-highest": "#1e253b",
+              "outline": "#707588",
+              "on-primary": "#004a5d",
+              "primary-fixed": "#00cffc",
+              "tertiary-fixed-dim": "#ff7b70",
+              "primary-dim": "#00c0ea",
+              "surface-container-lowest": "#000000",
+              "secondary-fixed-dim": "#2be800",
+              "secondary-fixed": "#2ff801",
+              "on-surface": "#e1e4fa",
+              "error-container": "#9f0519",
+              "on-secondary-fixed-variant": "#0d6200",
+              "secondary-dim": "#2be800",
+              "on-primary-fixed-variant": "#004a5c",
+              "surface-variant": "#1e253b",
+              "surface-bright": "#242b43",
+              "on-error-container": "#ffa8a3",
+              "on-background": "#e1e4fa",
+              "on-error": "#490006",
+              "background": "#090e1c",
+              "inverse-primary": "#006880",
+              "primary-fixed-dim": "#00c0ea",
+              "on-tertiary-fixed": "#3a0002",
+              "surface-dim": "#090e1c",
+              "error": "#ff716c",
+              "on-primary-container": "#004050",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "surface-tint": "#69daff",
+              "tertiary-fixed": "#ff9287",
+              "primary": "#69daff",
+              "on-tertiary-container": "#000000",
+              "inverse-on-surface": "#505466",
+              "secondary-container": "#106e00",
+              "on-primary-fixed": "#002a35",
+              "on-secondary": "#0b5800",
+              "outline-variant": "#434759",
+              "on-surface-variant": "#a6aabf",
+              "surface-container-low": "#0d1323",
+              "tertiary": "#ff7166",
+              "surface": "#090e1c",
+              "tertiary-dim": "#e51a22",
+              "tertiary-container": "#f5282b",
+              "on-tertiary": "#4a0003",
+              "on-secondary-container": "#e7ffd9",
+              "surface-container-high": "#181f33",
+              "inverse-surface": "#faf8ff",
+              "on-secondary-fixed": "#064200",
+              "surface-container": "#13192b",
+              "secondary": "#2ff801",
+              "error-dim": "#d7383b"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        background-color: #090e1c;
+        color: #e1e4fa;
+        font-family: 'Inter', sans-serif;
+      }
+      .glass-nav {
+        background: rgba(9, 14, 28, 0.6);
+        backdrop-filter: blur(20px);
+      }
+    </style>
+</head>
+<body class="min-h-screen">
+<!-- TopNavBar Component -->
+<header class="fixed top-0 z-50 w-full bg-[#090e1c]/60 backdrop-blur-xl shadow-[0_0_40px_rgba(105,218,255,0.08)] flex justify-between items-center px-6 py-4">
+<div class="text-2xl font-black tracking-tighter text-[#69daff]">
+            Midnight Stadium
+        </div>
+<nav class="hidden md:flex items-center gap-8 font-['Inter'] tracking-tight">
+<a class="text-[#e1e4fa]/70 hover:text-[#e1e4fa] transition-colors" href="#">Tournaments</a>
+<a class="text-[#e1e4fa]/70 hover:text-[#e1e4fa] transition-colors" href="#">Matches</a>
+<a class="text-[#e1e4fa]/70 hover:text-[#e1e4fa] transition-colors" href="#">Banter</a>
+<a class="text-[#e1e4fa]/70 hover:text-[#e1e4fa] transition-colors" href="#">Leaderboards</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-5 py-2 rounded-xl font-bold active:scale-95 transition-transform">
+                Create Tournament
+            </button>
+<div class="flex items-center gap-3 text-[#e1e4fa]/70">
+<span class="material-symbols-outlined p-2 hover:bg-[#181f33]/50 rounded-full transition-all cursor-pointer">notifications</span>
+<span class="material-symbols-outlined p-2 hover:bg-[#181f33]/50 rounded-full transition-all cursor-pointer">account_circle</span>
+</div>
+</div>
+</header>
+<div class="flex min-h-screen pt-20">
+<!-- SideNavBar Component -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-[#0d1323] flex flex-col pt-24 pb-8 px-4 z-40">
+<div class="mb-8 px-4">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+<img alt="Organizer Profile" class="w-full h-full object-cover" data-alt="Professional sports event organizer portrait with confident expression, dramatic neon blue rim lighting against a dark studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKYWDb07jZEDa6oFANVZxWpHBGMXTukv_M8eMlwKPH8fqtSzVAAdlfqKNzyDDhRZ3XLtpDXqz9EIv2akinZNaRH-8MClqoqHgbBJfHtKHWW1oYbe7OaV0XLknl3Lbdv9qFhWj0BlDjghFWaRXPJ45mbw_YO22uqOkFzO9TqKXB9LB8AVy-39b3W6iu8ED295c-PYY4XdR-NV8kpZO_765VHmXcswoMRfJhLE9FD3BogDzjkmVbzgsSXn3LbfyrwLGd3AbIxAiDE4Wl"/>
+</div>
+<div>
+<p class="text-[#69daff] font-black text-sm uppercase tracking-wider">New Tournament</p>
+<p class="text-[#e1e4fa]/50 text-xs font-bold uppercase tracking-[0.05em]">Draft Mode</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<!-- Basics - ACTIVE -->
+<a class="flex items-center gap-3 bg-[#181f33] text-[#69daff] rounded-xl px-4 py-3 shadow-[0_0_15px_rgba(105,218,255,0.1)] border-l-4 border-[#69daff] font-bold uppercase tracking-[0.05em] text-[0.75rem]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span>Basics</span>
+</a>
+<!-- Scoring -->
+<a class="flex items-center gap-3 text-[#e1e4fa]/50 px-4 py-3 hover:bg-[#181f33]/30 hover:text-[#69daff] transition-all font-bold uppercase tracking-[0.05em] text-[0.75rem]" href="#">
+<span class="material-symbols-outlined">scoreboard</span>
+<span>Scoring</span>
+</a>
+<!-- Prizes -->
+<a class="flex items-center gap-3 text-[#e1e4fa]/50 px-4 py-3 hover:bg-[#181f33]/30 hover:text-[#69daff] transition-all font-bold uppercase tracking-[0.05em] text-[0.75rem]" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Prizes</span>
+</a>
+<!-- Matches -->
+<a class="flex items-center gap-3 text-[#e1e4fa]/50 px-4 py-3 hover:bg-[#181f33]/30 hover:text-[#69daff] transition-all font-bold uppercase tracking-[0.05em] text-[0.75rem]" href="#">
+<span class="material-symbols-outlined">sports_soccer</span>
+<span>Matches</span>
+</a>
+<!-- Review -->
+<a class="flex items-center gap-3 text-[#e1e4fa]/50 px-4 py-3 hover:bg-[#181f33]/30 hover:text-[#69daff] transition-all font-bold uppercase tracking-[0.05em] text-[0.75rem]" href="#">
+<span class="material-symbols-outlined">visibility</span>
+<span>Review</span>
+</a>
+</nav>
+<button class="mt-auto w-full bg-secondary text-on-secondary py-3 rounded-xl font-black uppercase tracking-widest text-xs active:scale-95 transition-all">
+                Publish Live
+            </button>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 p-8 lg:p-12">
+<div class="max-w-4xl mx-auto">
+<div class="mb-12">
+<h1 class="text-5xl font-black tracking-tighter text-on-surface mb-2">Create New Tournament</h1>
+<p class="text-xl text-primary font-medium tracking-tight">Step 1: The Essentials</p>
+</div>
+<!-- Form Bento Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Details -->
+<div class="lg:col-span-8 space-y-8">
+<section class="bg-surface-container-low p-8 rounded-full shadow-[0_0_40px_rgba(105,218,255,0.03)] border-none">
+<div class="space-y-6">
+<div>
+<label class="block text-xs font-black uppercase tracking-[0.1em] text-on-surface-variant mb-3">Tournament Name</label>
+<input class="w-full bg-surface-container-highest border-none rounded-xl px-6 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-on-surface-variant/30 transition-all" placeholder="e.g. Midnight Champions League 2024" type="text"/>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<label class="block text-xs font-black uppercase tracking-[0.1em] text-on-surface-variant mb-3">Entry Fee (USD)</label>
+<div class="relative">
+<span class="absolute left-6 top-1/2 -translate-y-1/2 text-primary font-bold">$</span>
+<input class="w-full bg-surface-container-highest border-none rounded-xl pl-12 pr-6 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-on-surface-variant/30 transition-all" placeholder="0.00" type="number"/>
+</div>
+</div>
+<div class="flex items-end">
+<div class="bg-surface-container-highest/50 p-4 rounded-xl border border-outline-variant/15 flex items-center gap-3 w-full">
+<span class="material-symbols-outlined text-secondary">info</span>
+<p class="text-[0.7rem] text-on-surface-variant leading-tight">Platform fees (5%) are automatically calculated upon entry.</p>
+</div>
+</div>
+</div>
+<div>
+<label class="block text-xs font-black uppercase tracking-[0.1em] text-on-surface-variant mb-3">Description</label>
+<textarea class="w-full bg-surface-container-highest border-none rounded-xl px-6 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-on-surface-variant/30 transition-all resize-none" placeholder="Define the rules, the vibe, and why players should join your arena..." rows="5"></textarea>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Visuals & Actions -->
+<div class="lg:col-span-4 space-y-8">
+<!-- Image Upload Card -->
+<section class="bg-surface-container-low p-6 rounded-full shadow-[0_0_40px_rgba(105,218,255,0.03)] border-none">
+<label class="block text-xs font-black uppercase tracking-[0.1em] text-on-surface-variant mb-4">Tournament Image</label>
+<div class="relative group cursor-pointer overflow-hidden rounded-xl aspect-square bg-surface-container-highest flex flex-col items-center justify-center border-2 border-dashed border-outline-variant/30 hover:border-primary/50 transition-all">
+<img class="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:scale-105 transition-transform duration-500" data-alt="Cinematic wide shot of a futuristic neon-lit stadium at night with glowing blue and green structural accents and atmospheric mist" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnuWY8wEji-bEZADvf-ZtJ2DmBm7ZZZ6IBNNDz_k7I48IpS99e8QZD88KmTugq3T-kuKAM_D7jei9kRPnNVxUCJt2wxrmJbcRZzn4rfbWBC9s0ACFLbhyJxF8t65_nBgQS3owD_CXjBNv2esV7EW103E-IvSz7-8Cb3BhUCqC3uJvzkcX82Q8eS51aESlxX3VFtslSKCWUfZ6zR0qg6ymJfuyKFTYjUmuWyqGDcqUO4MBJQ8Kq-6NrFV4ONkgYqYH6BPgYhrFeOxo_"/>
+<div class="relative z-10 flex flex-col items-center text-center p-4">
+<span class="material-symbols-outlined text-4xl text-primary mb-2">cloud_upload</span>
+<p class="text-sm font-bold text-on-surface">Upload Cover</p>
+<p class="text-[0.65rem] text-on-surface-variant mt-1">16:9 Aspect Ratio recommended</p>
+</div>
+</div>
+</section>
+<!-- Action Controls -->
+<div class="space-y-3">
+<button class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary py-4 rounded-xl font-black uppercase tracking-widest text-sm shadow-[0_10px_30px_rgba(0,207,252,0.2)] hover:shadow-[0_15px_40px_rgba(0,207,252,0.3)] active:scale-95 transition-all">
+                                Next Step
+                            </button>
+<button class="w-full bg-transparent border border-outline-variant/20 text-on-surface-variant py-4 rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-surface-bright/50 transition-all">
+                                Cancel
+                            </button>
+</div>
+</div>
+</div>
+<!-- Banter Rail (Asymmetric Floating Feed) -->
+<aside class="fixed bottom-8 right-8 w-80 hidden xl:block">
+<div class="bg-surface-container-high/60 backdrop-blur-xl p-5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-outline-variant/10">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+                                Live Banter
+                            </h3>
+<span class="material-symbols-outlined text-on-surface-variant text-sm cursor-pointer hover:text-primary transition-colors">close</span>
+</div>
+<div class="space-y-4 max-h-64 overflow-y-auto pr-2 scrollbar-hide">
+<div class="flex gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex-shrink-0">
+<img class="w-full h-full object-cover rounded-full" data-alt="Close-up avatar of a male gamer with neon lighting highlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkFjYLy6_xMSh-WFr4ZhEOpYXBWfxA4jen5vBKqsBBu5CgwyeMe7Awy_pCap3lad-jaHXj48X2nJCWKeaTOm_1AS2br0qXFXuwihaAmEGN2E0X8crj4AzjEa6WNbZ-cq6CuTv0Eo9k00GNqcVq1QNkq5fGG49C2xFfqZ1nHPW9a4znIOng01xPcRvmQXxAesn1YVSgZ-Xwj6wIaBM6RO5kbSZ0NfE0CFb66yZAKOsiD23Lm0wkUNysOqz3GbDa0WO4kCVnYZFe3JVL"/>
+</div>
+<div class="bg-surface-container-highest/80 p-3 rounded-xl rounded-tl-none">
+<p class="text-[0.65rem] font-black text-primary mb-1">STRIKER_99</p>
+<p class="text-xs text-on-surface leading-snug">Set the entry fee to $50, let's keep it serious!</p>
+</div>
+</div>
+<div class="flex gap-3 justify-end">
+<div class="bg-primary/10 p-3 rounded-xl rounded-tr-none">
+<p class="text-[0.65rem] font-black text-secondary mb-1 text-right">YOU</p>
+<p class="text-xs text-on-surface leading-snug">Drafting the rules now. It's going to be wild.</p>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant/10">
+<div class="relative">
+<input class="w-full bg-[#090e1c] border-none rounded-lg py-2 px-3 text-xs focus:ring-1 focus:ring-primary/40" placeholder="Add to the banter..." type="text"/>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-primary text-sm cursor-pointer">send</span>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+</div>
+</body></html>

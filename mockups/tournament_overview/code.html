@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BanterBot Sports - Euro 2024 Tournament Overview</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary-container": "#00cffc",
+            "surface-container": "#13192b",
+            "primary-fixed": "#00cffc",
+            "surface-container-low": "#0d1323",
+            "primary-dim": "#00c0ea",
+            "on-tertiary": "#4a0003",
+            "tertiary-fixed-dim": "#ff7b70",
+            "background": "#090e1c",
+            "secondary-dim": "#2be800",
+            "error": "#ff716c",
+            "inverse-primary": "#006880",
+            "surface-tint": "#69daff",
+            "on-surface-variant": "#a6aabf",
+            "error-container": "#9f0519",
+            "on-tertiary-fixed-variant": "#7a0008",
+            "surface-dim": "#090e1c",
+            "tertiary-dim": "#e51a22",
+            "inverse-on-surface": "#505466",
+            "on-background": "#e1e4fa",
+            "on-secondary-fixed": "#064200",
+            "surface-variant": "#1e253b",
+            "on-primary-fixed": "#002a35",
+            "secondary-fixed-dim": "#2be800",
+            "surface-bright": "#242b43",
+            "on-surface": "#e1e4fa",
+            "surface": "#090e1c",
+            "on-tertiary-fixed": "#3a0002",
+            "inverse-surface": "#faf8ff",
+            "secondary-container": "#106e00",
+            "surface-container-lowest": "#000000",
+            "on-primary-container": "#004050",
+            "error-dim": "#d7383b",
+            "surface-container-high": "#181f33",
+            "surface-container-highest": "#1e253b",
+            "secondary-fixed": "#2ff801",
+            "secondary": "#2ff801",
+            "tertiary": "#ff7166",
+            "on-error": "#490006",
+            "on-primary": "#004a5d",
+            "outline": "#707588",
+            "on-tertiary-container": "#000000",
+            "outline-variant": "#434759",
+            "tertiary-container": "#f5282b",
+            "on-error-container": "#ffa8a3",
+            "primary": "#69daff",
+            "tertiary-fixed": "#ff9287",
+            "on-secondary-fixed-variant": "#0d6200",
+            "on-secondary": "#0b5800",
+            "primary-fixed-dim": "#00c0ea",
+            "on-secondary-container": "#e7ffd9",
+            "on-primary-fixed-variant": "#004a5c"
+          },
+          fontFamily: {
+            "headline": ["Inter"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+        },
+      },
+    }
+  </script>
+<style>
+    body { font-family: 'Inter', sans-serif; background-color: #090e1c; color: #e1e4fa; }
+    .glass-effect { backdrop-filter: blur(20px); background: rgba(30, 37, 59, 0.6); }
+    .text-glow-primary { text-shadow: 0 0 10px rgba(105, 218, 255, 0.5); }
+    .text-glow-secondary { text-shadow: 0 0 10px rgba(47, 248, 1, 0.5); }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  </style>
+</head>
+<body class="bg-background min-h-screen">
+<!-- TopNavBar (Shared Component) -->
+<nav class="fixed top-0 w-full z-50 bg-[#090e1c]/60 backdrop-blur-xl flex justify-between items-center px-6 py-4 shadow-[0_40px_40px_0_rgba(105,218,255,0.08)]">
+<div class="text-2xl font-black tracking-tighter text-[#69daff] uppercase">BanterBot Sports</div>
+<div class="hidden md:flex gap-8 items-center font-['Inter'] font-bold tracking-tight">
+<a class="text-[#69daff] border-b-2 border-[#69daff] pb-1" href="#">My Tournaments</a>
+<a class="text-[#e1e4fa]/70 hover:text-[#e1e4fa] transition-colors" href="#">Create Tournament</a>
+<a class="text-[#e1e4fa]/70 hover:text-[#e1e4fa] transition-colors" href="#">Bot Settings</a>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant/20 overflow-hidden">
+<img alt="User profile avatar" data-alt="Portrait of a modern young man with short dark hair in a clean studio setting with blue rim lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBK2cgweklHKrReKkzzs3aES0ZqdVpblZz2SHwIblJzCVPECx14xomrt9DzQIW3Jzlofqx78q82PwwG34JjI29gwz72-G3PVFNszfxRvL1VSJtxjHB5v9XWR-SmCp1zvrDP8xE6jWKUjKai3BQmV028wm6x_HGgFcu_yi5MSsWZ8HKeDrWBxwkjDKlaYAg1FzQ75wBHWOtP64Vpkdmy_3Y1ZJYVBLe1fnNzZBkBTDTiPPFHJbMruv4PYVwN2kEsGrbv73bcWbvOdq11"/>
+</div>
+<span class="text-on-surface font-bold">Profile</span>
+</div>
+</nav>
+<!-- SideNavBar (Banter Rail) -->
+<aside class="fixed right-0 top-20 h-[calc(100vh-5rem)] w-80 rounded-l-3xl bg-[#0d1323]/70 backdrop-blur-2xl shadow-[-20px_0_40px_rgba(0,0,0,0.3)] hidden xl:flex flex-col p-6 gap-4 z-40">
+<div class="flex items-center gap-3 mb-4">
+<div class="p-2 bg-primary/10 rounded-xl">
+<span class="material-symbols-outlined text-[#69daff]">psychology</span>
+</div>
+<div>
+<h3 class="text-[#69daff] font-bold uppercase tracking-widest text-sm">Banter Rail</h3>
+<p class="text-[#e1e4fa]/50 text-[10px] uppercase">The Neon Colosseum</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto space-y-4 pr-2">
+<!-- Chat Bubble -->
+<div class="bg-surface-container-high p-4 rounded-xl border-l-4 border-secondary transition-transform hover:translate-x-[-4px]">
+<div class="flex justify-between items-center mb-2">
+<span class="text-secondary font-bold text-xs">@KingCR7</span>
+<span class="text-[10px] text-on-surface-variant">2m ago</span>
+</div>
+<p class="text-sm text-on-surface">Mbappe is definitely scoring twice today. Locked in! 🍟</p>
+</div>
+<div class="bg-surface-container-high p-4 rounded-xl border-l-4 border-primary transition-transform hover:translate-x-[-4px]">
+<div class="flex justify-between items-center mb-2">
+<span class="text-primary font-bold text-xs">@StatBot AI</span>
+<span class="text-[10px] text-on-surface-variant">5m ago</span>
+</div>
+<p class="text-sm text-on-surface italic">AI Insight: Spain has 72% possession in opening matches.</p>
+</div>
+</div>
+<button class="w-full bg-secondary text-on-secondary font-black py-4 rounded-xl uppercase tracking-tighter active:scale-95 transition-transform">
+      Join Conversation
+    </button>
+</aside>
+<main class="pt-24 pb-12 px-6 lg:pr-[22rem]">
+<!-- Tournament Header -->
+<header class="mb-10 relative overflow-hidden rounded-[2rem] bg-surface-container-low p-8 lg:p-12 border border-outline-variant/10">
+<div class="absolute inset-0 z-0 opacity-20">
+<img alt="Stadium Atmosphere" class="w-full h-full object-cover" data-alt="Grand football stadium at night illuminated by powerful blue and white floodlights with a light haze in the air" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmznvvM4S_obslme05xcxubG2ZzucJWXeNtqEx5n-DlGQzohYAHPi22jgJve8QlS6NFZ0ps3mIeC658Dot9LxBVWICFWV1uOpq5gGjemWCrPfHFWHivZ6bHKyrbIsg6lFp3IwIoCR5FUgF5PSpCGzVEO1211svdSeOSeZeB27TuInoeU91rlYPIVY44k3FNNOINI9tB2ZaRb_ECoZoO2OhBcyuDJuJfDJu2pd1GLFRJRXkSvRCYBJukQTIk1pdJszbypaUXLH3w2Ek"/>
+<div class="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent"></div>
+</div>
+<div class="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<span class="bg-secondary text-on-secondary text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse">Live Now</span>
+<span class="text-on-surface-variant text-sm font-medium">Tournament ID: #EURO24-BB</span>
+</div>
+<h1 class="text-5xl md:text-7xl font-black tracking-tighter text-on-surface mb-2 uppercase italic leading-none">Euro 2024</h1>
+<div class="flex gap-6 mt-4">
+<div class="flex flex-col">
+<span class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Total Prize Pool</span>
+<span class="text-3xl font-black text-secondary-fixed">$500 USD</span>
+</div>
+<div class="w-px h-10 bg-outline-variant/30"></div>
+<div class="flex flex-col">
+<span class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Your Status</span>
+<span class="text-3xl font-black text-primary">#14<span class="text-sm font-bold text-on-surface-variant ml-1">/ 1,240</span></span>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="px-8 py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary-container font-black rounded-xl uppercase tracking-tighter shadow-[0_0_20px_rgba(105,218,255,0.3)] hover:scale-105 transition-transform">Edit Predictions</button>
+<button class="px-8 py-3 bg-surface-bright text-on-surface font-black rounded-xl border border-outline-variant/20 uppercase tracking-tighter hover:bg-surface-container-highest transition-colors">Invite Friends</button>
+</div>
+</div>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Main Content: Leaderboard & Tabs -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Matchday Navigation -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-2xl font-bold tracking-tight text-on-surface uppercase italic">Tournament Timeline</h2>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Active Matchday</span>
+</div>
+</div>
+<div class="flex overflow-x-auto pb-4 gap-4 no-scrollbar">
+<div class="flex-none bg-surface-container-high px-6 py-4 rounded-2xl border border-outline-variant/10 grayscale opacity-60 flex flex-col items-center gap-1 cursor-pointer">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Jornada 1</span>
+<span class="text-xs font-black uppercase text-on-surface">Finished</span>
+</div>
+<div class="flex-none bg-surface-container-high px-6 py-4 rounded-2xl border-2 border-secondary shadow-[0_0_15px_rgba(47,248,1,0.2)] flex flex-col items-center gap-1 cursor-pointer">
+<span class="text-[10px] font-bold text-secondary uppercase">Jornada 2</span>
+<span class="text-xs font-black uppercase text-on-surface">Open</span>
+</div>
+<div class="flex-none bg-surface-container-high px-6 py-4 rounded-2xl border border-outline-variant/10 flex flex-col items-center gap-1 cursor-pointer hover:bg-surface-bright transition-colors">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Jornada 3</span>
+<span class="text-xs font-black uppercase text-on-surface-variant">Pending</span>
+</div>
+<div class="flex-none bg-surface-container-high px-6 py-4 rounded-2xl border border-outline-variant/10 flex flex-col items-center gap-1 cursor-pointer hover:bg-surface-bright transition-colors">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Knockouts</span>
+<span class="text-xs font-black uppercase text-on-surface-variant">Locked</span>
+</div>
+</div>
+</section>
+<!-- Matchday Summary Card -->
+<section class="bg-surface-container-high rounded-[2rem] p-8 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-700">
+<span class="material-symbols-outlined text-9xl">stadium</span>
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-4 mb-6">
+<div class="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">calendar_month</span>
+</div>
+<div>
+<h3 class="text-xl font-bold">Jornada 2 Summary</h3>
+<p class="text-on-surface-variant text-sm">4 Matches Scheduled Today • 2 Live Now</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-background/40 p-4 rounded-2xl border border-outline-variant/10">
+<div class="flex justify-between items-center mb-2">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Your Prediction</span>
+<span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Live</span>
+</div>
+<div class="flex items-center justify-between text-lg font-bold">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-surface-bright flex items-center justify-center text-[10px]">ESP</span>
+<span>2 - 1</span>
+<span class="w-6 h-6 rounded-full bg-surface-bright flex items-center justify-center text-[10px]">ITA</span>
+</div>
+<div class="text-primary">+12 Pts</div>
+</div>
+</div>
+<div class="bg-surface-bright/50 p-4 rounded-2xl border border-primary/20 flex flex-col justify-center items-center text-center">
+<span class="text-sm font-bold text-on-surface-variant">Current Jornada Score</span>
+<span class="text-4xl font-black text-primary">28 Pts</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Leaderboard Table -->
+<section class="bg-surface-container-low rounded-[2rem] overflow-hidden">
+<div class="p-8 border-b border-outline-variant/10 flex justify-between items-center">
+<h3 class="text-xl font-bold uppercase italic tracking-tighter">Global Standings</h3>
+<div class="flex gap-2">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase bg-surface-container-high px-3 py-1 rounded-full">Top 5%</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="text-[10px] text-on-surface-variant uppercase tracking-[0.2em] font-black bg-surface-container-high/30">
+<th class="px-8 py-4">Rank</th>
+<th class="px-4 py-4">Player</th>
+<th class="px-4 py-4 text-center">Results</th>
+<th class="px-4 py-4 text-center">Exacts</th>
+<th class="px-4 py-4 text-center">Goles Pts</th>
+<th class="px-8 py-4 text-right">Total</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<tr class="hover:bg-surface-bright/20 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-yellow-400 text-lg" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+<span class="font-black text-xl">1</span>
+</div>
+</td>
+<td class="px-4 py-6 font-bold">BanterLord_99</td>
+<td class="px-4 py-6 text-center text-on-surface-variant">14/16</td>
+<td class="px-4 py-6 text-center text-on-surface-variant">5</td>
+<td class="px-4 py-6 text-center text-on-surface-variant">42</td>
+<td class="px-8 py-6 text-right font-black text-xl text-secondary">256</td>
+</tr>
+<tr class="hover:bg-surface-bright/20 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-400 text-lg" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+<span class="font-black text-xl">2</span>
+</div>
+</td>
+<td class="px-4 py-6 font-bold">GoalMachine</td>
+<td class="px-4 py-6 text-center text-on-surface-variant">12/16</td>
+<td class="px-4 py-6 text-center text-on-surface-variant">7</td>
+<td class="px-4 py-6 text-center text-on-surface-variant">38</td>
+<td class="px-8 py-6 text-right font-black text-xl">242</td>
+</tr>
+<tr class="bg-primary/10 border-l-4 border-primary">
+<td class="px-8 py-6">
+<span class="font-black text-xl">14</span>
+</td>
+<td class="px-4 py-6">
+<div class="flex items-center gap-2">
+<span class="font-black text-primary">YOU (Player_402)</span>
+<span class="bg-primary/20 text-primary text-[8px] font-black px-1.5 py-0.5 rounded uppercase">Your Rank</span>
+</div>
+</td>
+<td class="px-4 py-6 text-center text-on-surface-variant">10/16</td>
+<td class="px-4 py-6 text-center text-on-surface-variant">3</td>
+<td class="px-4 py-6 text-center text-on-surface-variant">22</td>
+<td class="px-8 py-6 text-right font-black text-xl text-primary">188</td>
+</tr>
+<tr class="hover:bg-surface-bright/20 transition-colors">
+<td class="px-8 py-6"><span class="font-black text-xl">15</span></td>
+<td class="px-4 py-6 font-bold">Starlight11</td>
+<td class="px-4 py-6 text-center text-on-surface-variant">11/16</td>
+<td class="px-4 py-6 text-center text-on-surface-variant">2</td>
+<td class="px-4 py-6 text-center text-on-surface-variant">30</td>
+<td class="px-8 py-6 text-right font-black text-xl">184</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 bg-surface-container-high/50 flex justify-center">
+<button class="text-[10px] font-black uppercase text-on-surface-variant hover:text-primary transition-colors tracking-[0.2em]">View Full Leaderboard</button>
+</div>
+</section>
+</div>
+<!-- Sidebar: Rules & Prizes -->
+<aside class="lg:col-span-4 space-y-8">
+<!-- Prize Distribution -->
+<section class="bg-surface-container-high rounded-[2rem] p-8 border border-outline-variant/10">
+<h3 class="text-xl font-bold uppercase italic mb-6">Prize Pool</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-4 bg-yellow-400/5 rounded-2xl border border-yellow-400/20">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-background font-bold">emoji_events</span>
+</div>
+<span class="font-bold">1st Place</span>
+</div>
+<div class="text-right">
+<span class="block font-black text-lg text-yellow-400">70%</span>
+<span class="text-[10px] text-on-surface-variant uppercase font-bold">$350.00</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-slate-400/5 rounded-2xl border border-slate-400/20">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-slate-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-background font-bold">emoji_events</span>
+</div>
+<span class="font-bold">2nd Place</span>
+</div>
+<div class="text-right">
+<span class="block font-black text-lg text-slate-400">20%</span>
+<span class="text-[10px] text-on-surface-variant uppercase font-bold">$100.00</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-orange-700/5 rounded-2xl border border-orange-700/20">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-orange-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-background font-bold">emoji_events</span>
+</div>
+<span class="font-bold">3rd Place</span>
+</div>
+<div class="text-right">
+<span class="block font-black text-lg text-orange-700">10%</span>
+<span class="text-[10px] text-on-surface-variant uppercase font-bold">$50.00</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Scoring System -->
+<section class="bg-surface-container-low rounded-[2rem] p-8 border border-outline-variant/10">
+<h3 class="text-xl font-bold uppercase italic mb-6">Scoring Rules</h3>
+<ul class="space-y-6">
+<li class="flex items-start gap-4">
+<div class="w-8 h-8 rounded-lg bg-primary/20 flex-none flex items-center justify-center">
+<span class="text-primary font-black text-xs">03</span>
+</div>
+<div>
+<span class="block font-bold text-sm">Correct Result (W/D/L)</span>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider font-medium">Predicting who wins or the draw.</p>
+</div>
+</li>
+<li class="flex items-start gap-4">
+<div class="w-8 h-8 rounded-lg bg-secondary/20 flex-none flex items-center justify-center">
+<span class="text-secondary font-black text-xs">05</span>
+</div>
+<div>
+<span class="block font-bold text-sm">Exact Scoreline</span>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider font-medium">Predicting the exact final score.</p>
+</div>
+</li>
+<li class="flex items-start gap-4">
+<div class="w-8 h-8 rounded-lg bg-surface-bright flex-none flex items-center justify-center">
+<span class="text-on-surface-variant font-black text-xs">01</span>
+</div>
+<div>
+<span class="block font-bold text-sm">Goles Jornada Pts</span>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider font-medium">For every goal scored in the matchday.</p>
+</div>
+</li>
+</ul>
+<div class="mt-8 pt-6 border-t border-outline-variant/10">
+<button class="w-full text-center text-xs font-black uppercase tracking-widest text-primary hover:underline">Download Full Rules PDF</button>
+</div>
+</section>
+<!-- Tournament Host -->
+<section class="p-6 bg-gradient-to-br from-surface-container-high to-surface-container-low rounded-[2rem] border border-outline-variant/10">
+<span class="text-[8px] font-black uppercase text-on-surface-variant mb-4 block tracking-widest">Organized By</span>
+<div class="flex items-center gap-3">
+<img alt="League Logo" class="w-12 h-12 rounded-xl object-cover" data-alt="Minimalist abstract eagle icon for a sports league brand in electric blue and white colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoQk2OH83vO06wxFAPrbA6cXKpYp4C1xvpnM--AhyceunlNgaWxJDoCbaCZN3zFuvp2VyP2vdtbpgCmJ0-ZTRjyDNd3HJsoOxBihW2HAaLCD329C76VYI_dXBcCkSo-X1sVbR6RYdFId1aI77Fh-ZHRGWGd-zxvJ8VkF7_sai4uRPygs7-2hghl68KLMuXmLlb2FuWVjrP5EmN88MLOFpgFIJB89FgoJv7N1Kb4ca4RC2l51DxIfg5kPVQllfOtaLPW4CLzhnW7_63"/>
+<div>
+<span class="block font-black text-on-surface uppercase tracking-tighter">Premier Banter League</span>
+<span class="text-[10px] text-secondary font-bold">Verified Host ✓</span>
+</div>
+</div>
+</section>
+</aside>
+</div>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="w-full py-12 border-t border-[#434759]/15 bg-[#090e1c] flex flex-col items-center justify-center gap-6">
+<div class="text-[#69daff] font-bold text-lg uppercase tracking-widest">BanterBot Sports</div>
+<div class="flex gap-8 font-['Inter'] text-xs text-[#e1e4fa]/40">
+<a class="hover:text-[#69daff] transition-opacity hover:underline" href="#">Documentation</a>
+<a class="hover:text-[#69daff] transition-opacity hover:underline" href="#">Developer API</a>
+<a class="hover:text-[#69daff] transition-opacity hover:underline" href="#">Support</a>
+<a class="hover:text-[#69daff] transition-opacity hover:underline" href="#">Privacy</a>
+</div>
+<p class="font-['Inter'] text-xs text-[#e1e4fa]/40">© 2024 BanterBot Sports. All Rights Reserved.</p>
+</footer>
+</body></html>

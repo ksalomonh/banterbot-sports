@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BanterBot Sports - Profile &amp; Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#69daff",
+              "primary-fixed": "#00cffc",
+              "on-surface": "#e1e4fa",
+              "on-primary-container": "#004050",
+              "surface-container-high": "#181f33",
+              "surface": "#090e1c",
+              "on-secondary": "#0b5800",
+              "surface-dim": "#090e1c",
+              "secondary-container": "#106e00",
+              "on-tertiary-container": "#000000",
+              "on-secondary-fixed-variant": "#0d6200",
+              "background": "#090e1c",
+              "on-error-container": "#ffa8a3",
+              "on-background": "#e1e4fa",
+              "secondary-fixed": "#2ff801",
+              "on-surface-variant": "#a6aabf",
+              "on-primary": "#004a5d",
+              "outline-variant": "#434759",
+              "on-tertiary-fixed": "#3a0002",
+              "inverse-primary": "#006880",
+              "error-container": "#9f0519",
+              "error-dim": "#d7383b",
+              "outline": "#707588",
+              "on-secondary-fixed": "#064200",
+              "inverse-surface": "#faf8ff",
+              "on-primary-fixed-variant": "#004a5c",
+              "secondary-dim": "#2be800",
+              "on-primary-fixed": "#002a35",
+              "surface-container": "#13192b",
+              "tertiary-container": "#f5282b",
+              "surface-bright": "#242b43",
+              "tertiary-dim": "#e51a22",
+              "on-tertiary": "#4a0003",
+              "primary-dim": "#00c0ea",
+              "surface-container-lowest": "#000000",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "primary-fixed-dim": "#00c0ea",
+              "surface-container-highest": "#1e253b",
+              "surface-tint": "#69daff",
+              "tertiary-fixed": "#ff9287",
+              "secondary-fixed-dim": "#2be800",
+              "inverse-on-surface": "#505466",
+              "on-secondary-container": "#e7ffd9",
+              "error": "#ff716c",
+              "tertiary-fixed-dim": "#ff7b70",
+              "tertiary": "#ff7166",
+              "surface-container-low": "#0d1323",
+              "primary-container": "#00cffc",
+              "surface-variant": "#1e253b",
+              "secondary": "#2ff801",
+              "on-error": "#490006"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(30, 37, 59, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .stadium-glow {
+            box-shadow: 0 40px 40px -15px rgba(105, 218, 255, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30 min-h-screen">
+<!-- Top Navigation Shell -->
+<nav class="fixed top-0 w-full z-50 bg-[#090e1c]/60 backdrop-blur-xl shadow-[0_40px_40px_-15px_rgba(105,218,255,0.08)]">
+<div class="flex justify-between items-center px-6 h-16 w-full max-w-7xl mx-auto">
+<div class="text-2xl font-black italic tracking-tighter text-sky-400">BanterBot Sports</div>
+<div class="hidden md:flex items-center space-x-8 font-['Inter'] font-bold tracking-tight">
+<a class="text-slate-400 hover:text-sky-300 transition-colors" href="#">Arena</a>
+<a class="text-slate-400 hover:text-sky-300 transition-colors" href="#">Locker Room</a>
+<a class="text-slate-400 hover:text-sky-300 transition-colors" href="#">Stats</a>
+<a class="text-sky-400 border-b-2 border-sky-400 pb-1" href="#">Settings</a>
+</div>
+<div class="flex items-center space-x-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-sky-400/10 p-2 rounded-full transition-all duration-200">notifications</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="Stylized 3D avatar of a young esports player with neon blue highlights and a confident expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPqTulcZNY3a2L3DXdoeYb8gKuEVAoWh4ykXgLT-ub4-5yTzDtQ_2YnA164gUtHpVxpLvK08_MM0JM37g284ZOY0JFQT4hM2z31qVjIeGIPZHCBNM0duPBzZWq9IFTU7XA6iH3PF5PmqIu-eDPbz4GnTMaHO9exRsXCYlHmq8x2NUbxlt1u79wlG0RX-TL3_jc5OctSMicqWuPTtNBiYLDxLr1xClV7lbmeEXCMAXtXepFTQEz7NEu_55DhU5X4M8VFM7y9TXbUUX_"/>
+</div>
+</div>
+</div>
+</nav>
+<!-- Side Navigation Shell (Web Only) -->
+<aside class="hidden lg:flex h-screen w-64 fixed left-0 top-0 border-r border-slate-800/20 bg-[#0d1323] flex-col py-8 z-40">
+<div class="px-6 mb-10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">smart_toy</span>
+</div>
+<div>
+<p class="text-sky-400 font-black text-xs uppercase tracking-widest">Pro Player</p>
+<p class="text-slate-500 text-[10px] uppercase tracking-tighter">Elite Tier</p>
+</div>
+</div>
+</div>
+<div class="flex-1 space-y-1">
+<a class="flex items-center gap-4 px-6 py-3 text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-['Inter'] text-sm font-medium uppercase tracking-widest">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined">trophy</span>
+<span class="font-['Inter'] text-sm font-medium uppercase tracking-widest">Tournaments</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+<span class="font-['Inter'] text-sm font-medium uppercase tracking-widest">Banter Bot</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-['Inter'] text-sm font-medium uppercase tracking-widest">Wallet</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 bg-sky-400/10 text-sky-400 border-r-4 border-sky-400 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['Inter'] text-sm font-medium uppercase tracking-widest">Settings</span>
+</a>
+</div>
+<div class="px-6 space-y-4">
+<button class="w-full bg-primary-container text-on-primary-container py-3 rounded-xl font-bold uppercase tracking-widest text-xs active:scale-95 transition-transform">Go Live</button>
+<div class="pt-4 border-t border-slate-800/20">
+<a class="flex items-center gap-4 py-2 text-slate-500 hover:text-slate-200 text-xs uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined text-sm">help</span> Help
+                </a>
+<a class="flex items-center gap-4 py-2 text-slate-500 hover:text-slate-200 text-xs uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined text-sm">logout</span> Logout
+                </a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="lg:ml-64 pt-24 px-6 pb-20 max-w-7xl mx-auto">
+<!-- Header Section -->
+<header class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="flex items-center gap-8">
+<div class="relative group">
+<div class="w-32 h-32 rounded-full overflow-hidden border-4 border-surface-container-high stadium-glow">
+<img alt="Player_402" class="w-full h-full object-cover" data-alt="High-detail close up of a stylized avatar with silver hair and blue glowing eyewear set against a dark tech background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIffPg8JJatTwOYMwkht908kqsY5qkE54oZQS45av2pQvW7QUcRLBHwCHncsf9j-x9ZgwfdTIDjMSYpo3L9PUgq74fa-9FhS3OuNEnMJdC-ceoAmEKgoH5USQg51jKgLX7H0RshWTfMHlqdJSUEKVgW_IIS_BSXqt1e2OoOSLBGwGAj1U46QTHBmCCLnV5FkdFxN09WHFxyTkoi9ZH8UHKedYRwO0vBYs5Dsz5TfWY9SCeeygA8Hu3IOINWgdC1qc6HBqGNvapvWfH"/>
+</div>
+<button class="absolute bottom-1 right-1 bg-primary text-on-primary-container w-10 h-10 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+<span class="material-symbols-outlined">photo_camera</span>
+</button>
+</div>
+<div>
+<div class="flex items-center gap-3 mb-1">
+<h1 class="text-4xl md:text-5xl font-black tracking-tighter text-on-surface">Player_402</h1>
+<span class="bg-secondary text-on-secondary text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter">PRO</span>
+</div>
+<p class="text-primary font-bold tracking-widest text-sm uppercase">Global Rank: #432</p>
+<div class="mt-4 flex gap-2">
+<span class="bg-surface-container-high px-3 py-1 rounded-full text-xs font-medium text-on-surface-variant">Top 5% League</span>
+<span class="bg-surface-container-high px-3 py-1 rounded-full text-xs font-medium text-on-surface-variant">Vocal Strategist</span>
+</div>
+</div>
+</div>
+<div class="flex gap-4">
+<button class="px-6 py-3 rounded-xl bg-surface-container-high text-on-surface font-bold hover:bg-surface-bright transition-colors border border-outline-variant/10">Share Profile</button>
+<button class="px-6 py-3 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary-container font-black shadow-[0_10px_20px_-5px_rgba(105,218,255,0.4)] active:scale-95 transition-transform">Save Changes</button>
+</div>
+</header>
+<!-- Stats Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+<div class="bg-surface-container-low p-6 rounded-xl border-l-4 border-primary/40 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl">leaderboard</span>
+</div>
+<p class="text-on-surface-variant text-xs font-black uppercase tracking-widest mb-2">Total Points</p>
+<h3 class="text-3xl font-black text-on-surface">12,492</h3>
+<p class="text-secondary text-xs mt-2 flex items-center gap-1 font-bold">
+<span class="material-symbols-outlined text-xs">trending_up</span> +14% this month
+                </p>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border-l-4 border-secondary/40 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl">target</span>
+</div>
+<p class="text-on-surface-variant text-xs font-black uppercase tracking-widest mb-2">Exact Scores</p>
+<h3 class="text-3xl font-black text-on-surface">84</h3>
+<p class="text-on-surface-variant text-xs mt-2 font-medium italic">Highest in 'London League'</p>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border-l-4 border-primary/40 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl">military_tech</span>
+</div>
+<p class="text-on-surface-variant text-xs font-black uppercase tracking-widest mb-2">Tournaments Won</p>
+<h3 class="text-3xl font-black text-on-surface">12</h3>
+<p class="text-on-surface-variant text-xs mt-2 font-medium italic">Elite Tournament Ready</p>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border-l-4 border-tertiary/40 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl">data_exploration</span>
+</div>
+<p class="text-on-surface-variant text-xs font-black uppercase tracking-widest mb-2">Win Rate</p>
+<h3 class="text-3xl font-black text-on-surface">68.4%</h3>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full mt-3 overflow-hidden">
+<div class="bg-secondary h-full" style="width: 68.4%"></div>
+</div>
+</div>
+</section>
+<!-- Dynamic Grid Content -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Bot Settings & Integration -->
+<div class="lg:col-span-7 space-y-8">
+<!-- Telegram Integration Card -->
+<div class="glass-panel p-8 rounded-xl border border-outline-variant/10 shadow-2xl relative overflow-hidden">
+<div class="absolute -top-12 -right-12 w-48 h-48 bg-primary/10 rounded-full blur-3xl"></div>
+<div class="flex flex-col md:flex-row gap-8 items-center">
+<div class="bg-white p-4 rounded-xl shadow-[0_0_30px_rgba(105,218,255,0.2)]">
+<img alt="QR Code" class="w-32 h-32 opacity-90" data-alt="Stylized monochrome QR code framed with high-tech neon blue corners on a clean white substrate" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXiA9YV2jYf6R_05j-L1sdgFPt3MkPb9cqs7u9L-AwcFypb62I-lN0BnTSM6UJu6-ZTj21-xAUYnWKpQ1in35MgUP1izi2Idaw2q0TOLb-b7nuEW7J5IOumymYH4GeO3FZd7limEhcokUZlfAUUu6Vwc9jgs_hsVr3WfZqtNGs_05OkuU0rPxeXS8gJP0Gs8xGOO3PFfkzvCacyrevnAQJGsp6CwzG78SsIPWGnNZ_oDj--ddYpZBeYU4bQVqgffJ3_d5Fq3U_7dX1"/>
+<p class="text-[10px] text-slate-400 font-black text-center mt-3 tracking-widest uppercase">BB-8892-XT</p>
+</div>
+<div class="flex-1 text-center md:text-left">
+<div class="flex items-center justify-center md:justify-start gap-3 mb-2">
+<span class="material-symbols-outlined text-primary">send</span>
+<h2 class="text-2xl font-black tracking-tight">Link Telegram</h2>
+</div>
+<p class="text-on-surface-variant text-sm mb-6 leading-relaxed">Connect your account to the Telegram bot for real-time trash talk, instant score updates, and exclusive betting insights directly in your DM.</p>
+<div class="flex items-center justify-center md:justify-start gap-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_10px_#2ff801]"></span>
+<span class="text-xs font-bold uppercase tracking-widest">Active Engine</span>
+</div>
+<button class="text-primary text-xs font-black uppercase tracking-widest hover:underline">Re-Sync Bot</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Bot Preferences -->
+<div class="bg-surface-container-low p-8 rounded-xl">
+<h3 class="text-xl font-black mb-8 tracking-tight flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">tune</span>
+                        Bot Preferences
+                    </h3>
+<div class="space-y-6">
+<div class="flex items-center justify-between group">
+<div>
+<p class="font-bold text-on-surface tracking-tight">Audio Predictions</p>
+<p class="text-xs text-on-surface-variant">Receive voice-memo banter for key match events</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between group">
+<div>
+<p class="font-bold text-on-surface tracking-tight">Banter Notifications</p>
+<p class="text-xs text-on-surface-variant">AI-generated trash talk when opponent scores</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between group">
+<div>
+<p class="font-bold text-on-surface tracking-tight">Match Reminders</p>
+<p class="text-xs text-on-surface-variant">Get notified 15 minutes before kick-off</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Account Management & Banter Rail -->
+<div class="lg:col-span-5 space-y-8">
+<!-- Account Management Form -->
+<div class="bg-surface-container-low p-8 rounded-xl border border-outline-variant/5">
+<h3 class="text-xl font-black mb-8 tracking-tight">Account Management</h3>
+<form class="space-y-6">
+<div>
+<label class="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-2 ml-1">Display Name</label>
+<input class="w-full bg-surface-container-highest border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-primary/20 text-on-surface" type="text" value="Player_402"/>
+</div>
+<div>
+<label class="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-2 ml-1">Email Address</label>
+<input class="w-full bg-surface-container-highest border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-primary/20 text-on-surface" type="email" value="alex_p402@arena.com"/>
+</div>
+<div class="pt-4">
+<button class="w-full py-3 border border-outline-variant/20 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-surface-bright transition-colors" type="button">Change Password</button>
+</div>
+</form>
+</div>
+<!-- High Octane Bonus Section: Achievement Badges -->
+<div class="bg-surface-container-low p-8 rounded-xl border border-outline-variant/5">
+<h3 class="text-xl font-black mb-6 tracking-tight">Arena Trophies</h3>
+<div class="grid grid-cols-3 gap-4">
+<div class="aspect-square bg-surface-container-highest rounded-xl flex flex-col items-center justify-center p-2 group cursor-pointer border border-transparent hover:border-primary/30 transition-all">
+<span class="material-symbols-outlined text-primary text-3xl mb-1 group-hover:scale-110 transition-transform">bolt</span>
+<span class="text-[8px] font-black uppercase tracking-tighter text-center">Fast Hands</span>
+</div>
+<div class="aspect-square bg-surface-container-highest rounded-xl flex flex-col items-center justify-center p-2 group cursor-pointer border border-transparent hover:border-secondary/30 transition-all">
+<span class="material-symbols-outlined text-secondary text-3xl mb-1 group-hover:scale-110 transition-transform">workspace_premium</span>
+<span class="text-[8px] font-black uppercase tracking-tighter text-center">Undefeated</span>
+</div>
+<div class="aspect-square bg-surface-container-highest rounded-xl flex flex-col items-center justify-center p-2 opacity-40 grayscale">
+<span class="material-symbols-outlined text-3xl mb-1">lock</span>
+<span class="text-[8px] font-black uppercase tracking-tighter text-center">The Goat</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-[#0d1323] h-16 flex items-center justify-around z-50 stadium-glow">
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[8px] font-bold uppercase">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">trophy</span>
+<span class="text-[8px] font-bold uppercase">Play</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[8px] font-bold uppercase">Settings</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[8px] font-bold uppercase">Account</span>
+</a>
+</nav>
+</body></html>

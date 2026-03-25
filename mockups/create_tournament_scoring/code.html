@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Midnight Stadium - Create Tournament</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-container": "#00cffc",
+              "surface-container-highest": "#1e253b",
+              "outline": "#707588",
+              "on-primary": "#004a5d",
+              "primary-fixed": "#00cffc",
+              "tertiary-fixed-dim": "#ff7b70",
+              "primary-dim": "#00c0ea",
+              "surface-container-lowest": "#000000",
+              "secondary-fixed-dim": "#2be800",
+              "secondary-fixed": "#2ff801",
+              "on-surface": "#e1e4fa",
+              "error-container": "#9f0519",
+              "on-secondary-fixed-variant": "#0d6200",
+              "secondary-dim": "#2be800",
+              "on-primary-fixed-variant": "#004a5c",
+              "surface-variant": "#1e253b",
+              "surface-bright": "#242b43",
+              "on-error-container": "#ffa8a3",
+              "on-background": "#e1e4fa",
+              "on-error": "#490006",
+              "background": "#090e1c",
+              "inverse-primary": "#006880",
+              "primary-fixed-dim": "#00c0ea",
+              "on-tertiary-fixed": "#3a0002",
+              "surface-dim": "#090e1c",
+              "error": "#ff716c",
+              "on-primary-container": "#004050",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "surface-tint": "#69daff",
+              "tertiary-fixed": "#ff9287",
+              "primary": "#69daff",
+              "on-tertiary-container": "#000000",
+              "inverse-on-surface": "#505466",
+              "secondary-container": "#106e00",
+              "on-primary-fixed": "#002a35",
+              "on-secondary": "#0b5800",
+              "outline-variant": "#434759",
+              "on-surface-variant": "#a6aabf",
+              "surface-container-low": "#0d1323",
+              "tertiary": "#ff7166",
+              "surface": "#090e1c",
+              "tertiary-dim": "#e51a22",
+              "tertiary-container": "#f5282b",
+              "on-tertiary": "#4a0003",
+              "on-secondary-container": "#e7ffd9",
+              "surface-container-high": "#181f33",
+              "inverse-surface": "#faf8ff",
+              "on-secondary-fixed": "#064200",
+              "surface-container": "#13192b",
+              "secondary": "#2ff801",
+              "error-dim": "#d7383b"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-panel {
+        background: rgba(30, 37, 59, 0.6);
+        backdrop-filter: blur(20px);
+      }
+      .glow-primary {
+        box-shadow: 0 0 20px rgba(105, 218, 255, 0.15);
+      }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body min-h-screen selection:bg-primary selection:text-on-primary">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 z-50 w-full flex justify-between items-center px-6 py-4 bg-[#090e1c]/60 backdrop-blur-xl border-none shadow-[0_0_40px_rgba(105,218,255,0.08)] font-['Inter'] tracking-tight">
+<div class="text-2xl font-black tracking-tighter text-[#69daff]">Midnight Stadium</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-[#e1e4fa]/70 hover:text-[#e1e4fa] transition-colors" href="#">Tournaments</a>
+<a class="text-[#e1e4fa]/70 hover:text-[#e1e4fa] transition-colors" href="#">Matches</a>
+<a class="text-[#e1e4fa]/70 hover:text-[#e1e4fa] transition-colors" href="#">Banter</a>
+<a class="text-[#e1e4fa]/70 hover:text-[#e1e4fa] transition-colors" href="#">Leaderboards</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-[#e1e4fa]/70 hover:text-[#69daff] transition-all">notifications</button>
+<button class="material-symbols-outlined text-[#e1e4fa]/70 hover:text-[#69daff] transition-all">account_circle</button>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold px-6 py-2 rounded-xl active:scale-95 transition-transform">Create Tournament</button>
+</div>
+</header>
+<div class="flex pt-20">
+<!-- Side Navigation Bar -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-[#0d1323] flex flex-col pt-24 pb-8 px-4 z-40 hidden md:flex">
+<div class="mb-8 px-4">
+<div class="text-[#69daff] font-black uppercase tracking-[0.05em] text-[0.75rem]">New Tournament</div>
+<div class="text-[#e1e4fa]/50 text-xs font-bold uppercase tracking-widest mt-1">Draft Mode</div>
+</div>
+<nav class="flex flex-col gap-2">
+<!-- Step 1: Completed -->
+<div class="flex items-center gap-3 text-[#2ff801] px-4 py-3 opacity-80 cursor-default">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-bold uppercase tracking-[0.05em] text-[0.75rem]">Basics</span>
+</div>
+<!-- Step 2: Active -->
+<div class="flex items-center gap-3 bg-[#181f33] text-[#69daff] rounded-xl px-4 py-3 shadow-[0_0_15px_rgba(47,248,1,0.1)] border-l-4 border-[#2ff801] active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined">scoreboard</span>
+<span class="font-bold uppercase tracking-[0.05em] text-[0.75rem]">Scoring</span>
+</div>
+<!-- Step 3 -->
+<div class="flex items-center gap-3 text-[#e1e4fa]/50 px-4 py-3 hover:bg-[#181f33]/30 hover:text-[#69daff] transition-all">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-bold uppercase tracking-[0.05em] text-[0.75rem]">Prizes</span>
+</div>
+<!-- Step 4 -->
+<div class="flex items-center gap-3 text-[#e1e4fa]/50 px-4 py-3 hover:bg-[#181f33]/30 hover:text-[#69daff] transition-all">
+<span class="material-symbols-outlined">sports_soccer</span>
+<span class="font-bold uppercase tracking-[0.05em] text-[0.75rem]">Matches</span>
+</div>
+<!-- Step 5 -->
+<div class="flex items-center gap-3 text-[#e1e4fa]/50 px-4 py-3 hover:bg-[#181f33]/30 hover:text-[#69daff] transition-all">
+<span class="material-symbols-outlined">visibility</span>
+<span class="font-bold uppercase tracking-[0.05em] text-[0.75rem]">Review</span>
+</div>
+</nav>
+<div class="mt-auto px-4">
+<button class="w-full bg-[#181f33] text-[#69daff] py-3 rounded-xl font-bold uppercase tracking-widest text-[0.7rem] hover:bg-[#242b43] transition-colors">
+                    Save Draft
+                </button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 p-8 min-h-[calc(100vh-80px)]">
+<div class="max-w-4xl mx-auto">
+<header class="mb-12">
+<h1 class="text-4xl md:text-5xl font-black tracking-tighter text-on-surface mb-2 italic uppercase">
+                        Scoring <span class="text-primary">Configuration</span>
+</h1>
+<p class="text-on-surface-variant text-lg">Set the points for each accurate prediction. High stakes, higher rewards.</p>
+</header>
+<!-- Configuration Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+<!-- Scoring Inputs (Left) -->
+<div class="md:col-span-7 space-y-6">
+<!-- Correct Result Card -->
+<div class="bg-surface-container-low rounded-full p-8 relative overflow-hidden group transition-all hover:bg-surface-container-high">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+<div class="flex items-start justify-between mb-4">
+<div>
+<h3 class="text-xl font-bold text-on-surface mb-1 uppercase tracking-tight">Correct Result (W/D/L)</h3>
+<p class="text-on-surface-variant text-sm pr-12">Awarded for predicting the match winner or a draw correctly.</p>
+</div>
+<div class="bg-primary/10 p-3 rounded-xl">
+<span class="material-symbols-outlined text-primary">sports_score</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<input class="w-24 bg-surface-container-highest border-none rounded-xl px-4 py-3 text-2xl font-black text-primary focus:ring-2 focus:ring-primary/20 transition-all text-center" type="number" value="3"/>
+<span class="text-on-surface-variant font-bold uppercase tracking-widest text-xs">Points per Match</span>
+</div>
+</div>
+<!-- Exact Scoreline Card -->
+<div class="bg-surface-container-low rounded-full p-8 relative overflow-hidden group transition-all hover:bg-surface-container-high">
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+<div class="flex items-start justify-between mb-4">
+<div>
+<h3 class="text-xl font-bold text-on-surface mb-1 uppercase tracking-tight">Exact Scoreline Bonus</h3>
+<p class="text-on-surface-variant text-sm pr-12">Additional points for getting the goals for both teams exactly right.</p>
+</div>
+<div class="bg-secondary/10 p-3 rounded-xl">
+<span class="material-symbols-outlined text-secondary">stars</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<input class="w-24 bg-surface-container-highest border-none rounded-xl px-4 py-3 text-2xl font-black text-secondary focus:ring-2 focus:ring-secondary/20 transition-all text-center" type="number" value="5"/>
+<span class="text-on-surface-variant font-bold uppercase tracking-widest text-xs">Bonus Points</span>
+</div>
+</div>
+<!-- Total Jornada Goals Card -->
+<div class="bg-surface-container-low rounded-full p-8 relative overflow-hidden group transition-all hover:bg-surface-container-high border-2 border-transparent hover:border-primary/10">
+<div class="absolute top-0 right-0 w-32 h-32 bg-tertiary/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+<div class="flex items-start justify-between mb-4">
+<div>
+<h3 class="text-xl font-bold text-on-surface mb-1 uppercase tracking-tight">Total Jornada Goals</h3>
+<p class="text-on-surface-variant text-sm pr-12">Score for predicting the total combined goals in the tournament round.</p>
+</div>
+<div class="bg-tertiary/10 p-3 rounded-xl">
+<span class="material-symbols-outlined text-tertiary">potted_plant</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<input class="w-24 bg-surface-container-highest border-none rounded-xl px-4 py-3 text-2xl font-black text-tertiary focus:ring-2 focus:ring-tertiary/20 transition-all text-center" type="number" value="10"/>
+<span class="text-on-surface-variant font-bold uppercase tracking-widest text-xs">Jackpot Points</span>
+</div>
+</div>
+</div>
+<!-- Banter Rail / Info Sidebar (Right) -->
+<div class="md:col-span-5">
+<div class="glass-panel rounded-full p-8 border border-outline-variant/15 sticky top-24">
+<h4 class="text-secondary font-black uppercase tracking-widest text-xs mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">info</span> Pro Tip: Prediction Dynamics
+                            </h4>
+<div class="space-y-8">
+<div class="relative pl-6 border-l-2 border-primary/30">
+<div class="absolute -left-[5px] top-0 w-2 h-2 bg-primary rounded-full"></div>
+<p class="text-on-surface font-bold text-sm mb-1 uppercase">Maximize Engagement</p>
+<p class="text-on-surface-variant text-xs leading-relaxed">
+                                        Setting a higher bonus for "Exact Scoreline" encourages users to take risks rather than just picking favorites.
+                                    </p>
+</div>
+<div class="relative pl-6 border-l-2 border-secondary/30">
+<div class="absolute -left-[5px] top-0 w-2 h-2 bg-secondary rounded-full"></div>
+<p class="text-on-surface font-bold text-sm mb-1 uppercase">The Tie-Breaker</p>
+<p class="text-on-surface-variant text-xs leading-relaxed">
+                                        The "Total Jornada Goals" is your primary tie-breaker. It requires deep knowledge of overall league trends.
+                                    </p>
+</div>
+<img class="w-full h-48 object-cover rounded-xl mt-4 grayscale hover:grayscale-0 transition-all duration-700" data-alt="Dynamic abstract visualization of soccer stadium lights with glowing blue and green data points representing score predictions" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSzUpxv5j8Zas46x8MGcHcSO7PmS1A5qxw6VeX_7N9Qgn7EGCE-QytoDuotsRCb9eX9o0-wj7rRk7VX3P9nRb8ufSVptsZPSyFxMBhcmxTRWq9zQYOOvW3wVmiVUlB8DxOk3V8ALx3oSLAvYjHNaKo8rUgqurnfaBFv187cDUpDX2M_RhzRTkInCS52j-ipL_S7ASt1NIg7SWfgSEhPSUu-NGYaJ-CSy2jDl7Md5PJcfxH8I-NdXNYoWEfoLYK5jF1k6Kq1c_vnVIV"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Actions -->
+<footer class="mt-16 pt-8 border-t border-outline-variant/10 flex items-center justify-between">
+<button class="flex items-center gap-2 px-8 py-4 rounded-xl border border-outline-variant/30 text-on-surface font-bold uppercase tracking-widest text-xs hover:bg-surface-bright transition-all">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+                        Back
+                    </button>
+<div class="flex items-center gap-4">
+<span class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mr-4 hidden md:block">Next: Prizes &amp; Distribution</span>
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary-container px-10 py-4 rounded-xl font-black uppercase tracking-[0.1em] shadow-[0_0_30px_rgba(105,218,255,0.2)] hover:shadow-[0_0_50px_rgba(105,218,255,0.4)] active:scale-95 transition-all">
+                            Next Step
+                        </button>
+</div>
+</footer>
+</div>
+</main>
+</div>
+<!-- Mobile Bottom NavBar (Visible only on mobile) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-high/90 backdrop-blur-xl px-6 py-4 flex justify-around items-center z-50">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">scoreboard</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Scoring</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Prizes</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">sports_soccer</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Matches</span>
+</button>
+</nav>
+</body></html>
