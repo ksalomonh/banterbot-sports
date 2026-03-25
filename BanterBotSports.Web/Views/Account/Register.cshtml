@@ -1,0 +1,49 @@
+@model BanterBotSports.Entities.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Registrarse";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <h2 class="mb-4">Crear cuenta</h2>
+
+        <form asp-action="Register" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="NombreDisplay" class="form-label">Nombre</label>
+                <input asp-for="NombreDisplay" class="form-control" autocomplete="name" />
+                <span asp-validation-for="NombreDisplay" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" autocomplete="email" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">Contraseña</label>
+                <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ConfirmPassword" class="form-label">Confirmar contraseña</label>
+                <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Crear cuenta</button>
+        </form>
+
+        <hr />
+        <p class="text-center mb-0">
+            ¿Ya tenés cuenta? <a asp-action="Login">Ingresar</a>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

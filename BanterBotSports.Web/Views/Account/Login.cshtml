@@ -1,0 +1,43 @@
+@model BanterBotSports.Entities.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Ingresar";
+    var returnUrl = ViewData["ReturnUrl"] as string;
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <h2 class="mb-4">Ingresar</h2>
+
+        <form asp-action="Login" asp-route-returnUrl="@returnUrl" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" autocomplete="email" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">Contraseña</label>
+                <input asp-for="Password" class="form-control" autocomplete="current-password" />
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3 form-check">
+                <input asp-for="RememberMe" class="form-check-input" />
+                <label asp-for="RememberMe" class="form-check-label">Recordarme</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+        </form>
+
+        <hr />
+        <p class="text-center mb-0">
+            ¿No tenés cuenta? <a asp-action="Register">Registrarse</a>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
