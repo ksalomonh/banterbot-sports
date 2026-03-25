@@ -1,6 +1,7 @@
 using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL.Repositories.Interfaces;
 using BanterBotSports.Entities.Enums;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -12,8 +13,7 @@ namespace BanterBotSports.BL.Services.Hosted;
 /// </summary>
 public class DeadlineEnforcerService : IHostedService, IAsyncDisposable
 {
-    private readonly IJornadaRepository _jornadaRepository;
-    private readonly IJornadaService _jornadaService;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<DeadlineEnforcerService> _logger;
 
     private readonly TimeSpan _interval = TimeSpan.FromSeconds(60);
@@ -22,16 +22,13 @@ public class DeadlineEnforcerService : IHostedService, IAsyncDisposable
     private CancellationTokenSource? _cts;
 
     public DeadlineEnforcerService(
-        IJornadaRepository jornadaRepository,
-        IJornadaService jornadaService,
+        IServiceScopeFactory scopeFactory,
         ILogger<DeadlineEnforcerService> logger)
     {
-        ArgumentNullException.ThrowIfNull(jornadaRepository);
-        ArgumentNullException.ThrowIfNull(jornadaService);
+        ArgumentNullException.ThrowIfNull(scopeFactory);
         ArgumentNullException.ThrowIfNull(logger);
 
-        _jornadaRepository = jornadaRepository;
-        _jornadaService = jornadaService;
+        _scopeFactory = scopeFactory;
         _logger = logger;
     }
 
@@ -73,8 +70,12 @@ public class DeadlineEnforcerService : IHostedService, IAsyncDisposable
     {
         try
         {
+            await using var scope = _scopeFactory.CreateAsyncScope();
+            var jornadaRepository = scope.ServiceProvider.GetRequiredService<IJornadaRepository>();
+            var jornadaService = scope.ServiceProvider.GetRequiredService<IJornadaService>();
+
             var now = DateTimeOffset.UtcNow;
-            var jornadasAbiertas = await _jornadaRepository.GetByEstadoAsync(EstadoJornada.Abierta);
+            var jornadasAbiertas = await jornadaRepository.GetByEstadoAsync(EstadoJornada.Abierta);
 
             var jornadasVencidas = jornadasAbiertas
                 .Where(j => j.DeadlineUtc.HasValue && j.DeadlineUtc.Value <= now)
@@ -90,7 +91,7 @@ public class DeadlineEnforcerService : IHostedService, IAsyncDisposable
                         "Closing jornada {JornadaId} (#{Numero}) — deadline {Deadline} has passed.",
                         jornada.Id, jornada.Numero, jornada.DeadlineUtc);
 
-                    await _jornadaService.CerrarJornadaAsync(jornada.Id);
+                    await jornadaService.CerrarJornadaAsync(jornada.Id);
                 }
                 catch (Exception ex)
                 {
