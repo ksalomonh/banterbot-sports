@@ -1,5 +1,6 @@
 using BanterBotSports.BanterAI;
 using BanterBotSports.BL.Services;
+using BanterBotSports.BL.Services.Hosted;
 using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL;
 using BanterBotSports.DAL.Repositories;
