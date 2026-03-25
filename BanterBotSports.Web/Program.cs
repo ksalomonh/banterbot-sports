@@ -88,6 +88,13 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 
+// ─── Auto-migrate on startup (dev) ───────────────────────────────────────────
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+}
+
 // ─── Middleware pipeline ─────────────────────────────────────────────────────
 if (!app.Environment.IsDevelopment())
 {
