@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BanterBot Sports | My Tournaments</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-container": "#00cffc",
+              "surface-container": "#13192b",
+              "primary-fixed": "#00cffc",
+              "surface-container-low": "#0d1323",
+              "primary-dim": "#00c0ea",
+              "on-tertiary": "#4a0003",
+              "tertiary-fixed-dim": "#ff7b70",
+              "background": "#090e1c",
+              "secondary-dim": "#2be800",
+              "error": "#ff716c",
+              "inverse-primary": "#006880",
+              "surface-tint": "#69daff",
+              "on-surface-variant": "#a6aabf",
+              "error-container": "#9f0519",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "surface-dim": "#090e1c",
+              "tertiary-dim": "#e51a22",
+              "inverse-on-surface": "#505466",
+              "on-background": "#e1e4fa",
+              "on-secondary-fixed": "#064200",
+              "surface-variant": "#1e253b",
+              "on-primary-fixed": "#002a35",
+              "secondary-fixed-dim": "#2be800",
+              "surface-bright": "#242b43",
+              "on-surface": "#e1e4fa",
+              "surface": "#090e1c",
+              "on-tertiary-fixed": "#3a0002",
+              "inverse-surface": "#faf8ff",
+              "secondary-container": "#106e00",
+              "surface-container-lowest": "#000000",
+              "on-primary-container": "#004050",
+              "error-dim": "#d7383b",
+              "surface-container-high": "#181f33",
+              "surface-container-highest": "#1e253b",
+              "secondary-fixed": "#2ff801",
+              "secondary": "#2ff801",
+              "tertiary": "#ff7166",
+              "on-error": "#490006",
+              "on-primary": "#004a5d",
+              "outline": "#707588",
+              "on-tertiary-container": "#000000",
+              "outline-variant": "#434759",
+              "tertiary-container": "#f5282b",
+              "on-error-container": "#ffa8a3",
+              "primary": "#69daff",
+              "tertiary-fixed": "#ff9287",
+              "on-secondary-fixed-variant": "#0d6200",
+              "on-secondary": "#0b5800",
+              "primary-fixed-dim": "#00c0ea",
+              "on-secondary-container": "#e7ffd9",
+              "on-primary-fixed-variant": "#004a5c"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #090e1c;
+            color: #e1e4fa;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-panel {
+            background: rgba(30, 37, 59, 0.6);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#090e1c]/60 backdrop-blur-xl shadow-[0_40px_40px_0_rgba(105,218,255,0.08)]">
+<div class="flex justify-between items-center w-full px-6 py-4">
+<div class="text-2xl font-black tracking-tighter text-[#69daff] uppercase font-['Inter']">
+                BanterBot Sports
+            </div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="font-['Inter'] font-bold tracking-tight text-[#69daff] border-b-2 border-[#69daff] pb-1" href="#">My Tournaments</a>
+<a class="font-['Inter'] font-bold tracking-tight text-[#e1e4fa]/70 hover:text-[#e1e4fa] transition-colors" href="#">Create Tournament</a>
+<a class="font-['Inter'] font-bold tracking-tight text-[#e1e4fa]/70 hover:text-[#e1e4fa] transition-colors" href="#">Bot Settings</a>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant/15 overflow-hidden">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="professional portrait of a young man with a friendly expression in a modern office setting with soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvamED05B_iCaD7qoW1FogybgT9EfRegJa7s1M_UsfsmEshGA40MeXnkryt_ornk6Qd8LPB5EOesLQIwX2P7moz5s3ElRdEyPUhWUEnZPQCa6wtP6U452UGhc-GHlm1EO03ilKf55XvwWrd4O5XDKLZ6d87TFWWnvY3Hl7axRV4jUwmecEPYNkj4vZntJfKAGAqjihJSJZcg89qyaxBULu85RDC-UmRh4pZqb55vop6T2SLiXfFdceJO_8oroVMC_di05FcKM4jA-U"/>
+</div>
+</div>
+</div>
+</nav>
+<!-- SideNavBar (Banter Rail) -->
+<aside class="fixed right-0 top-20 h-[calc(100vh-5rem)] w-80 rounded-l-3xl bg-[#0d1323]/70 backdrop-blur-2xl shadow-[-20px_0_40px_rgba(0,0,0,0.3)] hidden lg:flex flex-col p-6 gap-4 z-40">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-[#69daff]" data-icon="psychology">psychology</span>
+</div>
+<div>
+<h3 class="text-[#69daff] font-bold font-['Inter']">Banter Rail</h3>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">The Neon Colosseum</p>
+</div>
+</div>
+<div class="flex flex-col gap-4 overflow-y-auto pr-2">
+<!-- AI Banter Message (Banter Engine Widget) -->
+<div class="p-4 bg-surface-bright rounded-xl border-l-4 border-secondary shadow-lg">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="forum">forum</span>
+<span class="text-[10px] font-bold text-secondary tracking-widest uppercase">Live Banter</span>
+</div>
+<p class="text-sm text-on-surface leading-relaxed">
+                    Claude says: Kevin, your predictions for <span class="text-primary">Jornada 3</span> were... bold. Maybe check the stats next time? 📉
+                </p>
+</div>
+<div class="flex flex-col gap-2 mt-4">
+<div class="p-3 bg-surface-container-high rounded-xl hover:translate-x-[-4px] transition-transform cursor-pointer">
+<div class="flex justify-between items-center mb-1">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Global Predictions</span>
+<span class="text-[10px] text-secondary font-bold">LIVE</span>
+</div>
+<p class="text-xs text-on-surface">Madrid 2-1 City? 84% disagree with you.</p>
+</div>
+<div class="p-3 bg-surface-container-high rounded-xl hover:translate-x-[-4px] transition-transform cursor-pointer">
+<div class="flex justify-between items-center mb-1">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Trash Talk</span>
+</div>
+<p class="text-xs text-on-surface">User_99: @Kevin coming for that top spot today!</p>
+</div>
+</div>
+</div>
+<button class="mt-auto w-full py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-bold rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="campaign">campaign</span>
+            Join Conversation
+        </button>
+</aside>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-12 px-6 lg:pr-96 max-w-7xl mx-auto">
+<!-- Welcome Hero -->
+<section class="relative overflow-hidden rounded-[2rem] bg-surface-container-low p-8 md:p-12 mb-12 shadow-[0_40px_80px_rgba(105,218,255,0.05)] border border-outline-variant/5">
+<div class="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
+<div class="w-full h-full bg-gradient-to-l from-primary/30 to-transparent"></div>
+</div>
+<div class="relative z-10 grid md:grid-cols-2 gap-8 items-center">
+<div>
+<h1 class="text-4xl md:text-6xl font-black font-headline tracking-tighter mb-4">
+                        Welcome back, <span class="text-primary">Kevin!</span>
+</h1>
+<p class="text-lg text-on-surface-variant max-w-md mb-8">
+                        The stadium is roaring. You've climbed 4 spots this week. Ready to dominate the leaderboard?
+                    </p>
+<div class="flex flex-wrap gap-4">
+<div class="px-6 py-3 bg-surface-bright rounded-2xl flex flex-col">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Career Rank</span>
+<span class="text-2xl font-black text-secondary">#432</span>
+</div>
+<div class="px-6 py-3 bg-surface-bright rounded-2xl flex flex-col">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Active Tournaments</span>
+<span class="text-2xl font-black text-primary">12</span>
+</div>
+</div>
+</div>
+<div class="hidden md:block">
+<div class="aspect-video rounded-3xl overflow-hidden bg-surface-container-highest relative">
+<img alt="Cinematic stadium night view" class="w-full h-full object-cover" data-alt="dramatic wide angle shot of a professional sports stadium at night with bright neon floodlights and atmospheric mist" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDodHDPN7VsuiNiwnxHlXbZNfGi4TA8jQ4-RE34bc2l3yRS46N_KTlIvihEkYvh6MDlPYtPLNNNyeE8jdnzVRul8fyjOpnvVjruC-sf5-M12CoYTtQOM3r0zTo3qzEPxKp7d3DKxbQOGPDhq7xWFlBVXW5NLASNi_U7_HifuDcgRcBGRfjndkzw71ajhhwxabWHdQQjDgousweZsat_LftsP_1f_9aNdCvkqseZAE1x6cTd1D3zUHEC3DHYzTlP_xB7kOLiCDXc_Tb"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-60"></div>
+</div>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+<!-- Active Tournaments Grid -->
+<div class="xl:col-span-2">
+<div class="flex justify-between items-end mb-8">
+<h2 class="text-2xl font-bold font-headline">Active Tournaments</h2>
+<a class="text-primary font-bold text-sm hover:underline" href="#">View All</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Tournament Card 1 -->
+<div class="group relative overflow-hidden bg-surface-container-high rounded-[1.5rem] p-6 hover:bg-surface-bright transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 rounded-xl bg-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="trophy">trophy</span>
+</div>
+<span class="px-3 py-1 bg-secondary/10 text-secondary text-[10px] font-black rounded-full uppercase tracking-widest">LIVE</span>
+</div>
+<h3 class="text-xl font-bold mb-2">World Cup 2026</h3>
+<div class="flex justify-between items-center mb-6">
+<span class="text-on-surface-variant text-sm">Position</span>
+<span class="text-lg font-bold text-on-surface">14th <span class="text-on-surface-variant font-normal text-xs">/ 50</span></span>
+</div>
+<button class="w-full py-3 bg-surface-container-highest group-hover:bg-primary group-hover:text-on-primary-container transition-all rounded-xl font-bold text-sm flex items-center justify-center gap-2">
+                            Predict Jornada 4
+                            <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<!-- Tournament Card 2 -->
+<div class="group relative overflow-hidden bg-surface-container-high rounded-[1.5rem] p-6 hover:bg-surface-bright transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 rounded-xl bg-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary" data-icon="sports_soccer">sports_soccer</span>
+</div>
+<span class="px-3 py-1 bg-tertiary/10 text-tertiary text-[10px] font-black rounded-full uppercase tracking-widest">Pending Payment</span>
+</div>
+<h3 class="text-xl font-bold mb-2">Euro 2024</h3>
+<div class="flex justify-between items-center mb-6">
+<span class="text-on-surface-variant text-sm">Position</span>
+<span class="text-lg font-bold text-on-surface">3rd <span class="text-on-surface-variant font-normal text-xs">/ 120</span></span>
+</div>
+<button class="w-full py-3 bg-surface-container-highest group-hover:bg-tertiary group-hover:text-on-tertiary transition-all rounded-xl font-bold text-sm flex items-center justify-center gap-2">
+                            Complete Entry
+                            <span class="material-symbols-outlined text-sm" data-icon="payments">payments</span>
+</button>
+</div>
+<!-- Tournament Card 3 -->
+<div class="group relative overflow-hidden bg-surface-container-high rounded-[1.5rem] p-6 hover:bg-surface-bright transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 rounded-xl bg-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-dim" data-icon="stadium">stadium</span>
+</div>
+<span class="px-3 py-1 bg-on-surface-variant/10 text-on-surface-variant text-[10px] font-black rounded-full uppercase tracking-widest">Starting Soon</span>
+</div>
+<h3 class="text-xl font-bold mb-2">Premier League Masters</h3>
+<div class="flex justify-between items-center mb-6">
+<span class="text-on-surface-variant text-sm">Position</span>
+<span class="text-lg font-bold text-on-surface">-- <span class="text-on-surface-variant font-normal text-xs">/ 25</span></span>
+</div>
+<button class="w-full py-3 bg-surface-container-highest group-hover:bg-primary-dim group-hover:text-on-primary-container transition-all rounded-xl font-bold text-sm flex items-center justify-center gap-2">
+                            View Brackets
+                            <span class="material-symbols-outlined text-sm" data-icon="grid_view">grid_view</span>
+</button>
+</div>
+<!-- Quick Link Card: Join New -->
+<div class="group relative overflow-hidden border-2 border-dashed border-outline-variant/30 rounded-[1.5rem] p-6 flex flex-col items-center justify-center text-center hover:border-primary/50 transition-all cursor-pointer">
+<div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="add_circle">add_circle</span>
+</div>
+<h3 class="text-lg font-bold">Join a New Tournament</h3>
+<p class="text-xs text-on-surface-variant mt-2">Find active leagues and enter the arena.</p>
+</div>
+</div>
+</div>
+<!-- Sidebar -->
+<div class="space-y-8">
+<!-- Upcoming Deadlines Sidebar -->
+<section>
+<h2 class="text-xl font-bold font-headline mb-6">Deadlines</h2>
+<div class="space-y-4">
+<div class="p-4 bg-surface-container-low rounded-2xl border border-outline-variant/5">
+<div class="flex justify-between items-center mb-3">
+<span class="text-[10px] font-black text-tertiary uppercase tracking-widest flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="timer">timer</span> URGENT
+                                </span>
+<span class="text-xs font-bold text-on-surface">02:45:12</span>
+</div>
+<h4 class="font-bold text-sm">World Cup - Jornada 4</h4>
+<p class="text-xs text-on-surface-variant">Lock in your predictions</p>
+</div>
+<div class="p-4 bg-surface-container-low rounded-2xl border border-outline-variant/5">
+<div class="flex justify-between items-center mb-3">
+<span class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="schedule">schedule</span> TOMORROW
+                                </span>
+<span class="text-xs font-bold text-on-surface">18:00:00</span>
+</div>
+<h4 class="font-bold text-sm">Champions League Final</h4>
+<p class="text-xs text-on-surface-variant">Winner takes all pool</p>
+</div>
+<div class="p-4 bg-surface-container-low rounded-2xl border border-outline-variant/5">
+<div class="flex justify-between items-center mb-3">
+<span class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="schedule">schedule</span> 2 DAYS
+                                </span>
+<span class="text-xs font-bold text-on-surface">48:12:00</span>
+</div>
+<h4 class="font-bold text-sm">NBA Playoffs 2024</h4>
+<p class="text-xs text-on-surface-variant">Game 7 Special</p>
+</div>
+</div>
+</section>
+<!-- Quick Actions -->
+<section>
+<h2 class="text-xl font-bold font-headline mb-6">Quick Links</h2>
+<div class="grid grid-cols-1 gap-4">
+<button class="w-full flex items-center gap-4 p-4 bg-surface-container-high rounded-2xl hover:bg-surface-bright transition-colors text-left group">
+<div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center group-hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-primary group-hover:text-on-primary-container" data-icon="add_box">add_box</span>
+</div>
+<div>
+<h4 class="font-bold text-sm">Create a Tournament</h4>
+<p class="text-[10px] text-on-surface-variant">Start your own league today</p>
+</div>
+</button>
+<button class="w-full flex items-center gap-4 p-4 bg-surface-container-high rounded-2xl hover:bg-surface-bright transition-colors text-left group">
+<div class="w-10 h-10 rounded-xl bg-secondary/20 flex items-center justify-center group-hover:bg-secondary transition-colors">
+<span class="material-symbols-outlined text-secondary group-hover:text-on-secondary" data-icon="leaderboard">leaderboard</span>
+</div>
+<div>
+<h4 class="font-bold text-sm">Global Rankings</h4>
+<p class="text-[10px] text-on-surface-variant">Check where you stand</p>
+</div>
+</button>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 border-t border-[#434759]/15 bg-[#090e1c] flex flex-col items-center justify-center gap-6">
+<div class="text-[#69daff] font-bold text-xl uppercase tracking-tighter">BanterBot Sports</div>
+<div class="flex gap-8">
+<a class="text-[#e1e4fa]/40 hover:text-[#69daff] font-['Inter'] text-xs hover:underline transition-opacity" href="#">Documentation</a>
+<a class="text-[#e1e4fa]/40 hover:text-[#69daff] font-['Inter'] text-xs hover:underline transition-opacity" href="#">Developer API</a>
+<a class="text-[#e1e4fa]/40 hover:text-[#69daff] font-['Inter'] text-xs hover:underline transition-opacity" href="#">Support</a>
+<a class="text-[#e1e4fa]/40 hover:text-[#69daff] font-['Inter'] text-xs hover:underline transition-opacity" href="#">Privacy</a>
+</div>
+<div class="font-['Inter'] text-xs text-[#e1e4fa]/40 mt-4">
+            © 2024 BanterBot Sports. All Rights Reserved.
+        </div>
+</footer>
+</body></html>

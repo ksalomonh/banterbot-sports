@@ -89,7 +89,7 @@ El canal principal de interacción de los **jugadores** con el sistema es Telegr
 
 ### In Scope (MVP)
 - Registro/login de usuarios (migrar el sistema de auth existente)
-- Creación de torneos: nombre, jornadas, monto de inscripción, puntos configurables, distribución de premios configurable
+- Creación de torneos vía **wizard de 5 pasos**: Basics → Scoring → Prizes → Matches → Review (ver sección abajo)
 - **Integración API-Football**: búsqueda y selección de partidos por competición y fecha
 - **Asignación de partidos a jornadas** por el organizador (desde catálogo de la API)
 - **Carga progresiva de partidos de fase final** cuando ya tienen equipos definidos
@@ -99,25 +99,33 @@ El canal principal de interacción de los **jugadores** con el sistema es Telegr
 - **Ingreso de predicciones por Telegram**: texto libre y mensajes de voz
 - **Transcripción de audio** (Whisper API) + extracción de predicciones (Claude API)
 - Confirmación de predicciones por el bot + posibilidad de corrección hasta el deadline
+- **Recordatorios de partidos vía Telegram**: notificación automática 15 minutos antes del kick-off (configurable por el jugador en su perfil)
 - **Vinculación de cuenta Telegram** con usuario del sistema
 - Ingreso de predicciones vía web (alternativa a Telegram)
 - Pronóstico de goles totales por jornada
 - Bloqueo automático de predicciones al inicio del primer partido de la jornada
 - Cálculo automático de puntos (resultado, marcador exacto, goles de jornada)
+- **Multiplicador de puntos por jornada**: configurable por el organizador desde la consola (valor por defecto: 1x)
 - Tabla general acumulada del torneo
+- Tabla de posiciones completa por torneo (pantalla dedicada con ranking expandido)
 - Tabla de posiciones por jornada
+- **Resumen post-jornada**: vista del jugador con resultados reales, puntos ganados, variación en ranking y banter recap
 - Gestión del prize pool (quién pagó, cuánto, ganadores)
+- **Pantalla de cierre de torneo**: posiciones finales y distribución de premios calculada
 - El organizador puede participar como jugador
 - **IA Banter Engine vía Telegram**: mensajes personalizados por jugador al cerrar cada jornada (máx. 280 caracteres por mensaje)
-- Historial de torneos
+- **Banter Rail**: feed en tiempo real visible en las pantallas principales (dashboard, vista de torneo, predicciones, consola del organizador). Componente glassmórfico asimétrico en el lado derecho. No es un chat entre jugadores — es el BanterBot comentando en vivo.
+- Historial de torneos (activos e historial de torneos completados)
 
 ### Out of Scope (MVP)
 - Integración de pagos reales (el dinero se gestiona fuera de la app)
 - App móvil nativa (web responsiva + Telegram)
-- Chat entre jugadores
-- Autenticación social (Google, Facebook)
+- Chat directo entre jugadores (el Banter Rail es solo BanterBot, no mensajería peer-to-peer)
+- Autenticación social (Google, Facebook, Discord) — ver sección "Decisiones Pendientes"
 - Otros canales de mensajería (WhatsApp, Discord) — post-MVP
 - Predicciones grupales o en equipo
+- Sistema de logros/trofeos (Achievements/Trophies) — post-MVP
+- Ranking global cross-torneo (Career Rank) — post-MVP
 
 ---
 
@@ -193,6 +201,108 @@ BanterBotSports/
 - [ ] La tabla general refleja puntos acumulados en tiempo real
 - [ ] Cada jugador recibe al menos 1 mensaje de banter personalizado por Telegram al cerrar cada jornada
 - [ ] La distribución de premios con empates se calcula correctamente
+
+---
+
+## Navegación Principal
+
+La app tiene una navegación global con los siguientes ítems:
+
+| Ítem | Acceso | Descripción |
+|------|--------|-------------|
+| My Tournaments | Todos | Dashboard con torneos activos, deadlines y accesos rápidos |
+| Create Tournament | Todos | Inicia el wizard de creación |
+| Bot Settings | Todos | Preferencias del bot de Telegram (notificaciones, audio, recordatorios) |
+| Profile | Todos | Perfil del jugador con stats, vinculación Telegram y gestión de cuenta |
+
+En pantallas específicas (vista de torneo, consola del organizador) aparecen ítems adicionales contextuales como Leaderboards y Stats.
+
+---
+
+## Wizard de Creación de Torneo
+
+La creación de un torneo es un flujo lineal de **5 pasos** con un sidebar de progreso y un "Save Draft" persistente en cada paso:
+
+| Paso | Nombre | Contenido |
+|------|--------|-----------|
+| 1 | **Basics** | Nombre del torneo, cantidad de jornadas, monto de inscripción (USD), descripción, imagen de portada |
+| 2 | **Scoring** | Puntos por resultado correcto (W/D/L), puntos bonus por marcador exacto, puntos por goles totales de jornada |
+| 3 | **Prizes** | Cantidad de lugares premiados, porcentaje por lugar, validación de que el total = 100% |
+| 4 | **Matches** | Selección de partidos para la primera jornada desde el catálogo de API-Football (búsqueda por competición) |
+| 5 | **Review** | Resumen completo del torneo antes de publicar. Botón "Publish Live". |
+
+> **Nota**: El campo "cantidad de jornadas" del Paso 1 no está visible en el mockup `create_tournament_basics` actual — pendiente de actualización del mockup.
+
+---
+
+## Banter Rail
+
+El Banter Rail es un componente exclusivo de la identidad visual de BanterBot Sports:
+
+- **Posición**: panel vertical glassmórfico en el lado derecho de las pantallas principales
+- **Contenido**: mensajes del BanterBot comentando predicciones, resultados y movimientos en el ranking en tiempo real. NO es un chat entre jugadores.
+- **Comportamiento**: se actualiza en tiempo real vía SignalR. Los jugadores pueden ver el rail pero no escribir directamente — la única interacción es el botón "Join Conversation" que abre el bot de Telegram.
+- **Pantallas donde aparece**: Dashboard, Tournament Overview, Matchday Predictions, Organizer Console, Create Tournament wizard.
+- **Límite de mensajes**: 280 caracteres por mensaje (misma regla que el banter de Telegram).
+
+---
+
+## Decisiones de Diseño Pendientes
+
+Las siguientes discrepancias entre el PRD y los mockups requieren decisión explícita antes de implementar:
+
+### 1. Discord como opción de autenticación social
+- **Mockups**: Login y Register muestran Discord como "Synchronize With" / "Fast Track Entry"
+- **PRD actual**: Autenticación social (Google, Facebook) en Out of Scope. Discord no mencionado explícitamente.
+- **Opciones**: (a) Agregar Discord social login a Out of Scope, o (b) incluirlo en scope MVP como única opción de auth social dado el perfil de usuario (gamers).
+
+### 2. Wallet en el perfil del usuario
+- **Mockup**: `user_profile_bot_settings` muestra un ítem "Wallet" en el sidebar de navegación
+- **PRD actual**: Integración de pagos explícitamente Out of Scope
+- **Resolución sugerida**: El ítem "Wallet" en el mockup debe eliminarse o reemplazarse por "Prize History" (historial de premios ganados, sin procesamiento de pagos).
+
+### 3. Global Career Ranking cross-torneo
+- **Mockup**: Dashboard muestra "Career Rank #432" implicando un ranking global entre todos los torneos
+- **PRD actual**: No mencionado
+- **Resolución sugerida**: Marcar como post-MVP. El dashboard MVP muestra solo posición dentro de cada torneo activo, no un ranking global.
+
+### 4. Jornada count en Create Tournament - Step 1
+- **Mockup `create_tournament_basics`**: Solo muestra Name, Entry Fee y Description. Falta el campo "cantidad de jornadas".
+- **PRD actual**: El organizador define la cantidad de jornadas al crear el torneo.
+- **Resolución sugerida**: Agregar el campo al mockup de Basics (actualización de mockup pendiente).
+
+---
+
+## Mockups Existentes
+
+| Mockup | Pantalla |
+|--------|----------|
+| `login_banterbot_sports` | Login |
+| `register_banterbot_sports` | Registro |
+| `dashboard_my_tournaments` | Dashboard principal |
+| `tournament_overview` | Vista general del torneo |
+| `matchday_predictions` | Predicciones de jornada (jugador) |
+| `organizer_console` | Consola del organizador |
+| `create_tournament_basics` | Wizard paso 1: Datos básicos |
+| `create_tournament_scoring` | Wizard paso 2: Configuración de puntos |
+| `create_tournament_prizes` | Wizard paso 3: Distribución de premios |
+| `create_tournament_match_selection` | Wizard paso 4: Selección de partidos |
+| `user_profile_bot_settings` | Perfil + configuración del bot |
+
+## Mockups Pendientes de Creación
+
+Las siguientes pantallas están especificadas en el PRD pero no tienen mockup:
+
+| # | Pantalla | Descripción |
+|---|----------|-------------|
+| 1 | **Leaderboard completo** | Tabla de posiciones expandida con paginación, filtros por jornada y posición del jugador resaltada. Accesible desde "VIEW FULL LEADERBOARD" en Tournament Overview. |
+| 2 | **Join Tournament via invite link** | Pantalla que ve un jugador al seguir un link de invitación: preview del torneo (nombre, organizador, prize pool, jornadas), botón de confirmación de inscripción. |
+| 3 | **Create Tournament — Step 5: Review & Publish** | Resumen completo del torneo configurado (nombre, scoring, premios, partidos de jornada 1) antes de publicar. Botón "Publish Live". |
+| 4 | **Organizer: Asignar partidos a jornada existente** | Flujo para que el organizador agregue partidos de fase final a una jornada ya creada, una vez que los equipos clasificados están definidos. |
+| 5 | **Resumen post-jornada (jugador)** | Vista que aparece al jugador cuando cierra una jornada: resultados reales vs predicciones, puntos ganados por categoría, variación en el ranking, y mensajes de banter personalizados. |
+| 6 | **Cierre de torneo / Distribución final de premios** | Pantalla de fin de torneo: posiciones finales, cálculo del prize pool distribuido por lugar, indicador de empates resueltos. |
+| 7 | **Historial de torneos terminados** | Sección del dashboard o pantalla separada con torneos completados: nombre, fecha, posición final del jugador, premio ganado. |
+| 8 | **Forgot Password** | Flujo de recuperación de contraseña (referenciado con link en el mockup de Login). |
 
 ---
 

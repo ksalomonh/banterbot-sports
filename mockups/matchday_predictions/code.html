@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BanterBot Sports | Matchday Predictions</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-container": "#00cffc",
+              "surface-container": "#13192b",
+              "primary-fixed": "#00cffc",
+              "surface-container-low": "#0d1323",
+              "primary-dim": "#00c0ea",
+              "on-tertiary": "#4a0003",
+              "tertiary-fixed-dim": "#ff7b70",
+              "background": "#090e1c",
+              "secondary-dim": "#2be800",
+              "error": "#ff716c",
+              "inverse-primary": "#006880",
+              "surface-tint": "#69daff",
+              "on-surface-variant": "#a6aabf",
+              "error-container": "#9f0519",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "surface-dim": "#090e1c",
+              "tertiary-dim": "#e51a22",
+              "inverse-on-surface": "#505466",
+              "on-background": "#e1e4fa",
+              "on-secondary-fixed": "#064200",
+              "surface-variant": "#1e253b",
+              "on-primary-fixed": "#002a35",
+              "secondary-fixed-dim": "#2be800",
+              "surface-bright": "#242b43",
+              "on-surface": "#e1e4fa",
+              "surface": "#090e1c",
+              "on-tertiary-fixed": "#3a0002",
+              "inverse-surface": "#faf8ff",
+              "secondary-container": "#106e00",
+              "surface-container-lowest": "#000000",
+              "on-primary-container": "#004050",
+              "error-dim": "#d7383b",
+              "surface-container-high": "#181f33",
+              "surface-container-highest": "#1e253b",
+              "secondary-fixed": "#2ff801",
+              "secondary": "#2ff801",
+              "tertiary": "#ff7166",
+              "on-error": "#490006",
+              "on-primary": "#004a5d",
+              "outline": "#707588",
+              "on-tertiary-container": "#000000",
+              "outline-variant": "#434759",
+              "tertiary-container": "#f5282b",
+              "on-error-container": "#ffa8a3",
+              "primary": "#69daff",
+              "tertiary-fixed": "#ff9287",
+              "on-secondary-fixed-variant": "#0d6200",
+              "on-secondary": "#0b5800",
+              "primary-fixed-dim": "#00c0ea",
+              "on-secondary-container": "#e7ffd9",
+              "on-primary-fixed-variant": "#004a5c"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #090e1c;
+            color: #e1e4fa;
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-nav {
+            background: rgba(9, 14, 28, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .glass-side {
+            background: rgba(13, 19, 35, 0.7);
+            backdrop-filter: blur(32px);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+<!-- TopNavBar Shell -->
+<nav class="fixed top-0 w-full z-50 glass-nav shadow-[0_40px_40px_0_rgba(105,218,255,0.08)]">
+<div class="flex justify-between items-center w-full px-6 py-4">
+<div class="text-2xl font-black tracking-tighter text-[#69daff] uppercase">
+                BanterBot Sports
+            </div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-[#69daff] border-b-2 border-[#69daff] pb-1 font-bold tracking-tight" href="#">My Tournaments</a>
+<a class="text-[#e1e4fa]/70 hover:text-[#e1e4fa] transition-colors font-bold tracking-tight" href="#">Create Tournament</a>
+<a class="text-[#e1e4fa]/70 hover:text-[#e1e4fa] transition-colors font-bold tracking-tight" href="#">Bot Settings</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-[#e1e4fa]/70 hover:bg-[#242b43] rounded-full transition-all duration-200">
+<span class="material-symbols-outlined">search</span>
+</button>
+<div class="flex items-center gap-3 bg-[#181f33] pr-4 pl-1 py-1 rounded-full cursor-pointer hover:bg-[#242b43] transition-all">
+<img alt="User profile avatar" class="w-8 h-8 rounded-full object-cover" data-alt="Close up portrait of a young man with a confident expression in a tech office setting, soft bokeh background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC84flQ-xm2xj2JmCBLHMI__WkSeOL01jIH7vgVNCh7fwbqZvESQuJA1Zu2ccczfqthF2KJjoPEDtlSILRpTL-tSiT1jNP73YSNTjv_x4J0k2_kzvr4ASbBWAhNDIBjXR4kTxybDZLSug5JdPdtXkU2NSHiZfBS7g26vUV5ma51GcQ04RlAv5BPUK7dscOb84aRsRpZ7DClZedXKiPcW4Ew1Bh2h1OxpQ21ViBfUjO0g1VUVAc7fW7LzGguPwrv-sJsVTpuhKI_kl8Z"/>
+<span class="text-xs font-bold uppercase tracking-widest text-[#e1e4fa]">Profile</span>
+</div>
+</div>
+</div>
+</nav>
+<!-- SideNavBar (Banter Rail) Shell -->
+<aside class="fixed right-0 top-20 h-[calc(100vh-5rem)] w-80 rounded-l-3xl glass-side shadow-[-20px_0_40px_rgba(0,0,0,0.3)] hidden lg:flex flex-col p-6 gap-4 z-40">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#69daff] to-[#00cffc] flex items-center justify-center">
+<span class="material-symbols-outlined text-[#090e1c]" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<div>
+<h3 class="text-[#69daff] font-bold text-sm tracking-tight leading-none uppercase">Banter Rail</h3>
+<p class="text-[#e1e4fa]/50 text-[10px] font-bold uppercase tracking-widest">The Neon Colosseum</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 overflow-y-auto pr-2">
+<div class="p-4 bg-[#242b43] rounded-xl border-l-4 border-[#2ff801] hover:translate-x-[-4px] transition-transform">
+<p class="text-[10px] text-[#2ff801] font-black uppercase mb-1">Live Banter</p>
+<p class="text-sm text-[#e1e4fa]">"Lads, City is walking this one. 4-0 minimum."</p>
+<p class="text-[10px] text-[#e1e4fa]/40 mt-2">@KingKev • 2m ago</p>
+</div>
+<div class="p-4 bg-[#181f33] rounded-xl hover:translate-x-[-4px] transition-transform">
+<p class="text-[10px] text-[#e1e4fa]/50 font-black uppercase mb-1">Global Predictions</p>
+<p class="text-sm text-[#e1e4fa]">74% of users picked Arsenal to win vs Liverpool.</p>
+</div>
+<div class="p-4 bg-[#181f33] rounded-xl hover:translate-x-[-4px] transition-transform">
+<p class="text-[10px] text-[#e1e4fa]/50 font-black uppercase mb-1">AI Insights</p>
+<p class="text-sm text-[#e1e4fa]">Expected goals for Chelsea are trending up.</p>
+</div>
+</div>
+<button class="mt-auto w-full py-3 bg-[#181f33] border border-[#2ff801]/30 text-[#2ff801] rounded-xl font-bold uppercase text-xs tracking-widest hover:bg-[#2ff801] hover:text-[#090e1c] transition-all">
+            Join Conversation
+        </button>
+</aside>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-32 px-4 md:px-8 lg:pr-[340px] max-w-7xl mx-auto">
+<!-- Jornada Header -->
+<header class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h1 class="text-[3.5rem] leading-none font-black tracking-tighter text-[#e1e4fa] mb-2 uppercase">Jornada 4</h1>
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-2 px-3 py-1 bg-tertiary-container/20 text-tertiary font-bold text-xs rounded-full border border-tertiary/30 uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">timer</span>
+                        Deadline: 14h 22m 05s
+                    </span>
+<span class="text-[#e1e4fa]/40 font-bold text-xs uppercase tracking-widest">Premier League 24/25</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="bg-surface-container-high p-4 rounded-2xl flex items-center gap-4">
+<div>
+<p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Total Goals Prediction</p>
+<input class="bg-transparent text-2xl font-black text-primary border-none p-0 focus:ring-0 w-20" placeholder="0" type="number"/>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-10 h-5 bg-secondary/20 rounded-full relative cursor-pointer border border-secondary/30">
+<div class="absolute right-1 top-1 w-3 h-3 bg-secondary rounded-full"></div>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-secondary">Auto-Calc</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Telegram Bot Promotion -->
+<section class="mb-10 p-6 rounded-3xl bg-gradient-to-r from-[#00cffc]/10 to-transparent border border-[#00cffc]/20 flex items-center justify-between overflow-hidden relative">
+<div class="z-10 flex items-center gap-6">
+<div class="w-14 h-14 bg-[#00cffc] rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(0,207,252,0.4)]">
+<span class="material-symbols-outlined text-white text-3xl">send</span>
+</div>
+<div>
+<h4 class="text-xl font-bold text-white tracking-tight">Predict faster via Telegram!</h4>
+<p class="text-[#e1e4fa]/70 text-sm">Link your account in Profile to get instant match reminders and submit scores via chat.</p>
+</div>
+</div>
+<button class="z-10 px-6 py-3 bg-surface-bright text-primary font-bold rounded-xl border border-primary/20 hover:bg-primary hover:text-white transition-all">Link Account</button>
+<div class="absolute right-[-20px] bottom-[-20px] opacity-10">
+<span class="material-symbols-outlined text-[160px]">campaign</span>
+</div>
+</section>
+<!-- Prediction Grid -->
+<div class="grid grid-cols-1 gap-6">
+<!-- Match Card: Open -->
+<div class="group relative bg-surface-container-high rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-8 transition-all hover:bg-surface-bright border border-white/5">
+<div class="absolute top-6 left-6 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary">Open for prediction</span>
+</div>
+<div class="flex-1 flex items-center justify-center gap-6 md:gap-12 w-full mt-6 md:mt-0">
+<!-- Team A -->
+<div class="flex flex-col items-center gap-4 text-center flex-1">
+<div class="w-20 h-20 rounded-full bg-surface-container-low p-2">
+<img class="w-full h-full object-contain" data-alt="Graphic circular sports logo with a roaring red lion on a white circular shield with gold trim" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXD1ULJFGoHHLCHuYoOSsJQCnfl2582IBQINXLcpHDm0e-TnzUwkhMheLt8oV9fnprD4hnIgb39E7puwHI8kUAd6ceQtZlcgnbXZ7jULIeO0HXkCG-M9Bge_O8fXopyFTmUWL9FIreTLVPjdLxVy6myxLS8u8B5gtzX8zuBLURjY49aam7Wvh0N6TGKi1ADasE5u_hLYSHtUYXdVN2i5Bt8X2AOiONZELZWMujM8WpVeqvg2TCLF48lJdTVxUfsvbXeQp37iuNKfJD"/>
+</div>
+<h3 class="text-lg font-black uppercase tracking-tight">Arsenal</h3>
+</div>
+<!-- Prediction Inputs -->
+<div class="flex items-center gap-4">
+<input class="w-16 h-20 bg-surface-container-lowest text-4xl font-black text-center text-[#e1e4fa] rounded-2xl border-2 border-transparent focus:border-primary/50 focus:ring-0 transition-all outline-none" maxlength="2" placeholder="-" type="text"/>
+<span class="text-2xl font-black text-outline/30">:</span>
+<input class="w-16 h-20 bg-surface-container-lowest text-4xl font-black text-center text-[#e1e4fa] rounded-2xl border-2 border-transparent focus:border-primary/50 focus:ring-0 transition-all outline-none" maxlength="2" placeholder="-" type="text"/>
+</div>
+<!-- Team B -->
+<div class="flex flex-col items-center gap-4 text-center flex-1">
+<div class="w-20 h-20 rounded-full bg-surface-container-low p-2">
+<img class="w-full h-full object-contain" data-alt="Symmetrical sports emblem with blue wings and a golden football in the center, professional soccer club style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuElALEOc3nu1k_KJ1Ww-12cl-4ZY9R8WqF0SORQPWckEXePzhkjXh6SQwVhE6g3gcSWS62ER8JgDW8oaLKTv0PR0aKR_hDkTKucd2-zzvOI1RAC-uuDQlxCtx81M5hq4LFSZre3AqFCR1MXSDo6AY5I2NhG8b82lI1UR3fIYeKJwCoPEa1CuvFt0v4ES9xoXMBu8Srwaaio7BZPaKvm8sX0eSW32dEeZkVKptFFsSP9eq2JpKsVTcMrNcGZdkU-CKWurGXKT95p5r"/>
+</div>
+<h3 class="text-lg font-black uppercase tracking-tight">Tottenham</h3>
+</div>
+</div>
+<div class="w-full md:w-auto md:border-l border-outline-variant/15 md:pl-8 flex flex-col justify-center items-center md:items-start gap-1">
+<div class="flex items-center gap-2 text-[#e1e4fa]/40">
+<span class="material-symbols-outlined text-sm">calendar_month</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Sept 15 • 14:00</span>
+</div>
+<div class="flex items-center gap-2 text-[#e1e4fa]/40">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span class="text-[10px] font-bold uppercase tracking-widest" data-location="London">Emirates Stadium</span>
+</div>
+</div>
+</div>
+<!-- Match Card: Locked -->
+<div class="relative bg-surface-container-low/50 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-8 border border-white/5 opacity-80">
+<div class="absolute top-6 left-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-tertiary">lock</span>
+<span class="text-[10px] font-black uppercase tracking-[0.2em] text-tertiary">Locked</span>
+</div>
+<div class="flex-1 flex items-center justify-center gap-6 md:gap-12 w-full mt-6 md:mt-0">
+<div class="flex flex-col items-center gap-4 text-center flex-1 opacity-50">
+<div class="w-20 h-20 rounded-full bg-surface-container-low p-2 grayscale">
+<img class="w-full h-full object-contain" data-alt="Minimalist soccer club crest with a blue eagle clutching a ball, modern vector style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1dDyk6umAAvi5tlrvBMNSSUP9AbW7E2zMqcjodaG43pKuKvYwluAlPmRpqbFW6q9TcuDlOOb2ZWZcGBg-l7P8ionsf3tE1C2xGdH8HItNItZvGY7vRrLP4lQwPdWj_uSIvIXYEVDpyN_drPxY5pJWVHkEA_26UiI1f532hEMelFR6ba4Wb98AQPq44YId8nAqIsmn0vdoeP2iPkxh_GqyYakiHbZSCPBqlUSqRF5pyBHiWrIIIhZalwMlM-H5YJkj6XFf4KgOxKcE"/>
+</div>
+<h3 class="text-lg font-black uppercase tracking-tight">Man City</h3>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-16 h-20 bg-surface-container-high/30 flex items-center justify-center text-4xl font-black text-outline/20 rounded-2xl">2</div>
+<span class="text-2xl font-black text-outline/10">:</span>
+<div class="w-16 h-20 bg-surface-container-high/30 flex items-center justify-center text-4xl font-black text-outline/20 rounded-2xl">1</div>
+</div>
+<div class="flex flex-col items-center gap-4 text-center flex-1 opacity-50">
+<div class="w-20 h-20 rounded-full bg-surface-container-low p-2 grayscale">
+<img class="w-full h-full object-contain" data-alt="Classic heraldic football shield with vertical red and white stripes and a vintage leather soccer ball" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDshjgWnTP6Oj_MbowSY1bgH11JVyKWC8xR2faMKlsKzjRZHGa2KT3LNTygZITuPZN0nS97jcBqhl5vp-zQcjMLXap1fBoSURpqRSovM8KX12f7NacxU8z0BhkjEDi7dmgj2aj4chzNAEDn-cQTwWUczn__zY64i8LbXJd78AJkVNX2D4DBa2Bg1zBGQKNkIqKxTCzUNz1ALxJh2r6b-UxR6EazC8ZbOcRIKnKsrrIpTwvMoo13Q0tXSdqn03AwFpaNOt0KwZBgjGPr"/>
+</div>
+<h3 class="text-lg font-black uppercase tracking-tight">Brentford</h3>
+</div>
+</div>
+<div class="w-full md:w-auto md:border-l border-outline-variant/15 md:pl-8 flex flex-col justify-center items-center md:items-start gap-1">
+<p class="text-xs font-bold text-outline uppercase tracking-widest">Prediction Locked</p>
+</div>
+</div>
+<!-- Match Card: Finished -->
+<div class="relative bg-surface-container-high rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-8 border-2 border-secondary/20 shadow-[0_0_30px_rgba(47,248,1,0.05)]">
+<div class="absolute top-6 left-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-[#e1e4fa]/40">check_circle</span>
+<span class="text-[10px] font-black uppercase tracking-[0.2em] text-[#e1e4fa]/40">Finished</span>
+</div>
+<div class="absolute top-6 right-6 flex flex-col items-end">
+<span class="text-[10px] font-black uppercase tracking-widest text-secondary mb-1">Total Earned</span>
+<span class="text-2xl font-black text-secondary">+15 PTS</span>
+</div>
+<div class="flex-1 flex items-center justify-center gap-6 md:gap-12 w-full mt-6 md:mt-0">
+<div class="flex flex-col items-center gap-4 text-center flex-1">
+<div class="w-20 h-20 rounded-full bg-surface-container-low p-2">
+<img class="w-full h-full object-contain" data-alt="Abstract modern football emblem featuring sharp geometric shapes in navy and neon blue" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrarWXjQJmskADJyMy1UQouLxGEeQkoh2oha3nPSBPfCM9JUJIc9j7K0do6_MWOnqYjI134czMnaZomv4UKRB2qtF96qWcIClK1o6FSr1FZcfEfE_nclLCkuzHiyhGKPjI97gAt8Ba-OA4XzwCQwuQSqiTDz7YbhHlGtyJxPPcRsLXFWK_OkTrNqjJOvA8ouXc_92CVB3Re0oiJeScKtOzz9p2PBeugBnJA2FUnR0JELXT-Z8cxJMHIU2KcDXjPwoCGU2bB_E1k6bf"/>
+</div>
+<h3 class="text-lg font-black uppercase tracking-tight">Liverpool</h3>
+</div>
+<div class="flex flex-col items-center gap-3">
+<div class="flex items-center gap-4">
+<div class="w-16 h-20 bg-surface-container-lowest flex items-center justify-center text-4xl font-black text-on-surface rounded-2xl border-b-4 border-secondary/40">3</div>
+<span class="text-2xl font-black text-outline/30">:</span>
+<div class="w-16 h-20 bg-surface-container-lowest flex items-center justify-center text-4xl font-black text-on-surface rounded-2xl border-b-4 border-secondary/40">3</div>
+</div>
+<div class="bg-surface-bright px-3 py-1 rounded-full flex items-center gap-2">
+<span class="text-[10px] font-bold text-outline-variant uppercase">Your Pick:</span>
+<span class="text-xs font-black text-primary">3 - 3</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-4 text-center flex-1">
+<div class="w-20 h-20 rounded-full bg-surface-container-low p-2">
+<img class="w-full h-full object-contain" data-alt="Sports team logo showing a golden hawk head with piercing eyes on a dark hexagonal background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaIQEInvzi2w7nTtwbVBp061cIyqvbyBCUDGPp9WPWJvx-tH-NIfforAvf6jfgQDn5zs5naCZf0YwveHUDMI8s6g7SoibZyxg4UYiLdsvw9K7aYe6xVBq_bcQD2dWinhk5Yxo0byNRuneRDwiyA_YzaoOEjP31lJa8aJy0EvFG4qXDYKvh5zFNGPGC_QFaCgqDh6iJfEej0OhtYQG0eAfb8ozdGUZmzbzBd8jwC9F5jVgCodxUk4JdRco159W-CK9lf_yZk480ipPA"/>
+</div>
+<h3 class="text-lg font-black uppercase tracking-tight">Chelsea</h3>
+</div>
+</div>
+<div class="w-full md:w-auto md:border-l border-outline-variant/15 md:pl-8 flex flex-col justify-center items-center md:items-start gap-1">
+<span class="px-2 py-1 bg-secondary text-on-secondary text-[10px] font-black rounded-sm uppercase tracking-tighter">Perfect Score</span>
+<p class="text-[10px] text-outline font-bold uppercase tracking-widest mt-1">Match ended 3-3</p>
+</div>
+</div>
+</div>
+<!-- Floating Action Button -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 md:left-auto md:right-8 md:translate-x-0 z-50">
+<button class="group flex items-center gap-3 bg-gradient-to-r from-primary to-primary-container px-8 py-4 rounded-full shadow-[0_10px_30px_rgba(0,207,252,0.4)] hover:scale-105 active:scale-95 transition-all">
+<span class="text-white font-black uppercase tracking-widest">Save All Predictions</span>
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">save</span>
+</button>
+</div>
+</main>
+<!-- Footer Shell -->
+<footer class="w-full py-12 border-t border-[#434759]/15 bg-[#090e1c] flex flex-col items-center justify-center gap-6 mt-20">
+<div class="text-[#69daff] font-bold uppercase tracking-widest">BanterBot Sports</div>
+<div class="flex gap-8">
+<a class="text-[#e1e4fa]/40 hover:text-[#69daff] text-xs font-['Inter'] transition-opacity hover:underline" href="#">Documentation</a>
+<a class="text-[#e1e4fa]/40 hover:text-[#69daff] text-xs font-['Inter'] transition-opacity hover:underline" href="#">Developer API</a>
+<a class="text-[#e1e4fa]/40 hover:text-[#69daff] text-xs font-['Inter'] transition-opacity hover:underline" href="#">Support</a>
+<a class="text-[#e1e4fa]/40 hover:text-[#69daff] text-xs font-['Inter'] transition-opacity hover:underline" href="#">Privacy</a>
+</div>
+<p class="text-xs text-[#e1e4fa]/40 font-['Inter']">© 2024 BanterBot Sports. All Rights Reserved.</p>
+</footer>
+</body></html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container": "#13192b",
+            "secondary-fixed": "#2ff801",
+            "on-secondary-fixed": "#064200",
+            "on-tertiary-fixed": "#3a0002",
+            "tertiary-fixed-dim": "#ff7b70",
+            "secondary-dim": "#2be800",
+            "on-primary-fixed": "#002a35",
+            "on-surface-variant": "#a6aabf",
+            "surface-container-high": "#181f33",
+            "on-tertiary-fixed-variant": "#7a0008",
+            "on-tertiary-container": "#000000",
+            "surface": "#090e1c",
+            "on-surface": "#e1e4fa",
+            "surface-container-highest": "#1e253b",
+            "on-secondary": "#0b5800",
+            "surface-bright": "#242b43",
+            "secondary-container": "#106e00",
+            "primary-container": "#00cffc",
+            "inverse-surface": "#faf8ff",
+            "surface-variant": "#1e253b",
+            "primary-fixed-dim": "#00c0ea",
+            "primary-dim": "#00c0ea",
+            "on-background": "#e1e4fa",
+            "inverse-on-surface": "#505466",
+            "error-dim": "#d7383b",
+            "inverse-primary": "#006880",
+            "outline": "#707588",
+            "tertiary": "#ff7166",
+            "secondary": "#2ff801",
+            "on-tertiary": "#4a0003",
+            "surface-container-lowest": "#000000",
+            "on-error": "#490006",
+            "surface-tint": "#69daff",
+            "primary": "#69daff",
+            "surface-container-low": "#0d1323",
+            "surface-dim": "#090e1c",
+            "secondary-fixed-dim": "#2be800",
+            "tertiary-fixed": "#ff9287",
+            "error-container": "#9f0519",
+            "primary-fixed": "#00cffc",
+            "on-error-container": "#ffa8a3",
+            "tertiary-container": "#f5282b",
+            "tertiary-dim": "#e51a22",
+            "error": "#ff716c",
+            "outline-variant": "#434759",
+            "on-primary-container": "#004050",
+            "background": "#090e1c",
+            "on-primary-fixed-variant": "#004a5c",
+            "on-primary": "#004a5d",
+            "on-secondary-fixed-variant": "#0d6200",
+            "on-secondary-container": "#e7ffd9"
+          },
+          fontFamily: {
+            "headline": ["Inter"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+        },
+      },
+    }
+  </script>
+<style>
+    body { font-family: 'Inter', sans-serif; background-color: #090e1c; color: #e1e4fa; }
+    .glass-effect { background: rgba(30, 37, 59, 0.6); backdrop-filter: blur(20px); }
+    .neon-glow-primary { box-shadow: 0 0 20px rgba(105, 218, 255, 0.2); }
+    .neon-glow-secondary { box-shadow: 0 0 15px rgba(47, 248, 1, 0.15); }
+    .asymmetric-gradient { background: linear-gradient(135deg, #0d1323 0%, #090e1c 100%); }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col overflow-x-hidden">
+<!-- Shell Visibility: TopNavBar suppressed for focused Transactional journey -->
+<main class="flex-grow flex items-stretch min-h-screen relative">
+<!-- Left Side: Value Proposition Section -->
+<section class="hidden lg:flex w-7/12 asymmetric-gradient relative overflow-hidden flex-col justify-center px-20">
+<!-- Decorative Background Elements -->
+<div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px]"></div>
+<div class="relative z-10">
+<div class="mb-6 inline-flex items-center px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/15">
+<span class="material-symbols-outlined text-secondary text-sm mr-2" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="text-xs font-bold tracking-[0.1em] text-on-surface uppercase">Join the Elite</span>
+</div>
+<h1 class="text-[4rem] font-black leading-none tracking-tight mb-12 text-on-surface">
+          Start Your <span class="text-primary italic">Legacy</span> Today
+        </h1>
+<div class="space-y-10 max-w-xl">
+<!-- Feature 1 -->
+<div class="flex items-start gap-6 group">
+<div class="mt-1 w-14 h-14 rounded-xl bg-surface-container-highest flex items-center justify-center neon-glow-primary border border-primary/10 transition-transform group-hover:scale-110 duration-300">
+<span class="material-symbols-outlined text-primary text-3xl">trophy</span>
+</div>
+<div>
+<h3 class="text-xl font-bold text-on-surface mb-2">Join Tournaments</h3>
+<p class="text-on-surface-variant leading-relaxed">Enter high-stakes digital arenas and compete against the world's sharpest predictors in real-time.</p>
+</div>
+</div>
+<!-- Feature 2 -->
+<div class="flex items-start gap-6 group">
+<div class="mt-1 w-14 h-14 rounded-xl bg-surface-container-highest flex items-center justify-center neon-glow-secondary border border-secondary/10 transition-transform group-hover:scale-110 duration-300">
+<span class="material-symbols-outlined text-secondary text-3xl">smart_toy</span>
+</div>
+<div>
+<h3 class="text-xl font-bold text-on-surface mb-2">Banter with AI</h3>
+<p class="text-on-surface-variant leading-relaxed">Engage with our advanced BanterBot. Get real-time analysis, trash talk, and market insights powered by neural intelligence.</p>
+</div>
+</div>
+<!-- Feature 3 -->
+<div class="flex items-start gap-6 group">
+<div class="mt-1 w-14 h-14 rounded-xl bg-surface-container-highest flex items-center justify-center border border-tertiary/10 transition-transform group-hover:scale-110 duration-300">
+<span class="material-symbols-outlined text-tertiary text-3xl">payments</span>
+</div>
+<div>
+<h3 class="text-xl font-bold text-on-surface mb-2">Win Real Prizes</h3>
+<p class="text-on-surface-variant leading-relaxed">Climb the leaderboard to unlock massive prize pools, exclusive perks, and permanent glory in the Colosseum.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Atmospheric Image -->
+<div class="absolute bottom-12 right-0 w-64 h-64 opacity-20 pointer-events-none">
+<img alt="" class="w-full h-full object-contain" data-alt="Stylized futuristic stadium arena at night with neon lights and holographic displays in deep blue and green hues" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoHKg7wDS_eMPOkegPfh2ZCODapgtuUBlqBkhrUucSX3fi9hCVHRFiyFCCdxnPS3gkp5uaJfhxcHZuLmEEcHdMPuAqucYRaqhCoReapB7DREbAmPU37G0MuCtPWWAbvJi_pIBmXqx2qPoP1fanoItnHUGhnTM5JO0eX5ZFTEZ9bNdtEvJjJ9v2SKvDKexYuoTyXngqkOMdSvkny3MsXobXJBaPj9r_H2ghnhOSeCscSO1oWAFmmPu73v7IDWcYR7q2ViNOFiAWkqIi"/>
+</div>
+</section>
+<!-- Right Side: Registration Form -->
+<section class="w-full lg:w-5/12 bg-surface-container-low flex items-center justify-center p-8 lg:p-16 relative">
+<div class="w-full max-w-md relative z-10">
+<!-- Logo for Mobile -->
+<div class="lg:hidden mb-12 flex justify-center">
+<span class="text-3xl font-black tracking-tighter text-primary uppercase">Banter Arena</span>
+</div>
+<header class="mb-10 text-center lg:text-left">
+<h2 class="text-3xl font-bold text-on-surface mb-2">Enter the Colosseum</h2>
+<p class="text-on-surface-variant">Create your account to start your journey.</p>
+</header>
+<form class="space-y-6">
+<div class="space-y-2">
+<label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant px-1" for="name">Full Name</label>
+<div class="relative">
+<input class="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline-variant/60 transition-all" id="name" placeholder="John 'The Gladiator' Doe" type="text"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant px-1" for="email">Email Address</label>
+<div class="relative">
+<input class="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline-variant/60 transition-all" id="email" placeholder="champion@banterbot.ai" type="email"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant px-1" for="password">Password</label>
+<div class="relative">
+<input class="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline-variant/60 transition-all" id="password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<div class="flex items-start py-2">
+<div class="flex items-center h-5">
+<input class="w-5 h-5 rounded-lg bg-surface-container-highest border-none text-primary focus:ring-offset-background focus:ring-primary" id="terms" type="checkbox"/>
+</div>
+<label class="ml-3 text-sm text-on-surface-variant" for="terms">
+              I agree to the <a class="text-primary hover:underline font-semibold" href="#">Rules of the Arena</a> and Terms of Service.
+            </label>
+</div>
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-black py-4 rounded-xl uppercase tracking-tighter text-lg shadow-[0_10px_30px_-10px_rgba(105,218,255,0.4)] hover:scale-[1.02] active:scale-95 transition-all duration-200" type="submit">
+            Claim Your Seat
+          </button>
+</form>
+<div class="relative my-10">
+<div class="absolute inset-0 flex items-center"><div class="w-full border-t border-outline-variant/15"></div></div>
+<div class="relative flex justify-center text-xs uppercase tracking-widest"><span class="bg-surface-container-low px-4 text-outline-variant">Fast Track Entry</span></div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-3 bg-surface-container-high hover:bg-surface-bright py-3.5 rounded-xl border border-outline-variant/10 transition-colors group">
+<img alt="" class="w-5 h-5 opacity-70 group-hover:opacity-100" data-alt="Discord social media logo icon in white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCN30zicRh7vRphHGNYJzf1akh58GdiYb8h0dJJ6HhNFTTgxJhu84SHKUjXCdc2QVzjq415GjJR2Cdx6fq4SJSbfZKGa95XI9fEvuGpqbibgwY41vpWRQESZlvxLJYM8IkiH3YbSzYF21hQYvXaUJEGsU9ZUPhlK_IG6UgJwLUDU-lQiO46_D9JK62gY4TaSBmUDh2mWxQZi6JVShFBznTCg82CYdqIJROMqIR4pHdcrwuhFeNmji6TyVQK7nIArw6zqSYw1OAxuq4M"/>
+<span class="text-sm font-bold text-on-surface">Discord</span>
+</button>
+<button class="flex items-center justify-center gap-3 bg-surface-container-high hover:bg-surface-bright py-3.5 rounded-xl border border-outline-variant/10 transition-colors group">
+<img alt="" class="w-5 h-5 opacity-70 group-hover:opacity-100" data-alt="Telegram social media messenger logo icon in white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYKx7DjatX3xgtmhys2Em43aD-wKmBR9E0CCaaArm2oAF2WoCoDGtv16hpykqYkvM2NLq5S1JqJT9zOq6yiEamtxp2Ma3cMjSvLO9aGbY2mvzMrkcfM8rXQK4a-t3rN26mHvKHvAJ7nSLiOd4E2_IRZfxV8rKaFt5kksS1D47RLCDPczTDDddRFCdtW7mMiB5Bmn3PgCBiL3v_9u-MTToCJUDnw66NddcGsOX6FDYHeAmwSa3mMJplVYhL70W2ztfUNlEKqtY4qPvj"/>
+<span class="text-sm font-bold text-on-surface">Telegram</span>
+</button>
+</div>
+<footer class="mt-12 text-center">
+<p class="text-on-surface-variant text-sm">
+            Already have a seat reserved? 
+            <a class="text-primary font-bold hover:underline ml-1" href="#">Login</a>
+</p>
+</footer>
+</div>
+<!-- Small decorative glow -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[80px] pointer-events-none"></div>
+</section>
+</main>
+<!-- Shell Visibility: BottomNavBar suppressed for focused Transactional journey -->
+</body></html>

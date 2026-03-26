@@ -6,7 +6,7 @@ PROVIDER="claude"
 # .NET 10 + C# + Razor Views
 FILE_PATTERNS="*.cs,*.razor,*.cshtml,*.json,*.yaml,*.yml,*.md"
 
-EXCLUDE_PATTERNS="*.Designer.cs,*.g.cs,*.g.i.cs,*Migrations/*.cs"
+EXCLUDE_PATTERNS="*.Designer.cs,*.g.cs,*.g.i.cs,*Migrations/*.cs,PRD.md,DESIGN.md,mockups/**/DESIGN.md"
 
 RULES_FILE="AGENTS.md"
 

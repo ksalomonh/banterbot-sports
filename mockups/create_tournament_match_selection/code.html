@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-container": "#00cffc",
+              "surface-container-highest": "#1e253b",
+              "outline": "#707588",
+              "on-primary": "#004a5d",
+              "primary-fixed": "#00cffc",
+              "tertiary-fixed-dim": "#ff7b70",
+              "primary-dim": "#00c0ea",
+              "surface-container-lowest": "#000000",
+              "secondary-fixed-dim": "#2be800",
+              "secondary-fixed": "#2ff801",
+              "on-surface": "#e1e4fa",
+              "error-container": "#9f0519",
+              "on-secondary-fixed-variant": "#0d6200",
+              "secondary-dim": "#2be800",
+              "on-primary-fixed-variant": "#004a5c",
+              "surface-variant": "#1e253b",
+              "surface-bright": "#242b43",
+              "on-error-container": "#ffa8a3",
+              "on-background": "#e1e4fa",
+              "on-error": "#490006",
+              "background": "#090e1c",
+              "inverse-primary": "#006880",
+              "primary-fixed-dim": "#00c0ea",
+              "on-tertiary-fixed": "#3a0002",
+              "surface-dim": "#090e1c",
+              "error": "#ff716c",
+              "on-primary-container": "#004050",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "surface-tint": "#69daff",
+              "tertiary-fixed": "#ff9287",
+              "primary": "#69daff",
+              "on-tertiary-container": "#000000",
+              "inverse-on-surface": "#505466",
+              "secondary-container": "#106e00",
+              "on-primary-fixed": "#002a35",
+              "on-secondary": "#0b5800",
+              "outline-variant": "#434759",
+              "on-surface-variant": "#a6aabf",
+              "surface-container-low": "#0d1323",
+              "tertiary": "#ff7166",
+              "surface": "#090e1c",
+              "tertiary-dim": "#e51a22",
+              "tertiary-container": "#f5282b",
+              "on-tertiary": "#4a0003",
+              "on-secondary-container": "#e7ffd9",
+              "surface-container-high": "#181f33",
+              "inverse-surface": "#faf8ff",
+              "on-secondary-fixed": "#064200",
+              "surface-container": "#13192b",
+              "secondary": "#2ff801",
+              "error-dim": "#d7383b"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(30, 37, 59, 0.6);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex">
+<!-- Side Navigation Shell (SideNavBar) -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-[#0d1323] flex flex-col pt-12 pb-8 px-4 z-40">
+<div class="mb-10 px-4">
+<h1 class="text-[#69daff] font-black text-xl tracking-tighter">BanterBot Sports</h1>
+<div class="mt-4">
+<p class="font-['Inter'] font-bold uppercase tracking-[0.05em] text-[0.75rem] text-[#69daff]">New Tournament</p>
+<p class="text-[#e1e4fa]/50 text-xs">Draft Mode</p>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<!-- Basics (Completed) -->
+<a class="flex items-center gap-3 text-[#e1e4fa]/50 px-4 py-3 hover:bg-[#181f33]/30 transition-all group" href="#">
+<span class="material-symbols-outlined text-secondary">check_circle</span>
+<span class="font-['Inter'] font-bold uppercase tracking-[0.05em] text-[0.75rem]">Basics</span>
+</a>
+<!-- Scoring (Completed) -->
+<a class="flex items-center gap-3 text-[#e1e4fa]/50 px-4 py-3 hover:bg-[#181f33]/30 transition-all group" href="#">
+<span class="material-symbols-outlined text-secondary">check_circle</span>
+<span class="font-['Inter'] font-bold uppercase tracking-[0.05em] text-[0.75rem]">Scoring</span>
+</a>
+<!-- Prizes (Completed) -->
+<a class="flex items-center gap-3 text-[#e1e4fa]/50 px-4 py-3 hover:bg-[#181f33]/30 transition-all group" href="#">
+<span class="material-symbols-outlined text-secondary">check_circle</span>
+<span class="font-['Inter'] font-bold uppercase tracking-[0.05em] text-[0.75rem]">Prizes</span>
+</a>
+<!-- Match Selection (Active) -->
+<a class="flex items-center gap-3 bg-[#181f33] text-[#69daff] rounded-xl px-4 py-3 shadow-[0_0_15px_rgba(47,248,1,0.1)] border-l-4 border-[#2ff801] transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">sports_soccer</span>
+<span class="font-['Inter'] font-bold uppercase tracking-[0.05em] text-[0.75rem]">Matches</span>
+</a>
+<!-- Review -->
+<a class="flex items-center gap-3 text-[#e1e4fa]/50 px-4 py-3 hover:bg-[#181f33]/30 transition-all group" href="#">
+<span class="material-symbols-outlined">visibility</span>
+<span class="font-['Inter'] font-bold uppercase tracking-[0.05em] text-[0.75rem]">Review</span>
+</a>
+</nav>
+<div class="mt-auto px-4">
+<button class="w-full py-3 bg-surface-container-highest rounded-xl text-[#e1e4fa]/70 font-bold text-xs uppercase tracking-widest hover:bg-surface-bright transition-all">
+                Save Draft
+            </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 flex flex-col min-h-screen">
+<!-- TopAppBar Context -->
+<header class="h-20 flex items-center justify-between px-12 bg-[#090e1c]/60 backdrop-blur-xl sticky top-0 z-30">
+<div>
+<h2 class="text-3xl font-bold tracking-tight text-on-surface">Match Selection</h2>
+<p class="text-on-surface-variant text-sm mt-1">Select the matches for your first Jornada (Matchday)</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex -space-x-2">
+<img class="w-8 h-8 rounded-full border-2 border-background" data-alt="avatar of a tournament organizer profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSJFL4DBdcBggA9_i5XJzGNESupsrmAYPdcWg8pc3Hks8dwPJrUre2biFuVot2QZHSc8DQ92RVg9mLvj25KUdTgrszZ7NFhfxfmAvosiZPDRJK2xeJfA31uty5K-BVfAGUd-Qj5dqbdnEZbxoLVaMyTyzbcnPLfg6zZXF6BKsWOnr7BAy0sUzD4iOGVxqLogKFtCNei2gBdLt3umP7LPmedi1aMnU-rwH1P06-Afs2nfNn-MXkyaHns1q9tRECE6EquH9YaJh2fGNb"/>
+</div>
+</div>
+</header>
+<div class="flex-1 p-12 flex gap-8">
+<!-- Left Side: API Search and Match List -->
+<div class="flex-1 space-y-8">
+<!-- API Search Bar -->
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary">search</span>
+<input class="w-full bg-surface-container-high border-none rounded-xl py-4 pl-12 pr-4 text-on-surface placeholder:text-on-surface-variant focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search leagues (e.g., Premier League, La Liga)..." type="text"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 flex gap-2">
+<span class="px-2 py-1 bg-surface-bright rounded text-[10px] text-primary font-bold tracking-tighter">API ACTIVE</span>
+</div>
+</div>
+<!-- Active Filter Tags -->
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs font-bold">Premier League</button>
+<button class="px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full text-xs hover:text-on-surface">Champions League</button>
+<button class="px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full text-xs hover:text-on-surface">Bundesliga</button>
+</div>
+<!-- Available Matches Grid -->
+<div class="grid grid-cols-1 gap-4">
+<!-- Match Card 1 -->
+<div class="bg-surface-container-low p-6 rounded-2xl flex items-center justify-between border-l-4 border-transparent hover:border-primary hover:bg-surface-container-high transition-all group">
+<div class="flex items-center gap-8 flex-1">
+<div class="text-center w-24">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest mb-1">Tomorrow</p>
+<p class="text-lg font-black text-on-surface">20:45</p>
+</div>
+<div class="flex items-center gap-6 flex-1 justify-center">
+<div class="flex items-center gap-3 w-40 justify-end">
+<span class="font-bold text-on-surface">Liverpool</span>
+<div class="w-10 h-10 bg-surface-bright rounded-full flex items-center justify-center p-2">
+<img data-alt="Liverpool football club logo red and white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqAi0CbtNk-66V0gA46wyVng33FVUbgD_swqvUfpZHOpgxmcG_J0sDFcog2RCEQtYzIkfplh6NQ3w_xIo8jr1O8ih3oTP4l9xu2BnwRea3CHIa65jNYKKA4tuosFnsbi_wpF3LrQ1yJ6j_R-Y9YSVhi1sJ7qsVabizEFbTKJyWv81qVHYrt2HPuNcuvSF-Nt1CFv5YnDAynJrAKgRPrWD4MPhruuBEi6Umazsre7hYb2xYIA5itRfzeeCGQ-lpQiVaAph5kJckELh9"/>
+</div>
+</div>
+<div class="px-3 py-1 bg-background rounded-lg text-primary-dim font-black text-xs">VS</div>
+<div class="flex items-center gap-3 w-40">
+<div class="w-10 h-10 bg-surface-bright rounded-full flex items-center justify-center p-2">
+<img data-alt="Manchester City football club logo blue and white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSrDSvgjefnGxtrk-QMPu-XZJUKHtm5RDN0wHbP7kvK-OL_yg3gKy-AfPFfGayfS44THiJVB5NF404-32Eh-TgPoQr2F98QMJ05ubmWpHBN3SWsDQ7NiDA0zIprh4ieAZW_MO1I675tbfGGE7hcSH2kX7X26lPDftVUFIFuzBSwscITY_C__LX0AdNlfN17SIwSJIXPFFqfX3kiArsF3wo8MU2hwyP2iK1WZ6W7XaPGDgbnaFugiFHKIdhP2w2o-ocVd5Gz5UtznjJ"/>
+</div>
+<span class="font-bold text-on-surface">Man City</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="text-right mr-4">
+<p class="text-[10px] text-secondary font-bold uppercase tracking-widest">HYPE 98%</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+<!-- Match Card 2 -->
+<div class="bg-surface-container-low p-6 rounded-2xl flex items-center justify-between border-l-4 border-primary bg-surface-container-high transition-all group">
+<div class="flex items-center gap-8 flex-1">
+<div class="text-center w-24">
+<p class="text-[10px] text-secondary font-bold uppercase tracking-widest mb-1">LIVE NOW</p>
+<div class="w-2 h-2 bg-secondary rounded-full mx-auto animate-pulse"></div>
+</div>
+<div class="flex items-center gap-6 flex-1 justify-center">
+<div class="flex items-center gap-3 w-40 justify-end">
+<span class="font-bold text-on-surface">Arsenal</span>
+<div class="w-10 h-10 bg-surface-bright rounded-full flex items-center justify-center p-2">
+<img data-alt="Arsenal football club logo red cannon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6IIVID3tZ4R0HstiY7QqrmM2jzVvgjdoWw5MmJqvCM-34qWDU1cVG_vjUczbePLCQJhawggI3HxpQ3hq3fS-nvaXic72Pd8m0Dgp4S9oNnfeXxX6W4Mmd5mmwDSqtOACRuL_3zRgPsbHrLYq20efT1XUVV11kxUVByxJIxVnz4i2CqdDInVpRnseejcpJsl_2m32JP_iCwzp9IZGXxFHnTzJXo4-kQavyUQ5_b1hjTCggJB3mSw-lukVhNTlphp0w77Y9WHZw1DFD"/>
+</div>
+</div>
+<div class="px-3 py-1 bg-background rounded-lg text-primary-dim font-black text-xs">VS</div>
+<div class="flex items-center gap-3 w-40">
+<div class="w-10 h-10 bg-surface-bright rounded-full flex items-center justify-center p-2">
+<img data-alt="Chelsea football club logo blue lion" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZzkcxrikwzw0-VGXvOwO9diPa8QOr1AnestdHT0ZJ5j_O1OUZu0ZIZdgsJ9lTvuzVLQMGzemIOJT9vU7oh0UanRyhN2Va0rpKgUx1MLqDXt3PFzv2UAl1Xfs6wCqDAJZfcKq2nJACCxZjPf_V5apwYR0fCTpkkhDapP9Im3iPteIu03anBWwzUBsOvPOFGrLHUrHO-sr8wXP9mhBWgDglOkpq2aaasHSk1gkHf1e351d9LGawhD-OzOHyKuDn3IrC6wx01U-XBBnv"/>
+</div>
+<span class="font-bold text-on-surface">Chelsea</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="text-right mr-4">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">SELECTED</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+<!-- Match Card 3 -->
+<div class="bg-surface-container-low p-6 rounded-2xl flex items-center justify-between border-l-4 border-transparent hover:border-primary hover:bg-surface-container-high transition-all group">
+<div class="flex items-center gap-8 flex-1">
+<div class="text-center w-24">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest mb-1">Sat 14 Oct</p>
+<p class="text-lg font-black text-on-surface">15:00</p>
+</div>
+<div class="flex items-center gap-6 flex-1 justify-center">
+<div class="flex items-center gap-3 w-40 justify-end">
+<span class="font-bold text-on-surface">Spurs</span>
+<div class="w-10 h-10 bg-surface-bright rounded-full flex items-center justify-center p-2">
+<img data-alt="Tottenham Hotspur football club logo navy cockerel" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3o5cTtDQnDXZbCNkQXoCqAy1c7QIcVwERvwPBdpDi_QKk9Ys8k8Di8dJN3MSiATYm3kxI8wIh2nrGKVMqqGjwqAUgZLCA55KbnxhfVW75BnXUCNNARutKHzDunv-KdApWGpU7bMTzF7WvRTIuMDHmCVTzJgoKbyQTot7hKu0aWapWskhDDfPfNME_Aheld_WFeVZ4KSoqKTCpm8LLUTKExWsWay9fFS-JM2zHwQ3tjpcArGhNLjNBUKUDMnJQoQ_GyZ0XxqS19VVU"/>
+</div>
+</div>
+<div class="px-3 py-1 bg-background rounded-lg text-primary-dim font-black text-xs">VS</div>
+<div class="flex items-center gap-3 w-40">
+<div class="w-10 h-10 bg-surface-bright rounded-full flex items-center justify-center p-2">
+<img data-alt="West Ham football club logo claret and blue hammers" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQZu63w7BAYe5UkCvzhT5PjiozNb8DmhdfeD6MuWdj30lenWn6XOOav-FFZKh4ILqXU3goAkXfxZbGKoRvUy9Q-4QO1HVL6E-ogOqTU3b13vBJKvOrn3kFB7tsTry4Mzbuv7n9dKoSjtUoaTC2FCkq0p0LkMI32rbgaLj21XxO0-IW75MwLNp-nXK_1JNF38bPBhh9-ON6jhmHPfAKFjdWnfRDBf5JDiooN2OdwI8CRQfTWP3BW60SKEA6HMy2o2MHYqPcpMUEu9Qi"/>
+</div>
+<span class="font-bold text-on-surface">West Ham</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="text-right mr-4">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">HYPE 72%</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Side: Summary Sidebar -->
+<aside class="w-80 space-y-6">
+<div class="bg-surface-container-high rounded-3xl p-6 glass-panel border border-outline-variant/10 shadow-[0_0_40px_rgba(105,218,255,0.05)]">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-xl font-bold">Selected Matches</h3>
+<span class="bg-primary text-on-primary font-black px-2 py-1 rounded-lg text-sm">1</span>
+</div>
+<div class="space-y-4 mb-8">
+<!-- Selected Match Item -->
+<div class="flex items-center justify-between p-3 bg-surface-bright rounded-xl group">
+<div class="flex items-center gap-3">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 bg-background rounded-full flex items-center justify-center text-[10px]">A</div>
+<div class="w-6 h-6 bg-background rounded-full flex items-center justify-center text-[10px]">C</div>
+</div>
+<span class="text-xs font-bold truncate max-w-[120px]">Arsenal vs Chelsea</span>
+</div>
+<button class="text-tertiary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-sm">close</span>
+</button>
+</div>
+<!-- Empty State Filler -->
+<div class="border-2 border-dashed border-outline-variant/20 rounded-xl p-4 text-center">
+<p class="text-xs text-on-surface-variant italic">Add more matches to increase the prize pool</p>
+</div>
+</div>
+<div class="pt-6 border-t border-outline-variant/20 space-y-3">
+<div class="flex justify-between text-xs">
+<span class="text-on-surface-variant">Jornada 1 Potential Points</span>
+<span class="font-bold">150 pts</span>
+</div>
+<div class="flex justify-between text-xs">
+<span class="text-on-surface-variant">Banter Multiplier</span>
+<span class="text-secondary font-bold">x1.2</span>
+</div>
+</div>
+</div>
+<!-- Banter Rail (Mini Preview) -->
+<div class="bg-surface-container-low rounded-3xl p-6 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-sm">forum</span>
+<h4 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Real-time Banter</h4>
+</div>
+<div class="space-y-3">
+<div class="flex gap-2">
+<div class="w-6 h-6 bg-surface-bright rounded-full"></div>
+<div class="bg-surface-container-high rounded-lg p-2 flex-1">
+<p class="text-[10px] leading-tight text-on-surface/80">"Choosing City is such a meta move lol"</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+</div>
+<!-- Sticky Navigation Footer -->
+<footer class="h-24 bg-surface-container-low border-t border-outline-variant/10 flex items-center justify-between px-12 mt-auto">
+<button class="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-on-surface-variant hover:text-on-surface transition-all">
+<span class="material-symbols-outlined">arrow_back</span>
+                Back
+            </button>
+<div class="flex items-center gap-4">
+<p class="text-xs text-on-surface-variant mr-4">Step 4 of 5</p>
+<button class="px-8 py-3 bg-gradient-to-br from-primary to-primary-container rounded-xl text-on-primary font-black tracking-tight hover:shadow-[0_0_20px_rgba(105,218,255,0.4)] transition-all">
+                    Review Tournament
+                </button>
+</div>
+</footer>
+</main>
+</body></html>
