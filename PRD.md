@@ -1,91 +1,241 @@
-# PRD: BanterBot Sports
+# BanterBot Sports — PRD v2
 
-## Contexto e Intent
+**Versión**: 2.0
+**Fecha**: 2026-03-25
+**Estado**: En revisión
+**Autor**: Kevin Salomon
+
+---
+
+## Historial de versiones
+
+| Versión | Fecha | Cambios |
+|---------|-------|---------|
+| 1.0 | 2026-03-24 | Versión inicial — spec completa del sistema |
+| 2.0 | 2026-03-25 | Post-QA funcional: fallas encontradas, gaps, mejoras UX, especificación UI/UX completa |
+
+---
+
+## 1. Resumen del Producto
 
 BanterBot Sports es la evolución de un sistema de quinielas de fútbol usado por un grupo de amigos desde la **Eurocopa 2016** (Excel) y el **Mundial Rusia 2018** (app .NET Core 2.0). El objetivo es modernizar y extender esa app a **.NET 10 LTS** con todas las reglas reales del juego ya validadas en producción, incorporando:
 
 1. Integración con API externa para obtener partidos y resultados en tiempo real.
 2. Un bot de Telegram con IA que permite a los jugadores recibir y enviar predicciones desde su teléfono, por texto o por audio.
+3. Un motor de banter generado por IA que envía mensajes personalizados al cerrar cada jornada.
 
 El punto de partida es el repositorio legado: [Adriansillo/Quinielas](https://github.com/Adriansillo/Quinielas) (.NET Core 2.0 + PostgreSQL).
 
 ---
 
-## Estructura de la Quiniela
+## 2. Estado Actual del Sistema (post-QA)
+
+QA funcional realizado el 2026-03-25 con la app corriendo en Docker Compose (PostgreSQL + Web). Los resultados reflejan análisis estático de código + pruebas en vivo.
+
+| Módulo | Estado | Notas |
+|--------|--------|-------|
+| Auth (register/login/logout) | Funcional | Probado en vivo — sin errores |
+| Creación de torneos | Funcional | Bug menor: sin try/catch en POST, stack trace expuesto si falla |
+| Dashboard de torneo | Funcional | Muestra ranking y jornadas correctamente |
+| Jornadas (crear, abrir, cerrar) | Funcional | Sin partidos asignados todavía |
+| Asignación de partidos vía API-Football | Bloqueado | API key vacía en configuración |
+| Predicciones vía web | No probado | Requiere partidos asignados |
+| Bot de Telegram | No funcional | TelegramUpdateWorker no existe — solo stub |
+| Sincronización de resultados | No funcional | ResultSyncService incompleto — sin lógica real |
+| Cálculo de puntos (resultado + marcador exacto) | Implementado | PuntuacionService tiene la lógica core |
+| Cálculo de puntos de goles de jornada | No implementado | Método stub vacío en PuntuacionService |
+| Tabla de posiciones SignalR | Implementado | Hub y lógica de broadcast presentes |
+| Distribución de premios | Implementado | Incluyendo manejo de empates |
+| Banter por IA | Parcial | Generación funciona, pero usa UserId en lugar de NombreDisplay |
+| Páginas de error (404/500) | No funcional | Body vacío en 404, stack trace expuesto en 500 |
+| Home page | No funcional | Muestra contenido default de ASP.NET Core |
+
+---
+
+## 3. Contexto y Objetivos
+
+### Contexto
 
 La quiniela es un **torneo de largo aliento**, similar a una liga de fútbol:
 
-- El **organizador** crea el torneo, define la cantidad de jornadas y **selecciona qué partidos (obtenidos de la API) corresponden a cada jornada**. No crea los partidos manualmente.
+- El **organizador** crea el torneo, define la cantidad de jornadas y selecciona qué partidos (obtenidos de la API) corresponden a cada jornada. No crea los partidos manualmente.
 - Los partidos de **fase de grupos** están disponibles desde el inicio del torneo.
 - Los partidos de **fase final** (octavos, cuartos, semis, final) se cargan progresivamente conforme se conocen los equipos clasificados — el organizador los asigna a la jornada correspondiente cuando ya tienen contendientes definidos.
 - Los **jugadores** participan durante toda la duración del torneo.
 - Hay una **tabla general** que acumula puntos de todas las jornadas.
 - Al final del torneo, los lugares del podio reciben su porcentaje del prize pool.
 
+### Objetivos del Producto
+
+1. Reemplazar completamente el sistema legado con una app moderna en .NET 10.
+2. Mantener la experiencia del juego que ya funciona en producción desde 2018.
+3. Agregar Telegram como canal primario de interacción para los jugadores.
+4. Automatizar la obtención de partidos y resultados vía API-Football.
+5. Introducir IA para mejorar la experiencia (banter + extracción de predicciones).
+
 ---
 
-## Sistema de Puntos (configurable por el organizador)
+## 4. Usuarios y Roles
 
-| Concepto | Puntos por defecto | Descripción |
+### Roles del sistema
+
+| Rol | Descripción |
+|-----|-------------|
+| Organizador | Crea y administra torneos. Puede ser también jugador en su propio torneo. |
+| Jugador | Participa en torneos, ingresa predicciones, ve su ranking. |
+| Administrador | Rol de sistema — acceso total (solo para mantenimiento técnico). |
+
+### Permisos por rol
+
+| Acción | Organizador | Jugador |
+|--------|-------------|---------|
+| Crear torneo | Si | No |
+| Invitar jugadores | Si | No |
+| Abrir/cerrar jornada | Si | No |
+| Asignar partidos a jornada | Si | No |
+| Ingresar resultados oficiales | Si | No |
+| Extender deadline de jornada | Si (antes del cierre) | No |
+| Ingresar predicciones | Si (si es también jugador) | Si |
+| Ver ranking y estadísticas | Si | Si |
+| Configurar puntos del torneo | Si | No |
+| Configurar distribución de premios | Si | No |
+| Vincular cuenta Telegram | Si | Si |
+
+---
+
+## 5. Funcionalidades del Sistema
+
+### 5.1 Autenticacion y Cuentas
+
+- Registro con email y contrasena.
+- Login y logout.
+- NombreDisplay personalizable por usuario (se usa en rankings, banter, Telegram).
+- Vinculacion de cuenta con Telegram via flujo `/start` en el bot.
+- Perfil de usuario con estado de vinculacion Telegram.
+
+### 5.2 Gestion de Torneos
+
+- Crear torneo con: nombre, cantidad de jornadas, monto de inscripcion, configuracion de puntos, configuracion de premios.
+- Invitar jugadores con link cifrado (expiracion de 7 dias).
+- Dashboard del torneo: ranking acumulado, estado de cada jornada, info general.
+- El organizador puede extender el deadline de una jornada manualmente antes del primer kick-off.
+- El organizador puede participar como jugador en su propio torneo.
+
+### 5.3 Gestion de Jornadas
+
+- Crear jornadas al momento de crear el torneo (segun cantidad configurada).
+- Asignar partidos a cada jornada desde el catalogo de API-Football.
+- Busqueda de competiciones por ID o por dropdown de competiciones populares (Liga MX, Champions League, Premier League, etc.).
+- Abrir jornada: cambia estado a "Abierta", habilita predicciones, envia lista de partidos por Telegram.
+- El DeadlineUtc se asigna automaticamente al primer kick-off de la jornada al momento de abrirla.
+- Cerrar jornada: calcula puntos, actualiza ranking, envia banter por Telegram.
+- Ingresar resultados oficiales: solo el organizador, solo despues del cierre.
+- Sincronizacion automatica de resultados via API-Football: polling cada 5 minutos durante jornada activa, con fallback a ingreso manual.
+
+### 5.4 Predicciones
+
+#### Via web
+
+- Formulario por jornada: un input por partido (goles equipo local y visitante).
+- Campo adicional: goles totales de la jornada (puede ser ingresado manualmente o auto-calculado sumando las predicciones).
+- Countdown visible cuando quedan menos de 2 horas para el cierre (badge animado, rojo si < 30 minutos).
+- Indicador de estado por partido: "Sin predecir" / "Guardado" / "Cerrado".
+- Si el jugador predijo por Telegram, la web muestra badge "Prediccion recibida por Telegram".
+- Toast de confirmacion al guardar predicciones exitosamente.
+
+#### Via Telegram
+
+- El jugador envia predicciones en texto libre: "Argentina 2-0 Brasil, Francia 1-1 Alemania".
+- O envia un mensaje de voz — Whisper transcribe, luego Claude parsea.
+- Flujo: mensaje del usuario → Claude extrae predicciones con confidence score → confirmacion al usuario → el usuario confirma o corrige → guardado en base de datos.
+- Confidence threshold: 0.75 (si Claude no llega a ese umbral, pide al usuario que reformule).
+- Confirmacion: "Prediccion registrada: Argentina 2-0 Brasil, Francia 1-1 Alemania".
+- El jugador puede corregir hasta el deadline (primer kick-off de la jornada).
+
+### 5.5 Puntuacion
+
+El sistema de puntos tiene tres conceptos, todos configurables por el organizador:
+
+| Concepto | Puntos por defecto | Descripcion |
 |---|---|---|
 | Resultado correcto | 1 pt | Acertar ganador o empate (sin importar el marcador exacto) |
 | Marcador exacto | 1 pt | Acertar los goles exactos de ambos equipos |
-| Goles de la jornada | 3 pts | El jugador pronostica la suma total de goles de los partidos de la jornada. Si coincide con la realidad, gana los puntos |
+| Goles de la jornada | 3 pts | El jugador pronostica la suma total de goles de todos los partidos de la jornada |
 
-> Los valores de puntos por cada concepto son **configurables por el organizador**.
+**Especificacion detallada — Goles de la jornada:**
+- El jugador ingresa un numero de goles totales esperados para la jornada.
+- Si la suma de goles oficiales de TODOS los partidos de la jornada es igual al numero pronosticado, el jugador gana los puntos completos.
+- No hay puntos parciales — es todo o nada.
+- El calculo se hace sobre todos los partidos de la jornada, no solo los predichos por el jugador.
+- El jugador puede optar por no predecir goles de jornada (no puntua ni descuenta).
 
-**Nota sobre goles de jornada**: el jugador puede ingresar una suma personalizada o dejar que la app sume automáticamente sus predicciones de goles. Si la suma de goles oficiales coincide con su pronóstico, gana los puntos.
+**Calculo de puntos:**
+- Automatico al cerrar la jornada.
+- SignalR para actualizacion del ranking en tiempo real (< 1 segundo despues del calculo).
 
----
+### 5.6 Premios
 
-## Premio y Distribución (configurable)
+- Distribucion porcentual configurable por el organizador (ej: 1° 70%, 2° 20%, 3° 10%).
+- Manejo de empates: el premio de las posiciones empatadas se divide en partes iguales entre los empatados.
+- Solo las posiciones configuradas reciben premio — el resto no cobra.
+- La suma de porcentajes debe ser exactamente 100% (validacion en el formulario).
+- La app no procesa pagos reales — la distribucion se informa, el organizador coordina la entrega fuera del sistema.
 
-- Cada jugador aporta un **monto fijo de inscripción**.
-- El organizador configura **cuántos lugares reciben premio** y **qué porcentaje** corresponde a cada uno.
-- Ejemplo Rusia 2018: 3 ganadores → 1° 70%, 2° 20%, 3° 10%.
-- En caso de **empate entre posiciones**, el premio de esos lugares se divide en partes iguales.
+### 5.7 Bot de Telegram
 
----
+**Vinculacion de cuenta:**
+- El jugador hace `/start` en el bot.
+- El bot genera un token de vinculacion (validez: 15 minutos).
+- El jugador lo usa en la web para asociar su cuenta Telegram con su cuenta del sistema.
+- Sin vinculacion, el jugador puede ingresar predicciones solo via web.
 
-## Deadlines y Bloqueo de Predicciones
+**Notificaciones automaticas:**
+- Al abrir jornada: el bot envia la lista de partidos a predecir al grupo/canal del torneo.
+- 1 hora antes del deadline: el bot avisa a cada jugador que aun no predicho (mensaje privado).
+- Al cerrar jornada: el bot envia ranking de la jornada + banter a cada jugador.
 
-- Los jugadores tienen hasta el **inicio del primer partido de la jornada** para ingresar sus predicciones (vía web o Telegram).
-- Una vez iniciado el primer partido, los campos de predicción se **bloquean para los jugadores**.
-- **Solo el organizador** puede ingresar o modificar marcadores una vez bloqueada la jornada.
-- El organizador **puede ser también un jugador**.
+**Predicciones:**
+- Texto libre: "Argentina 2-0 Brasil, Francia 1-1 Alemania".
+- Audio (OGG de Telegram): Whisper transcribe → luego el mismo flujo de texto.
+- Confirmacion: "Prediccion registrada: Argentina 2-0 Brasil".
+- Correccion permitida hasta el deadline.
 
----
-
-## Flujo de Predicciones vía Telegram
-
-El canal principal de interacción de los **jugadores** con el sistema es Telegram:
+**Formato de la lista de partidos (apertura de jornada):**
 
 ```
-1. Apertura de jornada
-      ↓
-2. Bot envía mensaje a cada jugador con la lista de partidos a predecir
-      ↓
-3. El jugador responde:
-     - Texto: "Argentina 2-0 Brasil, Francia 1-1 Alemania, ..."
-     - Audio: mensaje de voz con los mismos datos
-      ↓
-4. Si es audio → transcripción automática (Whisper API)
-      ↓
-5. Claude API analiza el texto y extrae las predicciones
-      ↓
-6. El bot confirma las predicciones al jugador y las sube al sistema
-      ↓
-7. El jugador puede corregir hasta el deadline (primer kick-off de la jornada)
+Jornada 3 — BanterBot Sports 2026
+Partidos a predecir:
+
+1. Argentina vs Brasil — Sab 25/03 15:00 UTC
+2. Francia vs Alemania — Sab 25/03 18:00 UTC
+3. España vs Italia — Dom 26/03 14:00 UTC
+
+Deadline: Sab 25/03 15:00 UTC
+Respondé con tus predicciones: "Argentina 2-0, Francia 1-1, España 2-1"
 ```
 
-**Vinculación de cuenta Telegram:**
-- Al registrarse o en su perfil, el jugador vincula su cuenta de Telegram.
-- El flujo de vinculación: el usuario hace `/start` en el bot → el bot asocia su `telegram_user_id` con su cuenta en el sistema.
-- Sin vinculación, el jugador puede ingresar predicciones solo vía web.
+### 5.8 Motor de Banter (IA)
+
+- Claude API genera mensajes de maximo 280 caracteres por jugador.
+- Usa el NombreDisplay del usuario (no el UserId ni el email).
+- Envio automatico via Telegram al cerrar cada jornada.
+- Inputs para el prompt: nombre del jugador, su ranking en la jornada, sus predicciones vs resultados reales, posicion en el torneo general.
+- Modo de banter configurable por torneo: suave / normal / picante.
+- Si el jugador no tiene Telegram vinculado, el banter se muestra solo en la web.
+
+### 5.9 Notificaciones y Comunicacion
+
+| Evento | Canal | Destinatario |
+|--------|-------|--------------|
+| Apertura de jornada | Telegram (grupo/canal) | Todos los jugadores del torneo |
+| 1 hora antes del deadline | Telegram (privado) | Jugadores que aun no predicho |
+| Cierre de jornada | Telegram (privado) | Todos los jugadores vinculados |
+| Prediccion guardada | Web (toast) | El jugador que predijo |
+| Actualizacion de ranking | Web (SignalR) | Todos los que estan en el dashboard |
 
 ---
 
-## Scope
+## 6. Flujos Criticos (User Journeys)
 
 ### In Scope (MVP)
 - Registro/login de usuarios (migrar el sistema de auth existente)
@@ -128,80 +278,469 @@ El canal principal de interacción de los **jugadores** con el sistema es Telegr
 - Sistema de logros/trofeos (Achievements/Trophies) — post-MVP
 - Ranking global cross-torneo (Career Rank) — post-MVP. El dashboard MVP muestra únicamente la posición del jugador dentro de cada torneo activo.
 
+### 6.1 Flujo: Crear y arrancar un torneo
+
+```
+1. Organizador se registra / hace login
+2. Click en "Crear Torneo"
+3. Wizard paso 1: nombre, cantidad de jornadas, monto de inscripcion
+4. Wizard paso 2: puntos por resultado, por marcador exacto, por goles de jornada
+5. Wizard paso 3: distribucion de premios (porcentajes, suma = 100%)
+6. Wizard paso 4: revision y confirmacion → torneo creado
+7. Organizador copia y comparte el link de invitacion (expira en 7 dias)
+8. Jugadores se registran y usan el link de invitacion para unirse
+9. Organizador selecciona la jornada 1 → asigna partidos desde API-Football
+10. Organizador abre la jornada → DeadlineUtc se setea automaticamente
+11. Bot envia lista de partidos a todos los jugadores por Telegram
+```
+
+### 6.2 Flujo: Predecir por web
+
+```
+1. Jugador hace login
+2. Va al dashboard del torneo → ve jornada abierta
+3. Click en "Hacer predicciones"
+4. Ve la lista de partidos con inputs (goles local / visitante)
+5. Ve el countdown del deadline
+6. Ingresa predicciones y (opcionalmente) goles totales de la jornada
+7. Click en "Guardar predicciones"
+8. Toast de confirmacion: "Predicciones guardadas correctamente"
+9. El estado de cada partido cambia a "Guardado"
+```
+
+### 6.3 Flujo: Predecir por Telegram
+
+```
+1. Jugador hace /start en el bot (si no lo vinculo antes)
+2. Recibe la lista de partidos por Telegram al abrirse la jornada
+3. Responde con texto libre: "Argentina 2-0, Francia 1-1, España 2-1"
+4. Claude extrae las predicciones con confidence score >= 0.75
+5. Bot responde: "Entendi estas predicciones:
+   - Argentina 2-0 Brasil
+   - Francia 1-1 Alemania
+   - España 2-1 Italia
+   Confirmas? (Si/No)"
+6. Jugador responde "Si" → predicciones guardadas
+7. Si responde "No" → bot pide que reformule
+8. El jugador puede corregir hasta el deadline enviando un nuevo mensaje
+
+Flujo alternativo — audio:
+3b. Jugador envia mensaje de voz
+4b. Whisper transcribe el audio a texto
+5b. Se retoma el flujo desde el paso 4
+```
+
+### 6.4 Flujo: Cerrar jornada y distribuir premios
+
+```
+1. Todos los partidos de la jornada terminaron (o el organizador cierra manualmente)
+2. Sistema calcula puntos para todos los jugadores:
+   a. Por cada partido: resultado correcto + marcador exacto
+   b. Goles de jornada: suma goles oficiales vs pronostico
+3. Ranking de la jornada actualizado en tiempo real via SignalR
+4. Claude genera mensaje de banter para cada jugador
+5. Bot envia banter personalizado a cada jugador por Telegram
+6. Bot envia ranking de la jornada al grupo/canal del torneo
+7. Si es la ultima jornada del torneo:
+   a. Se calcula el ranking final acumulado
+   b. Se determina la distribucion de premios (con manejo de empates)
+   c. Bot envia ranking final + mensajes de cierre del torneo
+```
+
 ---
 
-## Stack
+## 7. Requerimientos No Funcionales
 
-| Capa | Tecnología | Justificación |
+### 7.1 Rendimiento
+
+- Respuesta de endpoints web: < 500ms (p95).
+- Sincronizacion de resultados: polling cada 5 minutos durante jornada activa.
+- SignalR: actualizacion de ranking < 1 segundo despues de calcular puntos.
+- Retry policy para API-Football: 3 intentos con backoff exponencial.
+
+### 7.2 Disponibilidad
+
+- SLA objetivo: 99% uptime mensual.
+- Base de datos: PostgreSQL con backup diario.
+- Bot de Telegram: webhook con retry automatico en caso de falla.
+- Modo degradado: si API-Football no responde, el organizador puede ingresar resultados manualmente.
+
+### 7.3 Seguridad
+
+- Tokens de invitacion cifrados con expiracion de 7 dias.
+- Tokens de vinculacion de Telegram con expiracion de 15 minutos.
+- Rutas protegidas por autenticacion (401 redirige a login).
+- Rutas de organizador protegidas por autorizacion (403 redirige a AccessDenied).
+- Rate limiting en webhook de Telegram (por chatId) para prevenir flood.
+- No exponer stack traces en produccion — configurar `UseExceptionHandler` correctamente.
+- Secrets en environment variables o secret manager — nunca hardcodeados.
+
+### 7.4 Escalabilidad (limites actuales del MVP)
+
+- Maximo partidos por jornada: 50.
+- Maximo participantes por torneo: 200.
+- Maximo torneos simultaneos: sin limite (revisable post-MVP segun metricas).
+- Un solo servidor — no se requiere escalabilidad horizontal para el MVP.
+
+---
+
+## 8. Diseno y Experiencia de Usuario
+
+### 8.1 Principios de Diseno
+
+- **Mobile-first, responsive**: la experiencia en celular debe ser igual de completa que en desktop.
+- **Deportivo pero profesional**: palette de colores energica, tipografia limpia.
+- **Feedback inmediato**: toasts, loading states, indicadores de estado en tiempo real.
+- **Orientacion en la navegacion**: breadcrumbs en todas las paginas internas.
+- **Confirmacion antes de acciones destructivas**: cerrar jornada, finalizar torneo.
+- **Mensajes de error especificos y accionables**: no mostrar "Error 500", sino "No se pudo guardar la prediccion — intenta de nuevo".
+
+### 8.2 Paginas Requeridas
+
+| # | Pagina | Descripcion |
+|---|--------|-------------|
+| 1 | Home (no autenticado) | Hero + CTA + como funciona + social proof |
+| 2 | Home (autenticado) | Mis torneos recientes + accesos rapidos |
+| 3 | Mis Torneos | Lista de torneos con estado + boton crear |
+| 4 | Crear Torneo | Wizard de 4 pasos |
+| 5 | Dashboard del Torneo | Ranking + jornadas + info general |
+| 6 | Detalle de Jornada | Partidos + predicciones + resultados + gestion (organizador) |
+| 7 | Formulario de Predicciones | Lista de partidos con inputs + countdown + submit |
+| 8 | Configuracion de Telegram | Vincular cuenta + estado de vinculacion |
+| 9 | Historial | Torneos pasados + estadisticas basicas |
+| 10 | Perfil de Usuario | NombreDisplay + email + cambio de contrasena |
+| 11 | Error 404 | Pagina custom con CTA a "Mis Torneos" |
+| 12 | Error 500 | Pagina custom sin stack trace |
+
+### 8.3 Componentes de UI Clave
+
+- **Navbar**: logo + "Mis Torneos" + perfil dropdown (avatar + NombreDisplay).
+- **Countdown timer**: visible en el formulario de predicciones cuando quedan < 2 horas, animado, rojo pulsante si < 30 minutos.
+- **Badge de estado de jornada**: Abierta (verde) / Cerrada (gris) / Pendiente de partidos (amarillo) / Finalizada (azul).
+- **Tabla de ranking**: posicion + NombreDisplay + puntos + estado de prediccion (icono).
+- **Toast notifications**: confirmacion de acciones exitosas y errores.
+- **Progress indicator**: en el wizard de creacion de torneo (paso 1 de 4).
+- **Modal de confirmacion**: antes de cerrar jornada o finalizar torneo.
+
+### 8.4 Prompt de Diseno para AI
+
+El siguiente prompt esta preparado para usar con v0.dev, Figma AI, o similar:
+
+```
+You are designing a modern web UI for BanterBot Sports, a competitive football pools application
+(similar to fantasy football but with group-based predictions and AI banter engine).
+
+Target: Medium-sized user base (50-200 players per tournament), desktop-first but responsive mobile.
+
+CORE PAGES TO DESIGN:
+
+1. **Landing / Home** (unauthenticated)
+   - Hero section with CTA: "Join a Tournament" or "Create One"
+   - Featured tournaments carousel (popular/active)
+   - Brief explanation of how the game works
+   - Social proof: "1,234 players in 45 active tournaments"
+   - Call-to-action buttons prominent
+
+2. **Tournament Dashboard** (authenticated, main view)
+   Left sidebar OR top nav:
+     - Logo/branding (BanterBot with soccer ball icon)
+     - User profile dropdown (avatar + name)
+     - "My Tournaments" breadcrumb/nav
+
+   Main content (2-column layout):
+     Left column (wider):
+       - Tournament name + status badge (Active/Closed/Pending)
+       - Current round/Jornada info: "Jornada 3 of 8 — Closes in 2h 34m" (countdown timer)
+       - List of all rounds (jornadas) with status indicators:
+         Completed, Open for predictions, Closed, Pending matches
+       - Quick action buttons: "Make predictions" (if open), "View results" (if closed)
+
+     Right column (narrower):
+       - Leaderboard / Rankings table (sortable by points)
+         Name | Prediction Status | Total Points | Prize Placement
+       - Your current rank highlighted
+       - Prize pool info: "Pool: $450 — 1st: $315, 2nd: $90, 3rd: $45"
+
+3. **Make Predictions Form** (heart of the app)
+   Header:
+     - Tournament name + Jornada number
+     - Deadline countdown: "CLOSES IN 45 MINUTES" (red if < 1 hour)
+     - "You have X/Y predictions entered"
+
+   Match list (card-based or table):
+     Per match:
+       [Team Logo] Team A vs Team B [Team Logo]
+       Date/Time: Sat, Mar 25 @ 3:00 PM UTC
+       Your prediction: [Input: Goals] - [Input: Goals]
+       Previous prediction (if exists): "You predicted 2-1"
+       Official result (if match played): "Final: 2-0"
+       Points earned (if completed): "+3 pts" (green highlight)
+
+   Summary section:
+     Total goals predicted: 24 (auto-sum toggle)
+     "Submit Predictions" button (large, green)
+     "Cancel" link
+
+4. **Jornada/Round Details** (organizer view)
+   Two tabs: "Matches" | "Standings"
+
+   Tab 1 - Matches:
+     - Form to add match from API-Football
+     - Search box: "Search by league ID (e.g., 128 for Liga MX)"
+     - OR: Dropdown of popular leagues (with icons)
+     - Match list with status badges (Scheduled/Live/Final)
+     - Enter results form (organizer-only, green outline)
+       [Team] [Goals] - [Goals] [Team]
+
+   Tab 2 - Standings:
+     - Leaderboard for THIS round only
+     - Per player: predictions count, points earned THIS round, cumulative
+     - Red highlight if player has not predicted yet
+
+5. **Create Tournament** (wizard)
+   Step 1: Basic Info
+     - Tournament name (text input, 2-200 chars)
+     - Number of rounds (spinner, 1-30)
+     - Entry fee (currency input, optional)
+
+   Step 2: Scoring Rules (card layout)
+     - Correct Result: [1-50] points
+     - Exact Score: [1-50] points
+     - Total Goals Prediction: [1-50] points
+
+   Step 3: Prize Distribution (table)
+     Position | Percentage
+     1st      | [50] %
+     2nd      | [30] %
+     3rd      | [20] %
+     "+ Add Position" button
+
+     Status: "Total assigned: 100%" or "Must sum to 100%"
+
+   Step 4: Review and Create
+     Summary card with all settings
+     "Create Tournament" button
+     "Edit" links to go back
+
+6. **Telegram Integration Modal / Section**
+   Card in sidebar or settings page:
+     - "Link Telegram Account"
+     - QR code or link to Telegram bot
+     - Status: "Not linked" or "Linked as @username"
+     - "Send me predictions" checkbox (opt-in to receive match list daily)
+
+DESIGN SYSTEM AND VISUAL LANGUAGE:
+
+Color Palette:
+  - Primary (action): #1E40AF (deep blue, trust/authority)
+  - Secondary (sport): #16A34A (soccer field green)
+  - Accent (banter): #EA580C (orange, playful/energetic)
+  - Success: #22C55E (bright green, wins)
+  - Warning: #EAB308 (yellow, deadlines)
+  - Danger: #EF4444 (red, closed/failed)
+  - Neutral: #F3F4F6 (light gray), #1F2937 (dark gray)
+
+Typography:
+  - Headlines: Montserrat or Poppins Bold (sporty, modern)
+  - Body: Inter or Segoe UI (clean, readable)
+  - Sizes: H1=32px, H2=24px, Body=16px, Small=14px
+
+Iconography:
+  - Material Design icons or similar (soccer ball, trophy, clock, user, etc.)
+  - Custom sport icons for each match (home/away team badges from real clubs)
+
+Spacing and Layout:
+  - 8px base unit grid
+  - Generous padding in cards (24px)
+  - Max-width container: 1200px
+  - Mobile breakpoint: 768px
+
+Interactive Elements:
+  - Buttons: rounded 6px, shadow on hover, smooth transition
+  - Inputs: border 1px #D1D5DB, rounded 4px, focus ring 2px #1E40AF
+  - Badges: rounded full, font-weight 600
+  - Countdown timer: animated, red pulsing if < 30 min
+
+Responsive Design:
+  - Desktop (>1024px): 3-column layout (nav sidebar, main content, secondary panel)
+  - Tablet (768-1024px): 2-column (collapsible nav, main + panel stacked)
+  - Mobile (<768px): Single column, sticky header with hamburger nav, bottom CTA
+
+ADVERTISING SPACES (important for monetization):
+  - Header banner (728x90px) above tournament name — "Bet Responsibly" sports brands
+  - Right sidebar (300x250px) below leaderboard — "Premium Tournament Stats"
+  - In-feed native ads between jornada list items (1 per 5 items)
+  - Telegram ad: bottom of daily matches message (text-only, non-intrusive)
+
+ACCESSIBILITY:
+  - WCAG 2.1 AA compliance
+  - High contrast mode support
+  - Keyboard navigation throughout
+  - Semantic HTML, ARIA labels for icons
+  - Form error messages linked to inputs
+
+TONE AND MICROCOPY:
+  - Friendly, sporty, slightly irreverent Argentine Spanish (if Spanish-focused)
+  - Short, punchy CTAs: "Make your picks", "Lock it in", "Dale!"
+  - Error messages: helpful, not blaming ("Match starts in 5 min — predicting closes then")
+
+This is a B2C SaaS product. Make it feel modern, trustworthy, and FUN. Users should feel the game energy.
+```
+
+### 8.5 Espacios Publicitarios
+
+| Espacio | Dimensiones | Ubicacion | Formato |
+|---------|-------------|-----------|---------|
+| Header banner | 728x90px | Sobre el nombre del torneo en cada pagina autenticada | Display |
+| Sidebar | 300x250px | Debajo del ranking en el dashboard del torneo | Display |
+| In-feed nativo | Ancho completo | 1 ad cada 5 items en listados de jornadas | Nativo |
+| Telegram | Texto | Al pie de los mensajes de apertura de jornada | Texto |
+
+Todos los espacios deben respetar WCAG 2.1 y no interferir con la navegacion principal ni con el formulario de predicciones.
+
+---
+
+## 9. Backlog de Fixes (post-QA)
+
+### P0 — Bloqueantes para funcionalidad completa
+
+| # | Fix | Archivo(s) | Impacto |
+|---|-----|-----------|---------|
+| 1 | Implementar TelegramUpdateWorker | `BanterBotSports.Web/Hosted/TelegramUpdateWorker.cs` | Telegram 100% inoperativo |
+| 2 | Completar ResultSyncService | `BanterBotSports.Integrations/Hosted/ResultSyncService.cs` | Resultados sin sincronizacion automatica |
+| 3 | Completar WhisperService | `BanterBotSports.Integrations/Telegram/WhisperService.cs` | Predicciones por audio no funcionan |
+| 4 | Configurar API-Football key | `.env` / `appsettings.json` | Sin key no se asignan partidos a jornadas |
+
+### P1 — Bugs funcionales
+
+| # | Fix | Archivo(s) | Impacto |
+|---|-----|-----------|---------|
+| 5 | Agregar try/catch en TorneoController.Nuevo(POST) | `Web/Controllers/TorneoController.cs` | Stack trace expuesto al usuario si falla la creacion |
+| 6 | Implementar calculo de puntos de Goles de Jornada | `BL/Services/PuntuacionService.cs` | Funcionalidad prometida completamente faltante |
+| 7 | Asignar DeadlineUtc automaticamente al abrir jornada | `BL/Services/JornadaService.cs` | Deadline nunca se asigna — predicciones nunca se bloquean |
+| 8 | Corregir NombreDisplay en BanterDispatchService | `BanterAI/BanterDispatchService.cs` | Banter muestra UserId en lugar del nombre del jugador |
+| 9 | Bajar confidence threshold a 0.75 | `BanterAI/PrediccionExtractionService.cs` | Predicciones validas son rechazadas (threshold actual: 0.95) |
+| 10 | Implementar SendMatchesListAsync en TelegramBotService | `Integrations/Telegram/TelegramBotService.cs` | Jugadores no reciben lista de partidos al abrirse la jornada |
+
+### P2 — UX y calidad
+
+| # | Fix | Impacto |
+|---|-----|---------|
+| 11 | Reemplazar home page con contenido real | Primera impresion rota — muestra template de ASP.NET |
+| 12 | Implementar paginas 404 y 500 custom | Pantalla en blanco o stack trace al usuario |
+| 13 | Agregar breadcrumbs en navegacion interna | Usuario se pierde en la jerarquia del sitio |
+| 14 | Modal de confirmacion antes de cerrar jornada | Prevenir cierres accidentales por parte del organizador |
+| 15 | Dropdown de competiciones populares en busqueda de partidos | Busqueda por ID de liga no es intuitiva para el organizador |
+| 16 | Countdown animado en formulario de predicciones | Falta de urgencia visual — usuarios pierden el deadline |
+| 17 | Toast de confirmacion al guardar prediccion | El jugador no sabe si la prediccion fue guardada |
+
+---
+
+## 10. Roadmap
+
+### MVP Completo (proximo ciclo de desarrollo)
+
+Objetivo: sistema funcionando de punta a punta con partidos reales.
+
+- Todos los fixes P0 y P1 del backlog.
+- UI/UX basico implementado con Bootstrap 5 o Tailwind CSS.
+- QA funcional completo end-to-end con API-Football en modo live.
+- Al menos un torneo completo de prueba ejecutado.
+
+### v1.1 — Post-MVP
+
+- Diseno visual profesional basado en el prompt de la seccion 8.4.
+- Espacios publicitarios implementados.
+- Estadisticas por jugador: porcentaje de aciertos, racha, mejor jornada, goles pronosticados vs reales.
+- Notificaciones push (web, via Service Worker).
+- Historial de torneos con exportacion a CSV.
+
+### v2.0 — Largo plazo
+
+- App movil nativa (MAUI o React Native).
+- Pagos in-app para distribucion de premios digital (Mercado Pago, Stripe).
+- Leaderboard global entre torneos del mismo organizador.
+- Temporadas multi-ano con estadisticas historicas.
+- Multi-idioma (espanol/ingles).
+
+---
+
+## 11. Stack Tecnico
+
+| Capa | Tecnologia | Justificacion |
 |---|---|---|
-| Framework | .NET 10 LTS | Migración desde .NET Core 2.0 |
+| Framework | .NET 10 LTS | Migracion desde .NET Core 2.0 |
 | Web | ASP.NET Core MVC / Razor Pages | Misma arquitectura del legado |
 | ORM | Entity Framework Core 10 | Ya usado en legado con EF Core 2.0 |
 | Base de datos | PostgreSQL | Ya usado en legado (Npgsql). Gratuito. |
 | Auth | ASP.NET Core Identity | Ya integrado en legado |
 | Real-time | SignalR | Actualizaciones de tabla en vivo |
 | Bot de Telegram | Telegram.Bot (NuGet) | SDK oficial .NET para Telegram Bot API |
-| Transcripción de voz | OpenAI Whisper API | Convierte audio OGG de Telegram a texto |
-| IA: extracción predicciones + banter | Claude API (claude-haiku-4-5-20251001) | Parsea texto libre → predicciones estructuradas; genera banter |
-| Datos de partidos y resultados | API-Football | Catálogo de partidos, resultados en tiempo real |
+| Transcripcion de voz | OpenAI Whisper API | Convierte audio OGG de Telegram a texto |
+| IA: extraccion + banter | Claude API (claude-haiku-4-5-20251001) | Parsea texto libre; genera banter de 280 caracteres |
+| Datos de partidos | API-Football | Catalogo de partidos y resultados en tiempo real |
+| Contenedores | Docker + Docker Compose | Deployment reproducible |
 
 ---
 
-## Arquitectura del Proyecto
+## 12. Arquitectura del Proyecto
 
 ```
 BanterBotSports/
-├── BanterBotSports.Web/              # ASP.NET Core — controllers, views, wwwroot, SignalR hubs
+├── BanterBotSports.Web/              # ASP.NET Core MVC — controllers, views, wwwroot, SignalR hubs
 ├── BanterBotSports.BL/               # Business Logic — puntos, premios, deadlines
 ├── BanterBotSports.DAL/              # EF Core DbContext, Repositories, Migrations
 ├── BanterBotSports.Entities/         # Domain entities, ViewModels, DTOs
-├── BanterBotSports.BanterAI/         # Claude API — banter engine + extracción de predicciones
+├── BanterBotSports.BanterAI/         # Claude API — banter engine + extraccion de predicciones
 ├── BanterBotSports.Integrations/     # API-Football client, Telegram bot, Whisper transcription
 └── BanterBotSports.sln
 ```
 
 ---
 
-## Entidades Principales
+## 13. Entidades Principales
 
-- `Torneo` — nombre, configuración de puntos, configuración de premios, monto inscripción, organizador
-- `Jornada` — número, fecha límite de predicciones, estado (abierta / cerrada / finalizada)
-- `Partido` — externalId (API-Football), equipo1, equipo2, fecha/hora kick-off UTC, goles oficiales, estado
-- `Participante` — relación usuario ↔ torneo, rol (organizador / jugador / ambos), estado de pago
-- `UsuarioTelegram` — telegramUserId, telegramUsername, fechaVinculacion, userId (FK)
-- `PrediccionPartido` — golesEquipo1, golesEquipo2, puntos obtenidos, fuente (web / telegram)
-- `PrediccionJornada` — goles totales pronosticados, puntos obtenidos
-
----
-
-## Risks
-
-| Riesgo | Probabilidad | Mitigación |
-|---|---|---|
-| Breaking changes .NET Core 2.0 → .NET 10 | Alta | Migración incremental, smoke tests en cada upgrade mayor |
-| Transcripción de voz con acentos/nombres de equipos incorrectos | Alta | Claude API valida y corrige el texto transcrito antes de parsear. Confirmación explícita al jugador. |
-| Predicción en texto libre mal parseada por Claude | Media | Prompt estructurado con ejemplos. Si no puede parsear, el bot pide reformular. |
-| Partidos de fase final sin equipos definidos | Media | Jornada queda en estado "pendiente de partidos". El organizador la activa cuando asigna los partidos. |
-| Rate limits de API-Football | Media | Caché de resultados en PostgreSQL. Polling solo para partidos activos. |
-| Entrega de mensajes Telegram fallida | Baja | Retry con backoff exponencial. Fallback a web. |
-| Lógica de empates en premios compleja | Media | Tests unitarios exhaustivos para todos los escenarios de empate |
-| Regulación legal de pools de dinero | Media | La app no procesa pagos. Gestión fuera del sistema. |
+| Entidad | Campos clave |
+|---------|-------------|
+| `Torneo` | nombre, configuracion de puntos (3 valores), configuracion de premios, monto inscripcion, organizadorId |
+| `Jornada` | numero, deadlineUtc, estado (Pendiente/Abierta/Cerrada/Finalizada), torneoId |
+| `Partido` | externalId (API-Football), equipo1, equipo2, fechaHoraUtc, golesEquipo1Oficial, golesEquipo2Oficial, estado |
+| `Participante` | usuarioId, torneoId, rol (Organizador/Jugador/Ambos), estado de pago |
+| `UsuarioTelegram` | telegramUserId, telegramUsername, fechaVinculacion, userId (FK) |
+| `PrediccionPartido` | usuarioId, partidoId, golesEquipo1, golesEquipo2, puntosObtenidos, fuente (Web/Telegram) |
+| `PrediccionJornada` | usuarioId, jornadaId, golesTotalesPronosticados, puntosObtenidos |
 
 ---
 
-## Success Criteria
+## 14. Riesgos
 
-- [ ] Migración completa a .NET 10 sin pérdida de funcionalidad existente
-- [ ] El organizador puede buscar y asignar partidos de una jornada desde la API en < 3 minutos
-- [ ] Los partidos de fase final aparecen disponibles para asignar una vez conocidos los equipos
-- [ ] Los resultados se sincronizan automáticamente desde API-Football al finalizar cada partido
-- [ ] Un jugador puede enviar sus predicciones completas de una jornada por Telegram (texto o voz)
-- [ ] La IA extrae correctamente las predicciones del mensaje con > 95% de precisión
-- [ ] El bloqueo de predicciones ocurre automáticamente al iniciar el primer partido de la jornada
-- [ ] Los puntos se calculan correctamente para los 3 conceptos
-- [ ] La tabla general refleja puntos acumulados en tiempo real
-- [ ] Cada jugador recibe al menos 1 mensaje de banter personalizado por Telegram al cerrar cada jornada
-- [ ] La distribución de premios con empates se calcula correctamente
+| Riesgo | Probabilidad | Mitigacion |
+|--------|-------------|------------|
+| API-Football sin key en desarrollo | Alta | Configuracion en .env obligatoria antes del primer QA real |
+| Transcripcion de voz con acentos o nombres de equipos incorrectos | Alta | Claude valida y corrige el texto transcrito. Confirmacion explicita al jugador. |
+| Prediccion en texto libre mal parseada | Media | Prompt estructurado con ejemplos. Si confidence < 0.75, el bot pide reformular. |
+| Partidos de fase final sin equipos definidos | Media | Jornada en estado "pendiente de partidos". El organizador la activa cuando asigna los partidos. |
+| Rate limits de API-Football | Media | Cache de resultados en PostgreSQL. Polling solo para partidos en jornadas activas. |
+| Entrega de mensajes Telegram fallida | Baja | Retry con backoff exponencial. Fallback: el jugador ve los resultados en la web. |
+| Logica de empates en premios compleja | Media | Tests unitarios exhaustivos para todos los escenarios de empate. |
+| Stack traces expuestos en produccion | Alta (actualmente) | Fix P1 #5 — configurar UseExceptionHandler en produccion. |
+
+---
+
+## 15. Criterios de Exito
+
+- [ ] El organizador puede crear un torneo completo en menos de 5 minutos.
+- [ ] El organizador puede buscar y asignar partidos de una jornada desde API-Football en menos de 3 minutos.
+- [ ] Los resultados se sincronizan automaticamente desde API-Football al finalizar cada partido.
+- [ ] Un jugador puede enviar sus predicciones completas de una jornada por Telegram (texto o voz).
+- [ ] La IA extrae correctamente las predicciones del mensaje con precision >= 75% (threshold ajustado).
+- [ ] El bloqueo de predicciones ocurre automaticamente al iniciar el primer partido de la jornada.
+- [ ] Los puntos se calculan correctamente para los 3 conceptos (resultado, marcador exacto, goles de jornada).
+- [ ] La tabla general refleja puntos acumulados en tiempo real via SignalR.
+- [ ] Cada jugador recibe al menos 1 mensaje de banter personalizado por Telegram al cerrar cada jornada.
+- [ ] La distribucion de premios con empates se calcula correctamente.
+- [ ] Ningun stack trace es visible para el usuario final en produccion.
+- [ ] Las paginas de error 404 y 500 muestran contenido custom y un CTA util.
 
 ---
 
@@ -372,11 +911,32 @@ El Arena Chat es el componente de interacción social en tiempo real. **Distinto
 
 ---
 
+## 16. Rollback Plan
+
+- El repositorio legado (`quinielas-legacy/`) se mantiene intacto como referencia permanente.
+- PostgreSQL schema se versiona con EF Core Migrations — reversible en cualquier punto.
+- El bot de Telegram y el banter engine son modulos aislados — desactivarlos no rompe el core.
+- API-Football tiene fallback: el organizador puede ingresar resultados manualmente si la API falla.
+- Docker Compose permite rollback rapido a la imagen anterior.
+
 ---
 
-## Rollback Plan
+## 17. Glosario
 
-- El repositorio legado (`quinielas-legacy/`) se mantiene intacto como referencia.
-- PostgreSQL schema se versiona con EF Core Migrations — reversible.
-- El bot de Telegram y el banter engine son módulos aislados — desactivarlos no rompe el core.
-- API-Football tiene fallback: el organizador puede ingresar resultados manualmente si la API falla.
+| Termino | Definicion |
+|---------|-----------|
+| Torneo | La quiniela completa — tiene N jornadas, jugadores, puntos y premios configurados |
+| Jornada | Una ronda de partidos. Tiene deadline y se abre/cierra manualmente por el organizador |
+| Partido | Un enfrentamiento entre dos equipos, obtenido de API-Football |
+| Prediccion | El pronostico de un jugador para un partido (goles local y visitante) |
+| Prediccion de Jornada | El pronostico de goles totales de todos los partidos de la jornada |
+| DeadlineUtc | Fecha y hora UTC del primer kick-off de la jornada — despues de eso se bloquean predicciones |
+| Organizador | El usuario que crea y administra el torneo. Puede ser tambien jugador. |
+| Banter | Mensaje personalizado por IA de maximo 280 caracteres, enviado al cerrar cada jornada |
+| Confidence Score | Nivel de certeza de Claude al extraer predicciones del texto libre (umbral: 0.75) |
+| Prize Pool | Suma total de las inscripciones de los jugadores — distribuido segun porcentajes configurados |
+| NombreDisplay | Nombre visible del usuario en rankings y mensajes (distinto del email o ID) |
+
+---
+
+_Documento generado post-QA funcional del 2026-03-25. Basado en analisis estatico de codigo y pruebas en vivo con Docker Compose._
