@@ -19,4 +19,12 @@ public interface IPrediccionService
 
     Task GuardarPrediccionAsync(PrediccionPartido prediccion, Jornada jornada, bool esOrganizador = false);
     Task ActualizarGolesJornadaAsync(int jornadaId);
+
+    /// <summary>
+    /// Computes jornada-level goal points: compares each participant's GolesPronosticados
+    /// against the official total goals for the jornada, assigns PuntosObtenidos, and persists.
+    /// Writes zero when no valid predictions exist for a participant.
+    /// Must be called after official match results are entered.
+    /// </summary>
+    Task CalcularPuntosGolesJornadaAsync(int jornadaId);
 }
