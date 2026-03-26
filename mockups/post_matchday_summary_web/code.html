@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BanterBot | Post-Matchday Summary</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary-fixed": "#00cffc",
+            "surface-dim": "#090e1c",
+            "surface-tint": "#69daff",
+            "surface-container": "#13192b",
+            "error-container": "#9f0519",
+            "on-tertiary-fixed-variant": "#7a0008",
+            "on-secondary": "#0b5800",
+            "inverse-primary": "#006880",
+            "tertiary-container": "#f5282b",
+            "primary-container": "#00cffc",
+            "on-primary-container": "#004050",
+            "inverse-surface": "#faf8ff",
+            "secondary-dim": "#2be800",
+            "on-secondary-fixed": "#064200",
+            "secondary": "#2ff801",
+            "surface-variant": "#1e253b",
+            "on-tertiary-fixed": "#3a0002",
+            "tertiary-fixed-dim": "#ff7b70",
+            "outline-variant": "#434759",
+            "error": "#ff716c",
+            "on-tertiary": "#4a0003",
+            "on-secondary-container": "#e7ffd9",
+            "tertiary-fixed": "#ff9287",
+            "surface-container-low": "#0d1323",
+            "background": "#090e1c",
+            "on-primary-fixed": "#002a35",
+            "on-background": "#e1e4fa",
+            "secondary-fixed": "#2ff801",
+            "error-dim": "#d7383b",
+            "on-surface-variant": "#a6aabf",
+            "surface-container-high": "#181f33",
+            "tertiary-dim": "#e51a22",
+            "secondary-container": "#106e00",
+            "on-surface": "#e1e4fa",
+            "surface-container-highest": "#1e253b",
+            "secondary-fixed-dim": "#2be800",
+            "on-error-container": "#ffa8a3",
+            "tertiary": "#ff7166",
+            "surface": "#090e1c",
+            "primary": "#69daff",
+            "outline": "#707588",
+            "inverse-on-surface": "#505466",
+            "surface-container-lowest": "#000000",
+            "on-secondary-fixed-variant": "#0d6200",
+            "surface-bright": "#242b43",
+            "primary-fixed-dim": "#00c0ea",
+            "on-primary": "#004a5d",
+            "on-primary-fixed-variant": "#004a5c",
+            "on-error": "#490006",
+            "primary-dim": "#00c0ea",
+            "on-tertiary-container": "#000000"
+          },
+          fontFamily: {
+            "headline": ["Inter"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .glass-nav {
+      background: rgba(9, 14, 28, 0.6);
+      backdrop-filter: blur(20px);
+    }
+    .neon-glow-primary {
+      box-shadow: 0 0 15px rgba(105, 218, 255, 0.3);
+    }
+    .neon-glow-secondary {
+      box-shadow: 0 0 15px rgba(47, 248, 1, 0.3);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar -->
+<nav class="bg-[#090e1c]/60 backdrop-blur-xl fixed top-0 z-50 w-full shadow-[0_8px_32px_0_rgba(105,218,255,0.08)]">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black tracking-tighter text-[#69daff] italic">BanterBot</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="text-[#e1e4fa]/60 hover:text-[#e1e4fa] font-['Inter'] font-bold tracking-tight transition-all duration-300" href="#">Tournaments</a>
+<a class="text-[#69daff] border-b-2 border-[#69daff] pb-1 font-['Inter'] font-bold tracking-tight" href="#">Results</a>
+<a class="text-[#e1e4fa]/60 hover:text-[#e1e4fa] font-['Inter'] font-bold tracking-tight transition-all duration-300" href="#">Ranking</a>
+<a class="text-[#e1e4fa]/60 hover:text-[#e1e4fa] font-['Inter'] font-bold tracking-tight transition-all duration-300" href="#">Rules</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-[#242b43] transition-all duration-300 rounded-full active:scale-95">
+<span class="material-symbols-outlined text-[#e1e4fa]">notifications</span>
+</button>
+<button class="p-2 hover:bg-[#242b43] transition-all duration-300 rounded-full active:scale-95">
+<span class="material-symbols-outlined text-[#e1e4fa]">account_circle</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- SideNavBar (Desktop Only) -->
+<aside class="hidden lg:flex flex-col h-screen p-4 space-y-8 bg-[#0d1323]/80 backdrop-blur-lg h-full w-64 fixed left-0 top-0 pt-24">
+<div class="flex items-center gap-3 px-2">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-[#69daff]">
+<img class="w-full h-full object-cover" data-alt="close up professional male portrait with neon blue rim lighting against a dark studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4oizU6WT6zW_2YI61yV3Q5N8SeNby9E0OqjnnDN8zxFmiiy4O9V8-CPpSrsOcOVGTDDhK3dTtZ1g1bVf9lGIjaKIiukdnz-bM2eJTDihq0dr9pxXe9dnol4lRHiqftq1UvoSz2DhNZh3_2hIfyMigluFm5-I9DuKNMXzqgzFXMuH03Sk7i_vQwKyAI-15zmy4HQmp6iy_YxbNEwE8ypeAYEXHxY2ZsSy64P4AF32YnFcMyiq2sUG1aNCfxv4b1_Sj-NNmdAMMOddZ"/>
+</div>
+<div>
+<p class="text-[#69daff] font-black text-xs">BanterBot Pro</p>
+<p class="text-[#e1e4fa]/60 text-[0.65rem] uppercase tracking-widest">Rank: Legend</p>
+</div>
+</div>
+<nav class="flex flex-col space-y-2">
+<a class="flex items-center gap-3 p-3 rounded-lg text-[#e1e4fa]/40 hover:bg-[#181f33] transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 duration-200">stadium</span>
+<span class="font-['Inter'] uppercase tracking-widest text-[0.75rem]">Live Arena</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-[#69daff]/20 to-transparent text-[#69daff] border-l-4 border-[#69daff] group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 duration-200">history</span>
+<span class="font-['Inter'] uppercase tracking-widest text-[0.75rem]">History</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-lg text-[#e1e4fa]/40 hover:bg-[#181f33] transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 duration-200">leaderboard</span>
+<span class="font-['Inter'] uppercase tracking-widest text-[0.75rem]">Leaderboard</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-lg text-[#e1e4fa]/40 hover:bg-[#181f33] transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 duration-200">emoji_events</span>
+<span class="font-['Inter'] uppercase tracking-widest text-[0.75rem]">Prizes</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-lg text-[#e1e4fa]/40 hover:bg-[#181f33] transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 duration-200">help_center</span>
+<span class="font-['Inter'] uppercase tracking-widest text-[0.75rem]">Support</span>
+</a>
+</nav>
+<div class="mt-auto space-y-2">
+<button class="w-full py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary-container font-bold rounded-xl active:scale-95 transition-transform neon-glow-primary">
+        New Tournament
+      </button>
+<div class="pt-4 space-y-1">
+<a class="flex items-center gap-3 p-3 text-[#e1e4fa]/40 hover:text-secondary transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['Inter'] uppercase tracking-widest text-[0.75rem]">Settings</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-[#e1e4fa]/40 hover:text-secondary transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-['Inter'] uppercase tracking-widest text-[0.75rem]">Logout</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="lg:ml-64 pt-24 pb-32 px-4 md:px-8 max-w-7xl mx-auto">
+<!-- Jornada Header Summary -->
+<header class="mb-12 flex flex-col md:flex-row items-end justify-between gap-6">
+<div class="space-y-2">
+<span class="bg-secondary text-on-secondary text-[0.75rem] font-bold px-3 py-1 rounded-full uppercase tracking-widest neon-glow-secondary">Jornada 24 Closed</span>
+<h1 class="text-5xl md:text-7xl font-black italic tracking-tighter text-on-background">DOMINATION <span class="text-primary">RECAP</span></h1>
+<p class="text-on-surface-variant text-lg">You outscored 84% of your bracket this week.</p>
+</div>
+<!-- Stats Asymmetric Grid -->
+<div class="flex gap-4 w-full md:w-auto overflow-x-auto pb-4 md:pb-0">
+<div class="bg-surface-container-high p-6 rounded-xl min-w-[160px] flex flex-col justify-between h-32 border-l-4 border-primary">
+<span class="text-[0.65rem] uppercase tracking-widest text-on-surface-variant">Total Points</span>
+<span class="text-4xl font-black text-on-surface">184</span>
+</div>
+<div class="bg-surface-container-high p-6 rounded-xl min-w-[160px] flex flex-col justify-between h-32 border-l-4 border-secondary">
+<span class="text-[0.65rem] uppercase tracking-widest text-on-surface-variant">Rank Shift</span>
+<div class="flex items-center gap-2">
+<span class="text-4xl font-black text-secondary">+12</span>
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+</div>
+</div>
+</div>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Match Results Comparison (Central wider column) -->
+<div class="lg:col-span-8 space-y-6">
+<h2 class="text-2xl font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">analytics</span>
+          Predictions vs Reality
+        </h2>
+<!-- Match Card 1 -->
+<div class="bg-surface-container-low rounded-2xl overflow-hidden group transition-all duration-300">
+<div class="p-6 flex flex-col md:flex-row items-center justify-between gap-6 relative">
+<!-- Background Image Accent (Subtle) -->
+<div class="absolute inset-0 opacity-10 pointer-events-none overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="blurred stadium lights and green grass field at night with a cinematic cinematic atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2ofYbhwQozg-nzStpPE4ZAAQKSV3mU_yYNwIIVuzjPgw5W60X17FQFbw8DJcEEJdx1qyjzi3FhF2_SadpjrtuUB9ygLeNzzHxw2Mdsn_fq8MKErVj-LuMOACuCaDz-4tpgzqraWnMFPI_Jv5UuxpolBov8ZGm5urV36m4g43bN3OyLBENjCw1E3lMd5BChkCJhsP3UIzLRYr03ZP5-hcCpfC-bCj0eTpXP1CyFUg6BkaFw57kLSVFhBshJ4yxTxEq5MFgoyfhXVK1"/>
+</div>
+<div class="flex items-center gap-4 z-10 w-full md:w-auto justify-between md:justify-start">
+<div class="text-center">
+<div class="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center mb-1">
+<img class="w-8 h-8 object-contain" data-alt="red and white soccer team logo shield simplified minimalist design" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWccTffb2RwXLit3nk7h6kE72ls2hB50urQVeNVZSkM3utma9Imd6lQxFkT2eRtu8sUVMf2YmED8wi6fU7JAVXfGB9ed3ccODBsbNgKfoACrwUtoAO0zL5Hx2yyyIsS7FcXJPOK3CyoUSaMQRNJMWHvaxzYFbzXVYq2Xg4F33qTGKNHX_oJAufR-LI5rtKHP0Vw-LlKY0Oe8GJeuTHvNiGL93Kawn5gJgklU6_EHsIJNq-Zt0FMXK0gbQB3-LgBHp8lV7nN-cnqqgk"/>
+</div>
+<p class="text-[0.6rem] font-black uppercase text-on-surface-variant">MUN</p>
+</div>
+<div class="flex flex-col items-center gap-1 px-4">
+<span class="text-2xl font-black tracking-widest">3 - 1</span>
+<span class="text-[0.6rem] text-on-surface-variant uppercase bg-surface-container px-2 py-0.5 rounded">Result</span>
+</div>
+<div class="text-center">
+<div class="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center mb-1">
+<img class="w-8 h-8 object-contain" data-alt="blue and gold athletic club logo emblem minimalist crest" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2L2DkvsXeTvrNR-Aw2zkkrNUs060PQoqmEX7Fj23veGMGljdXy9qCj78ESibep3AoSh24pZQmsKLHcMcRFcpHgrV73X6rI67kIuvfDhaYK_y8x9bRlYbMoJYCNYlTAUVfzYzLLBSF66BibkxILw3t0kR_IfuumuByMfA7Onm00ujV5hhecg-S3E6lGP3shy1mDa_JeCV_zoU-LzMzlB4YMkY6OjBeBOmi88Bg6sDndVYAQoTNWYwgmqa44GsND6lPK0PdTBIfgsMp"/>
+</div>
+<p class="text-[0.6rem] font-black uppercase text-on-surface-variant">ARS</p>
+</div>
+</div>
+<!-- Prediction Marker -->
+<div class="bg-surface-container-high px-8 py-3 rounded-xl flex flex-col items-center justify-center border border-primary/20 z-10">
+<span class="text-[0.65rem] uppercase tracking-widest text-on-surface-variant mb-1">Your Pick</span>
+<span class="text-xl font-bold text-primary">3 - 1</span>
+<span class="text-[0.5rem] font-black text-secondary uppercase tracking-widest mt-1">Exact Score</span>
+</div>
+<div class="flex flex-col items-end z-10">
+<span class="text-4xl font-black text-secondary">+25</span>
+<span class="text-[0.6rem] uppercase tracking-widest text-on-surface-variant">PTS Earned</span>
+</div>
+</div>
+</div>
+<!-- Match Card 2 -->
+<div class="bg-surface-container-low rounded-2xl overflow-hidden group transition-all duration-300">
+<div class="p-6 flex flex-col md:flex-row items-center justify-between gap-6 relative">
+<div class="flex items-center gap-4 z-10 w-full md:w-auto justify-between md:justify-start">
+<div class="text-center">
+<div class="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center mb-1">
+<img class="w-8 h-8 object-contain" data-alt="white and black circular soccer team crest" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtoFYARxNcUAofKBHfjdbJSwpQU6U9QNRq1SyHGAEGkEg4dvVchDbojHU0YOq9NlSscEEmN16qJquXf668SFiquXW8Ojv5628hwUVddtQwNrOuyeA_4CzVNMx8c7zjCZLdlxWrazv74xmwCb1pkYSCnScGexGPlvErt8Ox1vStK8FEbpBNfLgFYS-B-PwoDBlQu0wYDaHGgCNtxg3kLcyfnUXdSwJNOAe0a0p-B84HbZRq0EVIYVIavWQe9UbG31scQBBR_qsv6_eb"/>
+</div>
+<p class="text-[0.6rem] font-black uppercase text-on-surface-variant">LIV</p>
+</div>
+<div class="flex flex-col items-center gap-1 px-4">
+<span class="text-2xl font-black tracking-widest">0 - 2</span>
+<span class="text-[0.6rem] text-on-surface-variant uppercase bg-surface-container px-2 py-0.5 rounded">Result</span>
+</div>
+<div class="text-center">
+<div class="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center mb-1">
+<img class="w-8 h-8 object-contain" data-alt="light blue shield shaped football logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFGkf9PObHjMk-2xT43H82g3thMy0rXps54IMZwLkkzFG19qaWmFHHt3kGJRJHO90M5bax2_mjvtUkqt3yswISqHHxzsJFtu9oPLWSM0JdlnxcvHR6b3R1mBlYCNbv9cMCQZIdi3hiZCdlb8yTzUYDdROdoQglNdJjpFvkOYJeK5KjeW04oGT86IHAehIe_cdmU5vJe_QegPBAG0-GMPHypj27v3CZRDl1hdieanSM51y4GiE8VAJIp-H4-KkUsN0QsQD1Mw-xFwTx"/>
+</div>
+<p class="text-[0.6rem] font-black uppercase text-on-surface-variant">MCI</p>
+</div>
+</div>
+<div class="bg-surface-container-high px-8 py-3 rounded-xl flex flex-col items-center justify-center border border-error/20 z-10">
+<span class="text-[0.65rem] uppercase tracking-widest text-on-surface-variant mb-1">Your Pick</span>
+<span class="text-xl font-bold text-error">1 - 1</span>
+<span class="text-[0.5rem] font-black text-on-surface-variant uppercase tracking-widest mt-1">Wrong Outcome</span>
+</div>
+<div class="flex flex-col items-end z-10">
+<span class="text-4xl font-black text-on-surface-variant opacity-40">+0</span>
+<span class="text-[0.6rem] uppercase tracking-widest text-on-surface-variant">PTS Earned</span>
+</div>
+</div>
+</div>
+<!-- Match Card 3 -->
+<div class="bg-surface-container-low rounded-2xl overflow-hidden group transition-all duration-300">
+<div class="p-6 flex flex-col md:flex-row items-center justify-between gap-6 relative">
+<div class="flex items-center gap-4 z-10 w-full md:w-auto justify-between md:justify-start">
+<div class="text-center">
+<div class="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center mb-1">
+<img class="w-8 h-8 object-contain" data-alt="yellow and black sports club logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHdpa2yp9ikFG25oqDP0c13Ml9rICw7F0Gquz2ER63VVBcnIxVdKgWR0TCcrFD7vuvbi1IBTG1aCx-AKQ3Y3OV0_IJXMpQ6wA3TI4MBNAxZASFQHc5wxNbsV1QLBSE6ScA2nHkSk0Aid0CLbCzlqPwJpBAr3nOdTpjP146KlQGnATCBsWhnEvNKEcufnw4MCewhqMmQTbBnoXMsoiwiugP4CIpZS5eg1ssvxZqm4B4ob33wXlE4CRKJGoSc1vl_-IeKDM0A6aRtMoR"/>
+</div>
+<p class="text-[0.6rem] font-black uppercase text-on-surface-variant">BVB</p>
+</div>
+<div class="flex flex-col items-center gap-1 px-4">
+<span class="text-2xl font-black tracking-widest">2 - 2</span>
+<span class="text-[0.6rem] text-on-surface-variant uppercase bg-surface-container px-2 py-0.5 rounded">Result</span>
+</div>
+<div class="text-center">
+<div class="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center mb-1">
+<img class="w-8 h-8 object-contain" data-alt="white eagle on red background logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUuNDT6hTVC2abaeRw2C1c--_mzkEhDSotvOjPsdkZnWKWxmqd6Z-2GZrg-2CukgpQo_OksEA7H6nFwMx1MP90kLwhO-AwDReL4m2SohadMcPMDiJurpnpt-wMtIXwh-9wMaJWqev7zobp85_si8Bv5dsNOv1QhfAh9qZP3gqrqe975rQJ5xxU57SyChAeN0gqPNXwLf8AjPr76_Iq2eDq8WJrL1KgD3kwUii8CxO2VJNljhn2Joq6AVi1wt36s2xxf1ZJHxgs64cK"/>
+</div>
+<p class="text-[0.6rem] font-black uppercase text-on-surface-variant">FRA</p>
+</div>
+</div>
+<div class="bg-surface-container-high px-8 py-3 rounded-xl flex flex-col items-center justify-center border border-primary/20 z-10">
+<span class="text-[0.65rem] uppercase tracking-widest text-on-surface-variant mb-1">Your Pick</span>
+<span class="text-xl font-bold text-primary">0 - 0</span>
+<span class="text-[0.5rem] font-black text-primary uppercase tracking-widest mt-1">Correct Draw</span>
+</div>
+<div class="flex flex-col items-end z-10">
+<span class="text-4xl font-black text-secondary">+10</span>
+<span class="text-[0.6rem] uppercase tracking-widest text-on-surface-variant">PTS Earned</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Banter Rail (Asymmetric right column) -->
+<aside class="lg:col-span-4 space-y-6">
+<h2 class="text-2xl font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">forum</span>
+          Banter Recap
+        </h2>
+<div class="bg-surface-container-highest/60 backdrop-blur-xl rounded-3xl p-6 border-t border-primary/10 shadow-2xl space-y-6">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-on-primary-container">smart_toy</span>
+</div>
+<div class="space-y-3">
+<p class="text-[0.65rem] font-black text-primary uppercase tracking-tighter">AI commentator</p>
+<div class="bg-surface-container-low p-4 rounded-2xl rounded-tl-none italic text-on-surface leading-relaxed border-l-2 border-primary">
+                "You predicted Manchester United's 3-1 win so accurately I'm starting to think you're Erik ten Hag's burner account. Shame about that Liverpool collapse though... your 'defensive masterclass' prediction aged like milk."
+              </div>
+</div>
+</div>
+<div class="space-y-4 pt-4 border-t border-outline-variant/15">
+<p class="text-[0.65rem] font-bold text-on-surface-variant uppercase tracking-[0.2em]">Community Heat</p>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container"></div>
+<div class="flex-1">
+<p class="text-[0.7rem] font-bold text-on-surface">ProBanter99</p>
+<p class="text-xs text-on-surface-variant mt-1">Lucky guess on the United game. You're still behind me in the Global League though! 😂</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-container"></div>
+<div class="flex-1">
+<p class="text-[0.7rem] font-bold text-on-surface">FootyWhiz</p>
+<p class="text-xs text-on-surface-variant mt-1">How did you nail the exact score? My Liverpool prediction ruined my weekend.</p>
+</div>
+</div>
+</div>
+<div class="pt-4">
+<div class="bg-surface-container-low rounded-xl flex items-center p-2">
+<input class="bg-transparent border-none focus:ring-0 text-sm flex-1 px-2 text-on-surface placeholder:text-on-surface-variant" placeholder="Talk trash..." type="text"/>
+<button class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-sm">send</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Global Progress Card -->
+<div class="bg-gradient-to-br from-surface-container-high to-background p-6 rounded-3xl border border-outline-variant/10 relative overflow-hidden group">
+<div class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform duration-700">
+<span class="material-symbols-outlined text-9xl">military_tech</span>
+</div>
+<p class="text-[0.65rem] font-black text-secondary uppercase tracking-[0.2em] mb-4">Season Progress</p>
+<div class="flex items-end justify-between mb-2">
+<span class="text-3xl font-black">Elite IV</span>
+<span class="text-xs text-on-surface-variant">2,450 / 3,000 XP</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[75%] shadow-[0_0_10px_#2ff801]"></div>
+</div>
+<p class="text-[0.6rem] text-on-surface-variant mt-4">Next unlock: <span class="text-secondary font-bold">Custom Avatar Glow</span></p>
+</div>
+</aside>
+</div>
+<!-- CTA Footer -->
+<footer class="mt-16 flex flex-col md:flex-row items-center justify-between gap-6 p-8 bg-surface-container-low rounded-3xl border border-outline-variant/10">
+<div>
+<h3 class="text-xl font-bold text-on-surface">Ready for Jornada 25?</h3>
+<p class="text-on-surface-variant text-sm">Transfer window closes in 2 days, 4 hours.</p>
+</div>
+<div class="flex gap-4">
+<button class="px-8 py-3 bg-surface-container-highest text-on-surface font-bold rounded-xl hover:bg-surface-bright transition-colors active:scale-95">View Ranking</button>
+<button class="px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-black rounded-xl neon-glow-primary active:scale-95 transition-transform">Set Predictions</button>
+</div>
+</footer>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 bg-[#0d1323]/90 backdrop-blur-2xl flex justify-around items-center px-4 pb-6 pt-3 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+<a class="flex flex-col items-center justify-center text-[#e1e4fa]/50 hover:text-[#2ff801] active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#69daff]/10 text-[#69daff] rounded-2xl px-4 py-2 shadow-[0_0_15px_rgba(105,218,255,0.3)] active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">sports_soccer</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Matches</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#e1e4fa]/50 hover:text-[#2ff801] active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">forum</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Banter</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#e1e4fa]/50 hover:text-[#2ff801] active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Profile</span>
+</a>
+</nav>
+</body></html>

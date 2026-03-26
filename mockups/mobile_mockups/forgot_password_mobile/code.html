@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BanterBot - Forgot Password</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed": "#00cffc",
+              "surface-dim": "#090e1c",
+              "surface-tint": "#69daff",
+              "surface-container": "#13192b",
+              "error-container": "#9f0519",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "on-secondary": "#0b5800",
+              "inverse-primary": "#006880",
+              "tertiary-container": "#f5282b",
+              "primary-container": "#00cffc",
+              "on-primary-container": "#004050",
+              "inverse-surface": "#faf8ff",
+              "secondary-dim": "#2be800",
+              "on-secondary-fixed": "#064200",
+              "secondary": "#2ff801",
+              "surface-variant": "#1e253b",
+              "on-tertiary-fixed": "#3a0002",
+              "tertiary-fixed-dim": "#ff7b70",
+              "outline-variant": "#434759",
+              "error": "#ff716c",
+              "on-tertiary": "#4a0003",
+              "on-secondary-container": "#e7ffd9",
+              "tertiary-fixed": "#ff9287",
+              "surface-container-low": "#0d1323",
+              "background": "#090e1c",
+              "on-primary-fixed": "#002a35",
+              "on-background": "#e1e4fa",
+              "secondary-fixed": "#2ff801",
+              "error-dim": "#d7383b",
+              "on-surface-variant": "#a6aabf",
+              "surface-container-high": "#181f33",
+              "tertiary-dim": "#e51a22",
+              "secondary-container": "#106e00",
+              "on-surface": "#e1e4fa",
+              "surface-container-highest": "#1e253b",
+              "secondary-fixed-dim": "#2be800",
+              "on-error-container": "#ffa8a3",
+              "tertiary": "#ff7166",
+              "surface": "#090e1c",
+              "primary": "#69daff",
+              "outline": "#707588",
+              "inverse-on-surface": "#505466",
+              "surface-container-lowest": "#000000",
+              "on-secondary-fixed-variant": "#0d6200",
+              "surface-bright": "#242b43",
+              "primary-fixed-dim": "#00c0ea",
+              "on-primary": "#004a5d",
+              "on-primary-fixed-variant": "#004a5c",
+              "on-error": "#490006",
+              "primary-dim": "#00c0ea",
+              "on-tertiary-container": "#000000"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-effect {
+        backdrop-filter: blur(20px);
+        background: rgba(30, 37, 59, 0.6);
+      }
+      .stadium-glow {
+        box-shadow: 0 0 40px rgba(105, 218, 255, 0.1);
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full flex justify-between items-center px-6 h-16 bg-[#090e1c] z-50 shadow-[0_4px_40px_0_rgba(105,218,255,0.08)]">
+<div class="flex items-center gap-4">
+<button class="text-[#69daff] active:scale-95 transition-transform">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<span class="text-2xl font-black text-[#69daff] tracking-tighter uppercase font-['Inter']">BANTERBOT</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Close up portrait of a digital avatar with blue neon rim lighting in a futuristic dark setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJ_KiZgg9LW2-dnPVWR4-pYhLIyEc1svXN4tKhSnwvdQ59pRH_3sq3OCep41TSbLyZggZOYHgugh8W16WVN_TDonbmwjEHk6qrlqNzvhbEQ81dQUYwuGhy98NZ6meDPtU3-KQyvlv5oq8TBCs8LmRP9qxbsih4mGtdk4rtmg7508VpZDdw2qt4U5GaFTImfceSlJFRUt4cb1coHdKcqchtFa1M0cYMzqfjn9FvPElR8UAZU7z07_SAbsi2qZbydbIMIL76hzUbj_fu"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center px-6 pt-24 pb-12">
+<!-- Hero Visual Section -->
+<div class="w-full max-w-md mb-12 relative">
+<div class="absolute inset-0 bg-primary opacity-5 blur-[80px] rounded-full"></div>
+<div class="relative z-10 text-center">
+<span class="material-symbols-outlined text-primary text-7xl mb-4" style="font-variation-settings: 'wght' 200;">lock_reset</span>
+<h1 class="text-[3.5rem] leading-none font-black tracking-tight text-on-surface uppercase mb-4 font-headline">
+                    Lost your <br/><span class="text-primary">entry?</span>
+</h1>
+<p class="text-on-surface-variant text-lg max-w-[280px] mx-auto">
+                    Even the MVPs forget their playbooks. Let's get you back in the game.
+                </p>
+</div>
+</div>
+<!-- Forgot Password Card -->
+<div class="w-full max-w-md bg-surface-container-low p-8 rounded-full stadium-glow border-none transition-all duration-300">
+<form action="#" class="space-y-8">
+<div>
+<label class="block text-[0.75rem] font-bold tracking-[0.05em] uppercase text-primary mb-3" for="email">
+                        Stadium Registered Email
+                    </label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-xl">mail</span>
+</div>
+<input class="w-full bg-surface-container-highest border-none rounded-xl py-4 pl-12 pr-4 text-on-surface placeholder:text-outline/50 focus:ring-1 focus:ring-primary/20 focus:bg-surface-bright transition-all" id="email" name="email" placeholder="coach@banterbot.live" required="" type="email"/>
+</div>
+</div>
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-black py-4 rounded-xl uppercase tracking-widest text-sm shadow-lg shadow-primary/10 hover:brightness-110 active:scale-95 transition-all" type="submit">
+                    Send Recovery Link
+                </button>
+</form>
+<div class="mt-8 pt-8 border-t border-outline-variant/10 text-center">
+<p class="text-on-surface-variant text-sm mb-4">
+                    Remembered your pass?
+                </p>
+<a class="inline-flex items-center gap-2 text-primary font-bold uppercase tracking-wider text-xs hover:gap-3 transition-all" href="#">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+                    Return to Arena Login
+                </a>
+</div>
+</div>
+<!-- Bottom Graphic Decor -->
+<div class="mt-12 opacity-20 w-full max-w-xs h-1 bg-gradient-to-r from-transparent via-primary to-transparent rounded-full"></div>
+</main>
+<!-- Navigation suppressed for focused journey per "The Destination Rule" -->
+<!-- Content only prioritized for transactional flow -->
+<!-- Ambient Stadium Lighting Decor (Fixed Background Elements) -->
+<div class="fixed top-0 right-0 -z-10 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none translate-x-1/2 -translate-y-1/2"></div>
+<div class="fixed bottom-0 left-0 -z-10 w-[400px] h-[400px] bg-secondary/5 blur-[100px] rounded-full pointer-events-none -translate-x-1/2 translate-y-1/2"></div>
+</body></html>

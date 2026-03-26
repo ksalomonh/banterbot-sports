@@ -1,0 +1,281 @@
+<!-- OUT OF SCOPE — IGNORAR: Esta pantalla muestra un sistema de brackets/eliminación de estilo esports.
+     Decisión #13: Solo quiniela tradicional en MVP. No se implementa ningún sistema de playoffs, brackets
+     ni duelos. Este mockup es referencia visual únicamente — la pantalla no existe en el producto final.
+     Ver PRD.md § Decisiones de Diseño — Resueltas, decisión #13. -->
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BanterBot Sports - Playoff Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-variant": "#1e253b",
+                        "on-tertiary-container": "#000000",
+                        "inverse-surface": "#faf8ff",
+                        "secondary-fixed-dim": "#2be800",
+                        "error-container": "#9f0519",
+                        "tertiary-dim": "#e51a22",
+                        "primary-container": "#00cffc",
+                        "outline": "#707588",
+                        "on-secondary": "#0b5800",
+                        "on-secondary-container": "#e7ffd9",
+                        "tertiary": "#ff7166",
+                        "on-surface-variant": "#a6aabf",
+                        "on-tertiary": "#4a0003",
+                        "secondary-fixed": "#2ff801",
+                        "inverse-primary": "#006880",
+                        "outline-variant": "#434759",
+                        "on-primary-fixed-variant": "#004a5c",
+                        "surface-container-high": "#181f33",
+                        "on-error-container": "#ffa8a3",
+                        "error": "#ff716c",
+                        "tertiary-container": "#f5282b",
+                        "surface-bright": "#242b43",
+                        "on-secondary-fixed": "#064200",
+                        "surface-container-low": "#0d1323",
+                        "tertiary-fixed-dim": "#ff7b70",
+                        "background": "#090e1c",
+                        "secondary-dim": "#2be800",
+                        "surface": "#090e1c",
+                        "surface-dim": "#090e1c",
+                        "on-primary-container": "#004050",
+                        "secondary-container": "#106e00",
+                        "primary": "#69daff",
+                        "primary-fixed-dim": "#00c0ea",
+                        "surface-container-lowest": "#000000",
+                        "primary-fixed": "#00cffc",
+                        "on-background": "#e1e4fa",
+                        "secondary": "#2ff801",
+                        "on-primary-fixed": "#002a35",
+                        "surface-container": "#13192b",
+                        "surface-tint": "#69daff",
+                        "on-tertiary-fixed-variant": "#7a0008",
+                        "on-error": "#490006",
+                        "on-tertiary-fixed": "#3a0002",
+                        "inverse-on-surface": "#505466",
+                        "on-secondary-fixed-variant": "#0d6200",
+                        "on-primary": "#004a5d",
+                        "tertiary-fixed": "#ff9287",
+                        "on-surface": "#e1e4fa",
+                        "primary-dim": "#00c0ea",
+                        "surface-container-highest": "#1e253b",
+                        "error-dim": "#d7383b"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(24, 31, 51, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .neon-glow-primary {
+            box-shadow: 0 0 20px rgba(105, 218, 255, 0.15);
+        }
+        .neon-glow-secondary {
+            box-shadow: 0 0 15px rgba(47, 248, 1, 0.2);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body min-h-screen pb-32">
+<!-- Top Navigation Anchor (Mobile Responsive) -->
+<header class="fixed top-0 w-full z-50 bg-[#090e1c]/60 backdrop-blur-xl shadow-[0_0_40px_rgba(105,218,255,0.08)]">
+<div class="flex justify-between items-center h-16 px-6 w-full max-w-none">
+<span class="text-2xl font-black italic tracking-tighter text-sky-400">BanterBot Sports</span>
+<div class="flex gap-4 items-center">
+<button class="text-slate-400 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/20">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="Close up of a professional esports coach wearing a sleek dark jersey with neon blue accents, high-tech stadium background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0z7YWynHRWu_yW5FFLPZ6UMjKpTtWfEDTMa-QQUhkXe5AC9pOetcJ75tWaHa5za0Wxa6T2P2BFdS368z79GzQN-iFVKRJcmT_0IjmDJG21K4tXa0NttLKSkBMsccs_pTHtWXz1Knq8ADom3bwbkD2IC2tet-AsggFQXaOJlg8McTnMyg9RuxNPmqqRtccF_amYktMFQ-TUKhsUkmRNvkQ2SB5ipDaAkuFfVtQ0-D9879BDwDHTk9DToofhIuhAcvi-YZKi2O9j4zy"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-20 px-4">
+<!-- Tournament Hero Header -->
+<section class="mt-4 mb-8">
+<div class="flex items-center gap-2 mb-2">
+<span class="bg-secondary/20 text-secondary text-[10px] font-bold px-2 py-0.5 rounded-full tracking-widest uppercase flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span> LIVE
+                </span>
+<span class="text-on-surface-variant text-xs font-semibold uppercase tracking-wider">Apex Global Finals</span>
+</div>
+<h1 class="text-4xl font-black italic tracking-tighter text-on-surface mb-2 leading-none uppercase">Arena Master</h1>
+<p class="text-primary font-bold text-sm tracking-widest uppercase">Legend League • Playoffs</p>
+</section>
+<!-- Round Selector (Horizontal Scroll) -->
+<section class="mb-8 -mx-4 px-4 overflow-x-auto no-scrollbar flex gap-4">
+<button class="flex-none text-sky-400 border-b-2 border-sky-400 pb-1 font-bold text-sm uppercase tracking-widest">Round of 16</button>
+<button class="flex-none text-slate-500 font-bold text-sm uppercase tracking-widest">Quarter-Finals</button>
+<button class="flex-none text-slate-500 font-bold text-sm uppercase tracking-widest">Semi-Finals</button>
+<button class="flex-none text-slate-500 font-bold text-sm uppercase tracking-widest text-opacity-40">Finals</button>
+</section>
+<!-- Management Actions -->
+<section class="flex gap-3 mb-8">
+<button class="flex-1 bg-surface-container-high py-4 rounded-xl flex flex-col items-center justify-center gap-2 border-b-2 border-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined text-primary" data-icon="refresh">refresh</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Sync API Data</span>
+</button>
+<button class="flex-1 bg-surface-container-high py-4 rounded-xl flex flex-col items-center justify-center gap-2 border-b-2 border-secondary active:scale-95 transition-all">
+<span class="material-symbols-outlined text-secondary" data-icon="group_add">group_add</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Manual Seeding</span>
+</button>
+</section>
+<!-- Match Cards: Asymmetric Bento Style -->
+<section class="space-y-6">
+<div class="flex justify-between items-end px-1">
+<h2 class="text-xl font-bold italic text-on-surface uppercase tracking-tight">Active Fixtures</h2>
+<span class="text-[10px] font-bold text-slate-500 tracking-widest uppercase">8 Matches Remaining</span>
+</div>
+<!-- Match Card 1 -->
+<div class="relative overflow-hidden rounded-2xl bg-surface-container-low shadow-[0_10px_30px_rgba(0,0,0,0.3)] border-l-4 border-primary">
+<div class="p-5 flex flex-col gap-6">
+<div class="flex justify-between items-center">
+<span class="text-[10px] font-bold text-primary tracking-widest uppercase">Match ID: #PX-882</span>
+<div class="flex gap-2">
+<span class="material-symbols-outlined text-slate-500 text-sm" data-icon="timer">timer</span>
+<span class="text-[10px] font-bold text-slate-400 uppercase">Starts in 12:45</span>
+</div>
+</div>
+<div class="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+<div class="text-center">
+<div class="w-16 h-16 mx-auto mb-3 bg-surface-container-high rounded-full flex items-center justify-center border-2 border-primary/20">
+<span class="material-symbols-outlined text-3xl text-on-surface" data-icon="shield">shield</span>
+</div>
+<p class="font-black italic text-sm uppercase text-on-surface">Neon Titans</p>
+<p class="text-[9px] font-bold text-slate-500 uppercase">Rank #4</p>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-2xl font-black italic text-primary">VS</span>
+</div>
+<div class="text-center opacity-50">
+<div class="w-16 h-16 mx-auto mb-3 bg-surface-container-high rounded-full flex items-center justify-center border-2 border-dashed border-slate-600">
+<span class="material-symbols-outlined text-3xl text-slate-600" data-icon="help">help</span>
+</div>
+<p class="font-black italic text-sm uppercase text-slate-400">TBD</p>
+<p class="text-[9px] font-bold text-slate-600 uppercase">Pending Seed</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3 mt-2">
+<button class="bg-primary/10 text-primary border border-primary/20 py-3 rounded-lg text-[10px] font-bold uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span> Edit Score
+                        </button>
+<button class="bg-primary text-on-primary py-3 rounded-lg text-[10px] font-bold uppercase tracking-widest active:scale-95 transition-all shadow-lg shadow-primary/20">
+                            Finalize Teams
+                        </button>
+</div>
+</div>
+</div>
+<!-- Match Card 2 (Glass Style for Visual Depth) -->
+<div class="glass-panel relative overflow-hidden rounded-2xl border border-white/5">
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary/10 blur-3xl -z-10"></div>
+<div class="p-5 flex flex-col gap-6">
+<div class="flex justify-between items-center">
+<span class="text-[10px] font-bold text-secondary tracking-widest uppercase">Match ID: #PX-883</span>
+<span class="bg-secondary/10 text-secondary text-[9px] font-black px-2 py-0.5 rounded uppercase">Teams Ready</span>
+</div>
+<div class="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+<div class="text-center">
+<div class="w-16 h-16 mx-auto mb-3 bg-surface-container-high rounded-full flex items-center justify-center border-2 border-secondary/40 shadow-inner">
+<img alt="Team Alpha" class="w-10 h-10" data-alt="Cyberpunk style dragon emblem with neon green scales on a dark geometric shield base" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsYO_DopF418-A66CrJ7zmb-dNCUSnBlpk4dQQBaw2ZVC_Q3eh6NFTAWJJk5w1lfzNNlE0xNo1P9oRRiwKpDoLZKKoqaGfdP-0vUnAFbodAZPmLKFTcJ50DiFTt0njEofId15q5jgpBxbdphSGDSgMm9uJy_OURPWCEkiqDWmidixTvYiLGB3hZpm9FJuQlW-IIgZN6QjXiPPYWKnQ7cD5qs7iStyrZz7ByFiHxxtZBT5KT5k_LtPw6jrw_GQF7cVQGmWIbUFtbS3s"/>
+</div>
+<p class="font-black italic text-sm uppercase text-on-surface">Dragon Squad</p>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-lg font-black text-slate-600 italic">VS</span>
+</div>
+<div class="text-center">
+<div class="w-16 h-16 mx-auto mb-3 bg-surface-container-high rounded-full flex items-center justify-center border-2 border-secondary/40 shadow-inner">
+<img alt="Team Beta" class="w-10 h-10" data-alt="Electric lightning bolt logo with glowing blue edges inside a sleek circular metallic frame" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBO_v_MeOL69LDnyow75vR3TT0zZsLuBwYyi9DHdwqXrlKsQUNAXlHJdGtNN1Oh8A3gQ4N5jyEPynnj65kVqK6HmY6DWozdtyo0zJKnHdLgO0N9E4YmxukrGe4RIR3b1uGZasbsuFWIMIBqAcim2hNQodcPLyszUVjd7BJqidsI_AuI-6LUvZWor6U_kIEVFUZY7nXvIDpkXeGfro8o-cw_tg9vi2LsuvZoNjL3m7fqbkNF9ulSR8PDWw5ATK1WV6-moJ33X4Vx0BRQ"/>
+</div>
+<p class="font-black italic text-sm uppercase text-on-surface">Static Volt</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<button class="w-full bg-secondary text-on-secondary py-4 rounded-xl text-xs font-black uppercase tracking-[0.2em] active:scale-95 transition-all neon-glow-secondary">
+                            Start Match Server
+                        </button>
+<p class="text-[9px] text-center text-slate-500 uppercase tracking-widest font-bold">API Status: Connected &amp; Synced</p>
+</div>
+</div>
+</div>
+<!-- Match Card 3 (Compact Layout) -->
+<div class="bg-surface-container-high/40 rounded-2xl p-4 border border-outline-variant/10">
+<div class="flex items-center justify-between mb-4">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Match #884</span>
+<!-- PENDIENTE DECISIÓN #13: "Lower Bracket" es terminología de doble eliminación (esports).
+     En BanterBot Sports este componente se adaptaría a Ronda de Playoffs (cuartos, semis, final).
+     Ver PRD § Opciones de Gamificación con Playoffs. -->
+<h3 class="text-xs font-black uppercase text-on-surface">Lower Bracket Q1</h3>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-sm" data-icon="sync">sync</span>
+</button>
+</div>
+<div class="flex items-center justify-between gap-4">
+<div class="flex-1 flex items-center gap-3 bg-surface-container-lowest p-3 rounded-lg">
+<div class="w-8 h-8 rounded-full bg-surface-container-high"></div>
+<span class="text-[10px] font-bold uppercase">Phantom</span>
+</div>
+<span class="text-xs font-black italic text-slate-600">VS</span>
+<div class="flex-1 flex items-center gap-3 bg-surface-container-lowest p-3 rounded-lg justify-end">
+<span class="text-[10px] font-bold uppercase">Apex Predator</span>
+<div class="w-8 h-8 rounded-full bg-surface-container-high"></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating Action Button - Organizer Focus -->
+<div class="fixed bottom-24 right-6 z-50">
+<button class="w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined font-variation-settings-fill" data-icon="add" style="font-variation-settings: 'FILL' 1;">add</span>
+</button>
+</div>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-6 pb-6 pt-3 lg:hidden bg-[#0d1323]/80 backdrop-blur-2xl rounded-t-[2rem] border-t border-sky-400/10 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+<a class="flex flex-col items-center justify-center text-slate-500 p-2 hover:text-sky-200 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="sports_kabaddi">sports_kabaddi</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-['Inter'] mt-1">Arena</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-sky-500/20 text-sky-300 rounded-2xl px-5 py-2 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="military_tech">military_tech</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-['Inter'] mt-1">Ranks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 p-2 hover:text-sky-200 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-['Inter'] mt-1">Chat</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 p-2 hover:text-sky-200 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-['Inter'] mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

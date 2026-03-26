@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-variant": "#1e253b",
+            "on-tertiary-container": "#000000",
+            "inverse-surface": "#faf8ff",
+            "secondary-fixed-dim": "#2be800",
+            "error-container": "#9f0519",
+            "tertiary-dim": "#e51a22",
+            "primary-container": "#00cffc",
+            "outline": "#707588",
+            "on-secondary": "#0b5800",
+            "on-secondary-container": "#e7ffd9",
+            "tertiary": "#ff7166",
+            "on-surface-variant": "#a6aabf",
+            "on-tertiary": "#4a0003",
+            "secondary-fixed": "#2ff801",
+            "inverse-primary": "#006880",
+            "outline-variant": "#434759",
+            "on-primary-fixed-variant": "#004a5c",
+            "surface-container-high": "#181f33",
+            "on-error-container": "#ffa8a3",
+            "error": "#ff716c",
+            "tertiary-container": "#f5282b",
+            "surface-bright": "#242b43",
+            "on-secondary-fixed": "#064200",
+            "surface-container-low": "#0d1323",
+            "tertiary-fixed-dim": "#ff7b70",
+            "background": "#090e1c",
+            "secondary-dim": "#2be800",
+            "surface": "#090e1c",
+            "surface-dim": "#090e1c",
+            "on-primary-container": "#004050",
+            "secondary-container": "#106e00",
+            "primary": "#69daff",
+            "primary-fixed-dim": "#00c0ea",
+            "surface-container-lowest": "#000000",
+            "primary-fixed": "#00cffc",
+            "on-background": "#e1e4fa",
+            "secondary": "#2ff801",
+            "on-primary-fixed": "#002a35",
+            "surface-container": "#13192b",
+            "surface-tint": "#69daff",
+            "on-tertiary-fixed-variant": "#7a0008",
+            "on-error": "#490006",
+            "on-tertiary-fixed": "#3a0002",
+            "inverse-on-surface": "#505466",
+            "on-secondary-fixed-variant": "#0d6200",
+            "on-primary": "#004a5d",
+            "tertiary-fixed": "#ff9287",
+            "on-surface": "#e1e4fa",
+            "primary-dim": "#00c0ea",
+            "surface-container-highest": "#1e253b",
+            "error-dim": "#d7383b"
+          },
+          fontFamily: {
+            "headline": ["Inter"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col">
+<!-- Top Navigation (Shell) -->
+<header class="fixed top-0 w-full z-50 bg-[#090e1c]/60 backdrop-blur-xl shadow-[0_0_40px_rgba(105,218,255,0.08)]">
+<div class="flex justify-between items-center h-16 px-6 w-full max-w-none">
+<div class="text-2xl font-black italic tracking-tighter text-sky-400">BanterBot Sports</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-400 hover:bg-sky-400/10 transition-all active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-primary/20">
+<img alt="User Profile Avatar" data-alt="close up headshot of a professional esports player wearing a neon blue jersey and headset in a dark studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuzhkkMQI8CzmbJ6gJpaPiIO1wxfrIdQmzOmI8d1DsNZmd9Y3IkKVW6uRTRCHihoJ1VHXXlblUPnJaaBFNTZnoWnI54bqIL7UY2I6LeGTkm_ElcJn0FtS18Zup4Uj0Tx8CCKl32Ip3eoQIUV7SsY-92Gj2Dz1ah9ztFljjwPbPRbLPNNigQaRSLNn-jvnpNNS6aJdQB7dI91yDDPtKfbkApqqCRay9FF_TJgxeHwUCcQZKinQosJTizPyLUAPvk-X-AX4yjuCBZu62"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 mt-16 mb-24 px-4 pt-6 overflow-y-auto">
+<!-- Header Section -->
+<div class="mb-8">
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-secondary/20 text-secondary text-[10px] font-bold tracking-widest px-2 py-0.5 rounded-full border border-secondary/30 uppercase">Live</span>
+<span class="text-on-surface-variant text-xs font-semibold uppercase tracking-wider">World Series 2024</span>
+</div>
+<h1 class="text-[2.5rem] font-black leading-none tracking-tight text-on-surface mb-2">LEADERBOARD</h1>
+<p class="text-on-surface-variant text-sm max-w-[80%]">The elite arena where legends are forged through trash talk and precision plays.</p>
+</div>
+<!-- Podium / Top 3 (Asymmetric Grid) -->
+<div class="grid grid-cols-12 gap-3 mb-10">
+<!-- Rank 2 -->
+<div class="col-span-4 mt-8">
+<div class="relative bg-surface-container-low rounded-full p-4 flex flex-col items-center border-t border-primary/10">
+<div class="absolute -top-4 w-12 h-12 rounded-full border-2 border-outline-variant overflow-hidden bg-surface-container-highest">
+<img alt="Rank 2 Avatar" data-alt="digital avatar of a gamer with vibrant purple hair and futuristic glasses, neon lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5qW4sMZjZw-s0ZU0yytSAsVSyD3ylIyoLi1Q30y8pW8IxbFJBp6QQJwUIgNxlCxFxZgrQMmp3OnP8RJbdFGgzkAGg_relwKqDUMOuH85XMCFe3MAvtuPGYC20ch-VmJR5mdKj-qyrUlNeTJ6V9FMhV9VyPfkMM2Ft0fRV13LIiIn8OG9oeR4ux4aPbK27iOgdJd8ritTl08ZqQHxUOuCzubKVNfrmgrNBDq0i3sCbviHPIY9ALp79AtNiGI0_iuwlRycUQPK0rnqw"/>
+</div>
+<div class="mt-6 text-center">
+<div class="text-outline-variant font-black italic text-xl">#2</div>
+<div class="text-[10px] font-bold text-on-surface truncate w-full">ShadowReap</div>
+<div class="text-primary font-black text-sm">2,840</div>
+</div>
+</div>
+</div>
+<!-- Rank 1 (Featured) -->
+<div class="col-span-4">
+<div class="relative bg-surface-container-high rounded-full p-5 flex flex-col items-center shadow-[0_0_30px_rgba(105,218,255,0.15)] border-t border-primary/30">
+<div class="absolute -top-6 w-16 h-16 rounded-full border-4 border-primary overflow-hidden bg-surface-container-highest">
+<img alt="Rank 1 Avatar" data-alt="hyper-realistic digital portrait of a champion esports player with glowing blue cybernetic markings on face" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6vGOLA4WgneRtRmM3f6DvsMaIZQj_O0C8nA8b-C0f-URG0miuK9mzPa8XTLdqj5FIRIu1yVppCr_0V0Bco3x12i83utXACkT93U54tTEUUFxJ4IINywMsOksXEbXNV_KBQY977XZxoxA-MehEUGonPZMnFcIcpMACHWoyhD96g7PZ1VO43IQuJv_AevIk2gqs6M3Ty0EmlnATRln-LYIWipKGaGddNVtaXbL9pFMnR4BMgPX8-ubJZtYXk8Q9Mzolwt-cfNlrH_jG"/>
+</div>
+<div class="absolute -top-10">
+<span class="material-symbols-outlined text-secondary text-2xl" data-icon="military_tech" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+</div>
+<div class="mt-8 text-center">
+<div class="text-primary font-black italic text-2xl">#1</div>
+<div class="text-xs font-black text-on-surface truncate w-full">ViperStrike</div>
+<div class="text-secondary font-black text-lg">3,120</div>
+</div>
+</div>
+</div>
+<!-- Rank 3 -->
+<div class="col-span-4 mt-12">
+<div class="relative bg-surface-container-low rounded-full p-4 flex flex-col items-center border-t border-tertiary/10">
+<div class="absolute -top-4 w-12 h-12 rounded-full border-2 border-tertiary/20 overflow-hidden bg-surface-container-highest">
+<img alt="Rank 3 Avatar" data-alt="stylized illustration of a gamer wearing a hoodie and glowing red headphones, atmospheric dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAN4cbHDMNlWj4tOEzZuANsRlzm9SYVL7RtKRDUjcLOl4-xhQG0zAGCey7YXnmm8lZRRcurROvGYykWFTbH8Q_TIJYdR29cBvwOVy1NA44dCu_pA_gf2sU519BduOJVpw0hrGvrLj5y1Qbn7NvfHKO3kOHWI3sFh28k-cDJ-8PH7tG2bJxpZTf9TI2GPXN7lFtmeJamrC43DC41dmU2CmsTy_LuzWnxe5VL7mxa-EuDJ-T-T5XNhhSPKBLGgT-ddIQJNBcBfC-7zSLh"/>
+</div>
+<div class="mt-6 text-center">
+<div class="text-tertiary font-black italic text-xl">#3</div>
+<div class="text-[10px] font-bold text-on-surface truncate w-full">GhostMamba</div>
+<div class="text-primary font-black text-sm">2,450</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Standings List -->
+<div class="space-y-3">
+<!-- Player Row 4 -->
+<div class="bg-surface-container-high rounded-full p-3 flex items-center justify-between transition-all active:scale-[0.98] border-l-4 border-transparent">
+<div class="flex items-center gap-4">
+<span class="text-on-surface-variant font-black italic w-6 text-center">4</span>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="Player Avatar" data-alt="profile photo of a young man with a focused expression, blue neon rim lighting on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzqtgbmktSfuJ5HzALT_Y1uJJ5i7W-G-NwJlgZKO98hFJ9d0mVFJA1mXCX-uUVZ6PWEnt_pNpnUMa9h171R9TEseO5w2fqhjxmKk9a_7hlduVwfwWAx-zTlwQ6GDfo0CL8HSW6VLBblp3Y5wNZCfXozl-0dWqgbHjfkJ905iAU4oELheKBT_-Y4ODQr5eUhIYBX_pN5ssTN_IRGH2UQjTob3eogMbBSFaUi6cnto_w74MO_vJriW1IY9FzMDVs0EAx_r3hX-JqP1Oe"/>
+</div>
+<div>
+<div class="text-sm font-bold text-on-surface">NeonKnight</div>
+<div class="text-[10px] text-on-surface-variant uppercase tracking-widest">Master League</div>
+</div>
+</div>
+<div class="text-right flex items-center gap-3">
+<div>
+<div class="text-sm font-black text-primary">2,105</div>
+<div class="text-[8px] text-secondary font-bold">+12 pts</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-xl" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<!-- Player Row 5 (Expanded Concept) -->
+<div class="bg-surface-bright rounded-[2rem] p-1 flex flex-col transition-all border border-primary/10">
+<div class="p-3 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="text-on-surface-variant font-black italic w-6 text-center">5</span>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden ring-2 ring-primary/20">
+<img alt="Player Avatar" data-alt="digital art of a cybernetic warrior headshot with glowing orange eyes and metallic armor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzbusSZA69zcfldqyZ_FHd7TsRFdBzQGzgACPHgN-XB_n22Ame4cDtG7nrAovldLnx31ZFaF7zgBI6Ht-JpLZ5ui_zP8zVLdSmORWCchmp3imji2Erg4x_TbodD31vrAEWOJTU-mS09D_huTRVjldcmJjim0OVMwtUd1dElyOMfrHgV-IavbtdhJBx3FBCsuCBkIjksihHSz9w2EgE6JN9_zLeMncKjFP3n5aL8vj5g0-5JsNuTPuyxvPOdUNdw5GLeMKrbD0XQG-h"/>
+</div>
+<div>
+<div class="text-sm font-bold text-on-surface">AlphaWolf</div>
+<div class="text-[10px] text-on-surface-variant uppercase tracking-widest">Diamond III</div>
+</div>
+</div>
+<div class="text-right flex items-center gap-3">
+<div>
+<div class="text-sm font-black text-primary">1,980</div>
+<div class="text-[8px] text-tertiary font-bold">-4 pts</div>
+</div>
+<span class="material-symbols-outlined text-primary text-xl" data-icon="expand_less">expand_less</span>
+</div>
+</div>
+<!-- Breakdown Table (Expanded Content) -->
+<div class="px-4 pb-4 pt-2">
+<div class="bg-surface-container-lowest/40 rounded-2xl p-3 grid grid-cols-3 gap-2">
+<div class="text-center">
+<div class="text-[8px] text-on-surface-variant uppercase font-bold tracking-tighter">Matches</div>
+<div class="text-xs font-black text-on-surface">142</div>
+</div>
+<!-- POST-MVP — IGNORAR: "Win Rate" es stat cross-torneo. No en MVP. Ver PRD decisión #6. -->
+<div class="text-center border-x border-outline-variant/10">
+<div class="text-[8px] text-on-surface-variant uppercase font-bold tracking-tighter">Win Rate</div>
+<div class="text-xs font-black text-secondary">64%</div>
+</div>
+<div class="text-center">
+<div class="text-[8px] text-on-surface-variant uppercase font-bold tracking-tighter">Banter Score</div>
+<div class="text-xs font-black text-primary">8.4</div>
+</div>
+</div>
+<button class="w-full mt-3 py-2 bg-primary/10 rounded-full text-[10px] font-bold text-primary uppercase tracking-widest hover:bg-primary/20 transition-colors">View Profile History</button>
+</div>
+</div>
+<!-- Player Row 6 -->
+<div class="bg-surface-container-high rounded-full p-3 flex items-center justify-between transition-all active:scale-[0.98]">
+<div class="flex items-center gap-4">
+<span class="text-on-surface-variant font-black italic w-6 text-center">6</span>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="Player Avatar" data-alt="moody portrait of a female gamer in a dark room illuminated by neon green PC lights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCv_A285TkW7sedfkf8fxWYgg3D-2XlY4uevjUGvZy4mm5BiG1yyav4Xy2jlvg_ZkOHYryWm6ZQQwJWnznWcmj30iDqJSNZapL0Lr7cNupTwmTCyTvcMM6GLxa5HWneZ6MSNyzVzXUrcQ9LMj3MUn3vJLMNDjt4LqVtA_ZBYcctqcI1IVhp6T5dwkYK1o3HruiDX6KHV_MyAiuVrL8_MmfAeSygO-GweQegT0voxJTlBIwxjlc89ohBoE_Eq9PU2J3kD8SNOA2V0zyW"/>
+</div>
+<div>
+<div class="text-sm font-bold text-on-surface">CrimsonAce</div>
+<div class="text-[10px] text-on-surface-variant uppercase tracking-widest">Diamond II</div>
+</div>
+</div>
+<div class="text-right flex items-center gap-3">
+<div>
+<div class="text-sm font-black text-primary">1,820</div>
+<div class="text-[8px] text-on-surface-variant font-bold">0 pts</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-xl" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<!-- Player Row 7 -->
+<div class="bg-surface-container-high rounded-full p-3 flex items-center justify-between transition-all active:scale-[0.98]">
+<div class="flex items-center gap-4">
+<span class="text-on-surface-variant font-black italic w-6 text-center">7</span>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="Player Avatar" data-alt="pixel art style avatar of a robot head with glowing visor, dark space theme" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGkBPDVXIEL92_d7Idj8F1I9rXnEY2K048zCFwe4EaSeYuOIj9BVKZ1CqUlbikcTqSg_vaXfqdC2_yZOfOM_8bOGCZC9DXoeBZFKT3tNQkoBKnasLVYLlTOuLtRZi81qU8eqRfz2-qbwZj1vDgSx6I1FO74R-T4lV9vdfM3K8N3cvshmCqR-n2oiEHeNwfgOjKSeQP-YdeCpkYAiRaICps-WRYxx9Dn1HfOEPsLsJDUgGFCjdNIvBdpGDG-q0AWUsUA3rd5ih5AzB1"/>
+</div>
+<div>
+<div class="text-sm font-bold text-on-surface">BotKiller99</div>
+<div class="text-[10px] text-on-surface-variant uppercase tracking-widest">Diamond I</div>
+</div>
+</div>
+<div class="text-right flex items-center gap-3">
+<div>
+<div class="text-sm font-black text-primary">1,745</div>
+<div class="text-[8px] text-secondary font-bold">+28 pts</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-xl" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<!-- Player Row 8 -->
+<div class="bg-surface-container-high rounded-full p-3 flex items-center justify-between transition-all active:scale-[0.98]">
+<div class="flex items-center gap-4">
+<span class="text-on-surface-variant font-black italic w-6 text-center">8</span>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="Player Avatar" data-alt="cinematic close up of a player wearing high-tech goggles reflecting a gaming dashboard" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfeoK-T9qJtbox2-gWRfZF_BAupdZnuU2POWmaJv97xf8Yg9jOVcp6l4hCp8vqI6xYwIx6cAzGOLdOEQr66uabIGBhc-uGMdPlCGhpNBZrsnM_tlgA3ppSDRDg8voqzLuMK5WWpnFKZBnO39HoOBEZSau96y7emXg88zrDskKdPB4cCHDFCWNI5v32NPdJP7vjvo55MSwC_-HaPU2jGBuNjjR-Cl9JzieU_vyozAEeRdmn9FbsqxsDcH3SMyRAn1o6YoMMK_G17icV"/>
+</div>
+<div>
+<div class="text-sm font-bold text-on-surface">ZeroChill</div>
+<div class="text-[10px] text-on-surface-variant uppercase tracking-widest">Platinum V</div>
+</div>
+</div>
+<div class="text-right flex items-center gap-3">
+<div>
+<div class="text-sm font-black text-primary">1,690</div>
+<div class="text-[8px] text-tertiary font-bold">-15 pts</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-xl" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-6 pb-6 pt-3 lg:hidden bg-[#0d1323]/80 backdrop-blur-2xl rounded-t-[2rem] border-t border-sky-400/10 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+<!-- Arena Tab -->
+<a class="flex flex-col items-center justify-center text-slate-500 p-2 hover:text-sky-200 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="sports_kabaddi">sports_kabaddi</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-['Inter'] mt-1">Arena</span>
+</a>
+<!-- Ranks Tab (Active) -->
+<a class="flex flex-col items-center justify-center bg-sky-500/20 text-sky-300 rounded-2xl px-5 py-2 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="military_tech" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-['Inter'] mt-1">Ranks</span>
+</a>
+<!-- NOTA: "Chat" tab mapea al Arena Chat (IN SCOPE). En MVP el bottom nav usa Patrón A
+     (Home, Leagues, Predict, Profile). El Arena Chat se accede via FAB flotante, no desde nav. Ver PRD. -->
+<!-- Chat Tab -->
+<a class="flex flex-col items-center justify-center text-slate-500 p-2 hover:text-sky-200 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-['Inter'] mt-1">Chat</span>
+</a>
+<!-- Profile Tab -->
+<a class="flex flex-col items-center justify-center text-slate-500 p-2 hover:text-sky-200 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-['Inter'] mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

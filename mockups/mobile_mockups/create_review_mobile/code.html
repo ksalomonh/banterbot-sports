@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BanterBot Sports - Review &amp; Publish</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-variant": "#1e253b",
+                        "on-tertiary-container": "#000000",
+                        "inverse-surface": "#faf8ff",
+                        "secondary-fixed-dim": "#2be800",
+                        "error-container": "#9f0519",
+                        "tertiary-dim": "#e51a22",
+                        "primary-container": "#00cffc",
+                        "outline": "#707588",
+                        "on-secondary": "#0b5800",
+                        "on-secondary-container": "#e7ffd9",
+                        "tertiary": "#ff7166",
+                        "on-surface-variant": "#a6aabf",
+                        "on-tertiary": "#4a0003",
+                        "secondary-fixed": "#2ff801",
+                        "inverse-primary": "#006880",
+                        "outline-variant": "#434759",
+                        "on-primary-fixed-variant": "#004a5c",
+                        "surface-container-high": "#181f33",
+                        "on-error-container": "#ffa8a3",
+                        "error": "#ff716c",
+                        "tertiary-container": "#f5282b",
+                        "surface-bright": "#242b43",
+                        "on-secondary-fixed": "#064200",
+                        "surface-container-low": "#0d1323",
+                        "tertiary-fixed-dim": "#ff7b70",
+                        "background": "#090e1c",
+                        "secondary-dim": "#2be800",
+                        "surface": "#090e1c",
+                        "surface-dim": "#090e1c",
+                        "on-primary-container": "#004050",
+                        "secondary-container": "#106e00",
+                        "primary": "#69daff",
+                        "primary-fixed-dim": "#00c0ea",
+                        "surface-container-lowest": "#000000",
+                        "primary-fixed": "#00cffc",
+                        "on-background": "#e1e4fa",
+                        "secondary": "#2ff801",
+                        "on-primary-fixed": "#002a35",
+                        "surface-container": "#13192b",
+                        "surface-tint": "#69daff",
+                        "on-tertiary-fixed-variant": "#7a0008",
+                        "on-error": "#490006",
+                        "on-tertiary-fixed": "#3a0002",
+                        "inverse-on-surface": "#505466",
+                        "on-secondary-fixed-variant": "#0d6200",
+                        "on-primary": "#004a5d",
+                        "tertiary-fixed": "#ff9287",
+                        "on-surface": "#e1e4fa",
+                        "primary-dim": "#00c0ea",
+                        "surface-container-highest": "#1e253b",
+                        "error-dim": "#d7383b"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(24, 31, 51, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .text-glow-primary {
+            text-shadow: 0 0 15px rgba(105, 218, 255, 0.4);
+        }
+        .bg-stadium-gradient {
+            background: radial-gradient(circle at top right, rgba(105, 218, 255, 0.05) 0%, transparent 60%),
+                        radial-gradient(circle at bottom left, rgba(47, 248, 1, 0.03) 0%, transparent 50%),
+                        #090e1c;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-stadium-gradient text-on-surface font-body min-h-screen pb-32">
+<!-- Top Navigation Suppression: Not rendered for transactional wizard flow -->
+<!-- Header / Progress Area -->
+<header class="sticky top-0 z-40 bg-surface/80 backdrop-blur-xl px-6 py-4 flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<button class="p-2 -ml-2 text-on-surface">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline font-extrabold tracking-tight text-xl italic uppercase">Review &amp; Publish</h1>
+</div>
+<span class="text-secondary font-label font-bold text-xs tracking-widest bg-secondary/10 px-2 py-1 rounded-full">STEP 5/5</span>
+</div>
+<!-- Progress Bar (100%) -->
+<div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container w-full shadow-[0_0_10px_rgba(105,218,255,0.5)]"></div>
+</div>
+</header>
+<main class="px-6 py-6 flex flex-col gap-8">
+<!-- Hero Preview Card (Asymmetric) -->
+<section class="relative">
+<div class="absolute -top-4 -left-2 w-24 h-24 bg-primary/10 rounded-full blur-3xl"></div>
+<div class="surface-container-high rounded-3xl overflow-hidden border-l-4 border-primary">
+<div class="relative h-48 w-full">
+<img alt="tournament banner" class="w-full h-full object-cover opacity-60" data-alt="cinematic wide shot of a modern dark gaming arena with glowing blue neon lights and empty spectator seats in dark tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBq-uO5Jm6diQ81lIg7ChY15gWGHovLJHHAmSvKC2EULaHYNoEV2dFOps0orbRM1gOM_q67GN-NuTjQl0_4eTvfD6W8KI9ECqqqoh4HeYqK3_bTIh62kZ_3g2Bz272a9704h8mBRhK_T2w1HTzVyGbhHU4b4v9NFmzRJunZ0aDcqlwNarus1SRSQJDAxsRVkngL4D8lPKZ-ndnHQhioBSBRy7d7fxPgjA4damnPW9ARIqanWW6eeN_bT-jFyRRBMl8urhe74OOHtPv"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-high to-transparent"></div>
+<div class="absolute bottom-4 left-4 right-4">
+<p class="text-primary font-label text-[10px] font-black uppercase tracking-[0.2em] mb-1">PRO LEAGUE SERIES</p>
+<h2 class="text-2xl font-black italic tracking-tighter text-glow-primary">NEON RIFT SHOWDOWN</h2>
+</div>
+</div>
+</div>
+</section>
+<!-- Vertical Summary Section -->
+<div class="flex flex-col gap-6">
+<!-- Tournament Identity -->
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between px-1">
+<h3 class="font-headline text-xs font-bold text-on-surface-variant uppercase tracking-widest">General Info</h3>
+<button class="text-primary text-xs font-bold uppercase tracking-tighter">Edit</button>
+</div>
+<div class="surface-container-low rounded-2xl p-5 flex flex-col gap-4">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">emoji_events</span>
+</div>
+<div>
+<!-- PENDIENTE DECISIÓN #13: "Double Elimination Brackets / 16 Teams / Region" son conceptos de esports.
+     BanterBot Sports es una quiniela de fútbol. Ver PRD § Opciones de Gamificación con Playoffs.
+     También: "Public registration", "Anti-cheat protocol", "Rake/Out 5%" son ficticio o post-MVP. -->
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-wider">Format</p>
+<p class="font-bold text-sm">Double Elimination Brackets</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">groups</span>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-wider">Participant Limit</p>
+<p class="font-bold text-sm">64 Players / 16 Teams</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Schedule Bento Card -->
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between px-1">
+<h3 class="font-headline text-xs font-bold text-on-surface-variant uppercase tracking-widest">Timing &amp; Region</h3>
+<button class="text-primary text-xs font-bold uppercase tracking-tighter">Edit</button>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="surface-container-low rounded-2xl p-4 flex flex-col gap-1">
+<span class="material-symbols-outlined text-secondary text-lg mb-1">calendar_today</span>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-tight">Starts</p>
+<p class="font-bold text-sm">Oct 24, 2023</p>
+</div>
+<div class="surface-container-low rounded-2xl p-4 flex flex-col gap-1">
+<span class="material-symbols-outlined text-secondary text-lg mb-1">public</span>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-tight">Region</p>
+<p class="font-bold text-sm">North America</p>
+</div>
+</div>
+</div>
+<!-- Rules & Prize Pool -->
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between px-1">
+<h3 class="font-headline text-xs font-bold text-on-surface-variant uppercase tracking-widest">Economy</h3>
+<button class="text-primary text-xs font-bold uppercase tracking-tighter">Edit</button>
+</div>
+<div class="surface-container-low rounded-2xl p-5 border-l-4 border-secondary/30 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl rounded-full translate-x-16 -translate-y-8"></div>
+<div class="relative flex justify-between items-center">
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-wider mb-1">Total Prize Pool</p>
+<p class="text-3xl font-black italic tracking-tighter text-secondary">$5,000.00</p>
+</div>
+<div class="bg-secondary/10 px-3 py-1.5 rounded-xl border border-secondary/20">
+<span class="text-secondary text-[10px] font-black uppercase tracking-widest">Verified</span>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-outline-variant/10 flex justify-between">
+<div>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-tight">Entry Fee</p>
+<p class="font-bold text-sm">$25.00</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-tight">House Cut</p>
+<p class="font-bold text-sm">5%</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Final Settings Checklist -->
+<div class="surface-container-high rounded-2xl p-5 flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-sm font-semibold">Public registration enabled</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-sm font-semibold">Anti-cheat protocol active</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-sm font-semibold">Banter chat enabled</span>
+</div>
+</div>
+</div>
+<!-- Warning Area -->
+<div class="p-4 bg-tertiary/10 rounded-2xl border border-tertiary/20 flex gap-4">
+<span class="material-symbols-outlined text-tertiary">warning</span>
+<p class="text-xs text-on-surface/80 leading-relaxed">
+                Once launched, certain core tournament settings like Format and Prize Pool cannot be modified. Ensure all data is accurate before proceeding.
+            </p>
+</div>
+</main>
+<!-- Fixed Bottom Actions -->
+<div class="fixed bottom-0 left-0 right-0 p-6 glass-panel border-t border-primary/10 z-50">
+<div class="max-w-md mx-auto flex flex-col gap-4">
+<button class="w-full h-14 bg-gradient-to-r from-primary to-primary-fixed text-on-primary-fixed font-headline font-black italic tracking-tighter text-lg rounded-2xl shadow-[0_4px_20px_rgba(105,218,255,0.4)] active:scale-95 transition-transform uppercase">
+                LAUNCH TOURNAMENT
+            </button>
+<p class="text-center text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">By clicking launch, you agree to Arena Master terms</p>
+</div>
+</div>
+<!-- No SideNavBar or BottomNavBar as per "Focus/Transactional" suppression rule -->
+</body></html>

@@ -1,0 +1,316 @@
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-variant": "#1e253b",
+              "on-tertiary-container": "#000000",
+              "inverse-surface": "#faf8ff",
+              "secondary-fixed-dim": "#2be800",
+              "error-container": "#9f0519",
+              "tertiary-dim": "#e51a22",
+              "primary-container": "#00cffc",
+              "outline": "#707588",
+              "on-secondary": "#0b5800",
+              "on-secondary-container": "#e7ffd9",
+              "tertiary": "#ff7166",
+              "on-surface-variant": "#a6aabf",
+              "on-tertiary": "#4a0003",
+              "secondary-fixed": "#2ff801",
+              "inverse-primary": "#006880",
+              "outline-variant": "#434759",
+              "on-primary-fixed-variant": "#004a5c",
+              "surface-container-high": "#181f33",
+              "on-error-container": "#ffa8a3",
+              "error": "#ff716c",
+              "tertiary-container": "#f5282b",
+              "surface-bright": "#242b43",
+              "on-secondary-fixed": "#064200",
+              "surface-container-low": "#0d1323",
+              "tertiary-fixed-dim": "#ff7b70",
+              "background": "#090e1c",
+              "secondary-dim": "#2be800",
+              "surface": "#090e1c",
+              "surface-dim": "#090e1c",
+              "on-primary-container": "#004050",
+              "secondary-container": "#106e00",
+              "primary": "#69daff",
+              "primary-fixed-dim": "#00c0ea",
+              "surface-container-lowest": "#000000",
+              "primary-fixed": "#00cffc",
+              "on-background": "#e1e4fa",
+              "secondary": "#2ff801",
+              "on-primary-fixed": "#002a35",
+              "surface-container": "#13192b",
+              "surface-tint": "#69daff",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "on-error": "#490006",
+              "on-tertiary-fixed": "#3a0002",
+              "inverse-on-surface": "#505466",
+              "on-secondary-fixed-variant": "#0d6200",
+              "on-primary": "#004a5d",
+              "tertiary-fixed": "#ff9287",
+              "on-surface": "#e1e4fa",
+              "primary-dim": "#00c0ea",
+              "surface-container-highest": "#1e253b",
+              "error-dim": "#d7383b"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(30, 37, 59, 0.6);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body min-h-screen">
+<!-- TopNavBar (Shared Component) -->
+<nav class="fixed top-0 w-full z-50 bg-[#090e1c]/60 backdrop-blur-xl shadow-[0_0_40px_rgba(105,218,255,0.08)] flex justify-between items-center h-16 px-6 w-full max-w-none">
+<div class="text-2xl font-black italic tracking-tighter text-sky-400 font-headline">BanterBot Sports</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="font-headline font-bold tracking-tight text-slate-400 hover:text-sky-200 transition-colors" href="#">Tournaments</a>
+<a class="font-headline font-bold tracking-tight text-slate-400 hover:text-sky-200 transition-colors" href="#">Leaderboard</a>
+<a class="font-headline font-bold tracking-tight text-slate-400 hover:text-sky-200 transition-colors" href="#">Matches</a>
+<a class="font-headline font-bold tracking-tight text-slate-400 hover:text-sky-200 transition-colors" href="#">Banter</a>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant hover:bg-sky-400/10 p-2 rounded-full cursor-pointer transition-all active:scale-95 duration-200">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:bg-sky-400/10 p-2 rounded-full cursor-pointer transition-all active:scale-95 duration-200">settings</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/20">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="close-up portrait of a professional e-sports player with neon blue lighting accents and tech wear" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSAStJZpRBwdKo-MUQRRCobBOKO7KO4d_0hf4TakGHfjpix98RwtXqlT8frwG1BIWbgDgXuohG-q3q6_8IN4sWhh20lENzI-wgQp75dTskiZSN7A5zzhPGwVuqslVUMGCYdwYJ3t6EZeE2zVWKFUPkSdkJLiZZNJ5yDThxGgjRsfgcRFuVDcHkjZX9CPiUMr7s7tIuv1YzFeWTQ23WgAc7Uef6ArvGvDrqwiZWK4ITG10L70DweFsBtwoNr63UFHPW7Z7cVmZEUnDE"/>
+</div>
+</div>
+</nav>
+<!-- SideNavBar (Shared Component) - Suppressed for Transactional/Wizard Flow per Mandate -->
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-12 px-6 lg:px-12 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Wizard Sidebar -->
+<aside class="lg:col-span-3 space-y-8">
+<div class="surface-container-low p-8 rounded-xl space-y-6">
+<h3 class="text-label-md font-bold uppercase tracking-widest text-primary">Arena Creation</h3>
+<nav class="space-y-4">
+<div class="flex items-center gap-3 text-on-surface-variant/50">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-sm font-semibold uppercase tracking-wider">1. Basics</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant/50">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-sm font-semibold uppercase tracking-wider">2. Scoring</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant/50">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-sm font-semibold uppercase tracking-wider">3. Teams</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant/50">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-sm font-semibold uppercase tracking-wider">4. Prizes</span>
+</div>
+<div class="flex items-center gap-3 text-primary">
+<span class="material-symbols-outlined">radio_button_checked</span>
+<span class="text-sm font-semibold uppercase tracking-wider">5. Review</span>
+</div>
+</nav>
+<div class="pt-6 border-t border-outline-variant/15">
+<p class="text-xs text-on-surface-variant mb-2">Completion Status</p>
+<div class="w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="w-full h-full bg-secondary"></div>
+</div>
+<p class="text-xl font-black italic mt-2 text-on-surface">STEP 5/5</p>
+</div>
+</div>
+<!-- Contextual Hint -->
+<div class="bg-primary/5 p-6 rounded-xl border-l-4 border-primary">
+<span class="material-symbols-outlined text-primary mb-2">info</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">Ensure all scoring metrics are accurate. Once the arena is live, scoring rules cannot be modified for active matches.</p>
+</div>
+</aside>
+<!-- Step 5 Review Content -->
+<section class="lg:col-span-9 space-y-8">
+<header class="space-y-2">
+<h1 class="text-headline-lg font-bold text-on-surface tracking-tight">Review &amp; Publish Arena</h1>
+<p class="text-on-surface-variant body-lg">One final check of the digital colosseum before the gates open.</p>
+</header>
+<!-- Bento Grid Summary -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Basics Card -->
+<div class="surface-container-high p-8 rounded-xl shadow-[0_0_40px_rgba(105,218,255,0.04)] hover:surface-bright transition-all group">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl">stadium</span>
+<h2 class="text-xl font-bold">Arena Basics</h2>
+</div>
+<button class="text-primary text-sm font-bold uppercase tracking-widest hover:underline">Edit</button>
+</div>
+<div class="space-y-4">
+<div>
+<p class="text-xs uppercase tracking-widest text-on-surface-variant mb-1">Tournament Name</p>
+<p class="text-lg font-bold text-primary">Cyber Blitz Championship 2024</p>
+</div>
+<div class="flex gap-8">
+<div>
+<!-- NOTA DE MOCKUP: "BANTER" es moneda ficticia del diseñador. La implementación real usa USD. Ver PRD decisión #9. -->
+<p class="text-xs uppercase tracking-widest text-on-surface-variant mb-1">Entry Fee</p>
+<p class="text-lg font-bold">45.00 BANTER</p>
+</div>
+<div>
+<p class="text-xs uppercase tracking-widest text-on-surface-variant mb-1">Max Players</p>
+<p class="text-lg font-bold">512</p>
+</div>
+</div>
+<!-- POST-MVP — IGNORAR: "Public Lobby" badge. En MVP todos los torneos son privados (invite link). Ver PRD decisión #5. -->
+<div class="pt-4 border-t border-outline-variant/15">
+<span class="bg-secondary/10 text-secondary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest">Public Lobby</span>
+</div>
+</div>
+</div>
+<!-- Scoring Card -->
+<div class="surface-container-high p-8 rounded-xl shadow-[0_0_40px_rgba(105,218,255,0.04)] hover:surface-bright transition-all">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl">leaderboard</span>
+<h2 class="text-xl font-bold">Scoring Engine</h2>
+</div>
+<button class="text-primary text-sm font-bold uppercase tracking-widest hover:underline">Edit</button>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-center p-3 bg-surface-container rounded-lg">
+<span class="text-sm font-semibold">Match Win</span>
+<span class="text-secondary font-black">+100 PTS</span>
+</div>
+<div class="flex justify-between items-center p-3 bg-surface-container rounded-lg">
+<span class="text-sm font-semibold">Headshot Bonus</span>
+<span class="text-secondary font-black">+15 PTS</span>
+</div>
+<div class="flex justify-between items-center p-3 bg-surface-container rounded-lg">
+<span class="text-sm font-semibold">Match Loss</span>
+<span class="text-tertiary font-black">-20 PTS</span>
+</div>
+</div>
+</div>
+<!-- Prize Distribution (Asymmetric/Full Width) -->
+<div class="md:col-span-2 surface-container-high p-8 rounded-xl border border-primary/10 relative overflow-hidden">
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-8">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl">military_tech</span>
+<h2 class="text-xl font-bold">Prize Pool Distribution</h2>
+</div>
+<button class="text-primary text-sm font-bold uppercase tracking-widest hover:underline">Edit</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="text-center p-6 bg-surface-container/50 rounded-2xl border-b-4 border-secondary">
+<p class="text-4xl font-black italic text-on-surface mb-2">60%</p>
+<p class="text-xs uppercase tracking-widest text-on-surface-variant">1st Place</p>
+<p class="mt-2 text-secondary font-bold">13,824 BANTER</p>
+</div>
+<div class="text-center p-6 bg-surface-container/50 rounded-2xl border-b-4 border-primary">
+<p class="text-4xl font-black italic text-on-surface mb-2">25%</p>
+<p class="text-xs uppercase tracking-widest text-on-surface-variant">2nd Place</p>
+<p class="mt-2 text-primary font-bold">5,760 BANTER</p>
+</div>
+<div class="text-center p-6 bg-surface-container/50 rounded-2xl border-b-4 border-outline-variant">
+<p class="text-4xl font-black italic text-on-surface mb-2">15%</p>
+<p class="text-xs uppercase tracking-widest text-on-surface-variant">3rd Place</p>
+<p class="mt-2 text-on-surface-variant font-bold">3,456 BANTER</p>
+</div>
+</div>
+<div class="mt-8 flex items-center justify-between p-4 bg-secondary/10 rounded-xl">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<span class="font-bold">Total Guaranteed Pool: 23,040.00 BANTER</span>
+</div>
+<span class="text-xs text-secondary/70">Calculated based on 512 max entries</span>
+</div>
+</div>
+<!-- Ambient Glow -->
+<div class="absolute -right-20 -top-20 w-64 h-64 bg-primary/10 blur-[100px] rounded-full"></div>
+</div>
+</div>
+<!-- Action Area -->
+<div class="pt-8 flex flex-col md:flex-row items-center justify-between gap-6">
+<button class="flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors font-bold uppercase tracking-widest text-sm">
+<span class="material-symbols-outlined">arrow_back</span>
+                    Previous Step
+                </button>
+<div class="flex items-center gap-4 w-full md:w-auto">
+<button class="flex-1 md:flex-none px-8 py-4 rounded-xl border border-outline-variant text-sm font-bold uppercase tracking-widest hover:bg-surface-container-high transition-all">
+                        Save Draft
+                    </button>
+<button class="flex-1 md:flex-none px-12 py-4 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary-container text-sm font-black uppercase tracking-widest shadow-[0_0_20px_rgba(105,218,255,0.4)] hover:shadow-[0_0_30px_rgba(105,218,255,0.6)] active:scale-95 transition-all">
+                        PUBLISH LIVE ARENA
+                    </button>
+</div>
+</div>
+</section>
+<!-- The Banter Rail (Exclusive Component) -->
+<aside class="hidden xl:block fixed right-6 top-24 bottom-24 w-72 glass-panel rounded-3xl border border-primary/5 p-6 overflow-hidden">
+<h4 class="text-sm font-bold uppercase tracking-widest text-secondary mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">forum</span>
+                Arena Chatter
+            </h4>
+<div class="space-y-6 overflow-y-auto h-[calc(100%-40px)] pr-2 custom-scrollbar">
+<div class="space-y-2">
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-bold text-primary">VIP_SLAYER</span>
+<span class="text-[9px] text-on-surface-variant">2m ago</span>
+</div>
+<p class="text-xs bg-surface-container-high p-3 rounded-tr-xl rounded-br-xl rounded-bl-xl text-on-surface">Is the scoring for headshots fixed yet? +15 seems too high for this league.</p>
+</div>
+<div class="space-y-2">
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-bold text-secondary-fixed-dim">ARENA_BOT</span>
+<span class="text-[9px] text-on-surface-variant">Now</span>
+</div>
+<p class="text-xs bg-surface-container-high p-3 rounded-tr-xl rounded-br-xl rounded-bl-xl border-l-2 border-secondary text-on-surface">New arena detected: Cyber Blitz Championship 2024. Waiting for master approval...</p>
+</div>
+</div>
+<!-- Message Input (Visual Only) -->
+<div class="absolute bottom-4 left-4 right-4">
+<div class="bg-surface-container-highest rounded-full px-4 py-2 flex items-center gap-2">
+<input class="bg-transparent border-none text-xs w-full focus:ring-0 placeholder:text-on-surface-variant/30" placeholder="Talk trash..." type="text"/>
+<span class="material-symbols-outlined text-primary text-sm">send</span>
+</div>
+</div>
+</aside>
+</main>
+<!-- BottomNavBar (Shared Component) - Visible only on Mobile -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-6 pb-6 pt-3 lg:hidden bg-[#0d1323]/80 backdrop-blur-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.5)] rounded-t-[2rem] border-t border-sky-400/10">
+<div class="flex flex-col items-center justify-center text-slate-500 p-2 hover:text-sky-200 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">sports_kabaddi</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-['Inter']">Arena</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 p-2 hover:text-sky-200 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">military_tech</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-['Inter']">Ranks</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 p-2 hover:text-sky-200 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-['Inter']">Chat</span>
+</div>
+<!-- Active Tab: Profile (Assuming user is finalizing their creation) -->
+<div class="flex flex-col items-center justify-center bg-sky-500/20 text-sky-300 rounded-2xl px-5 py-2 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-['Inter']">Profile</span>
+</div>
+</nav>
+</body></html>

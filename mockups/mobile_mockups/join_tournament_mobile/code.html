@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BanterBot Sports - Join Tournament</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-variant": "#1e253b",
+              "on-tertiary-container": "#000000",
+              "inverse-surface": "#faf8ff",
+              "secondary-fixed-dim": "#2be800",
+              "error-container": "#9f0519",
+              "tertiary-dim": "#e51a22",
+              "primary-container": "#00cffc",
+              "outline": "#707588",
+              "on-secondary": "#0b5800",
+              "on-secondary-container": "#e7ffd9",
+              "tertiary": "#ff7166",
+              "on-surface-variant": "#a6aabf",
+              "on-tertiary": "#4a0003",
+              "secondary-fixed": "#2ff801",
+              "inverse-primary": "#006880",
+              "outline-variant": "#434759",
+              "on-primary-fixed-variant": "#004a5c",
+              "surface-container-high": "#181f33",
+              "on-error-container": "#ffa8a3",
+              "error": "#ff716c",
+              "tertiary-container": "#f5282b",
+              "surface-bright": "#242b43",
+              "on-secondary-fixed": "#064200",
+              "surface-container-low": "#0d1323",
+              "tertiary-fixed-dim": "#ff7b70",
+              "background": "#090e1c",
+              "secondary-dim": "#2be800",
+              "surface": "#090e1c",
+              "surface-dim": "#090e1c",
+              "on-primary-container": "#004050",
+              "secondary-container": "#106e00",
+              "primary": "#69daff",
+              "primary-fixed-dim": "#00c0ea",
+              "surface-container-lowest": "#000000",
+              "primary-fixed": "#00cffc",
+              "on-background": "#e1e4fa",
+              "secondary": "#2ff801",
+              "on-primary-fixed": "#002a35",
+              "surface-container": "#13192b",
+              "surface-tint": "#69daff",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "on-error": "#490006",
+              "on-tertiary-fixed": "#3a0002",
+              "inverse-on-surface": "#505466",
+              "on-secondary-fixed-variant": "#0d6200",
+              "on-primary": "#004a5d",
+              "tertiary-fixed": "#ff9287",
+              "on-surface": "#e1e4fa",
+              "primary-dim": "#00c0ea",
+              "surface-container-highest": "#1e253b",
+              "error-dim": "#d7383b"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #090e1c; color: #e1e4fa; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-card { background: rgba(30, 37, 59, 0.6); backdrop-filter: blur(20px); }
+        .stadium-gradient { background: linear-gradient(135deg, #69daff 0%, #00cffc 100%); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen flex flex-col overflow-x-hidden">
+<!-- Top Navigation Suppression: Not rendered as this is a focused transactional/onboarding page -->
+<main class="flex-grow flex flex-col px-6 pt-12 pb-32 max-w-md mx-auto w-full relative">
+<!-- Background Ambient Glows -->
+<div class="fixed top-[-10%] left-[-10%] w-[60%] h-[40%] bg-primary/10 blur-[120px] rounded-full pointer-events-none"></div>
+<div class="fixed bottom-[-5%] right-[-5%] w-[50%] h-[30%] bg-secondary/5 blur-[100px] rounded-full pointer-events-none"></div>
+<!-- Header Branding -->
+<div class="mb-10 text-center">
+<h1 class="text-2xl font-black italic tracking-tighter text-primary uppercase">BanterBot Sports</h1>
+</div>
+<!-- Hero Section -->
+<section class="mb-8">
+<h2 class="text-[3.5rem] leading-[0.9] font-black tracking-tighter uppercase text-on-surface mb-2">
+                A challenger awaits!
+            </h2>
+<p class="text-on-surface-variant text-lg font-medium">
+                You've been invited by <span class="text-primary font-bold">ArenaMaster_99</span> to join the ultimate showdown.
+            </p>
+</section>
+<!-- Tournament Card (Bento-style focused card) -->
+<div class="glass-card rounded-[2rem] overflow-hidden border border-primary/10 shadow-[0_0_40px_rgba(105,218,255,0.08)] mb-8">
+<div class="relative h-48 w-full overflow-hidden">
+<img alt="Sports Arena" class="w-full h-full object-cover" data-alt="dramatic night view of a glowing digital sports stadium with blue neon lights and high contrast shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfs1brNgy_GRzOknM-NHUpH4coB9E1C3_z2p8FPXX5JzIQe00zA18KFfkCJ7kXArFMTONzJ3C9V8R842KldkSGrr6Ir_vCX6W_B_WxQaD545ttth1GyFCBTgKR7D4zOr4wMMcTia4XAtUDNLxMKF2z7WrnAuV8mgIZ4tWKSRYYrLurFHEdMXB_YjktDz_DjN9ud3ZLd01EikXwuu_WESDS6-jGjD9-aj2RKLLOUOE9Cyt2Ji5zRa7X5509XQ4XUxgDIFFVd9LIQ913"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low via-transparent to-transparent"></div>
+<div class="absolute top-4 right-4">
+<span class="bg-secondary text-on-secondary text-[10px] font-bold px-3 py-1 rounded-full tracking-widest uppercase">
+                        LIVE SOON
+                    </span>
+</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-2xl font-extrabold tracking-tight text-on-surface">Cyber Slam Open</h3>
+<p class="text-sm text-on-surface-variant font-medium">Regional Qualifiers • Pro League</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] font-bold text-secondary uppercase tracking-widest">Prize Pool</p>
+<p class="text-2xl font-black text-primary">$1,500</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-surface-container-high rounded-xl p-3">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-sm">stadium</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Slots</span>
+</div>
+<p class="text-lg font-bold">12 / 16</p>
+</div>
+<div class="bg-surface-container-high rounded-xl p-3">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-sm">timer</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Starts</span>
+</div>
+<p class="text-lg font-bold">2h 14m</p>
+</div>
+</div>
+<button class="w-full stadium-gradient text-on-primary-fixed h-14 rounded-xl font-black text-lg shadow-[0_4px_20px_rgba(105,218,255,0.3)] active:scale-95 transition-all">
+                    JOIN TOURNAMENT
+                </button>
+</div>
+</div>
+<!-- Fast-track Signup Form -->
+<section class="bg-surface-container-low rounded-[2rem] p-8 border border-white/5">
+<div class="text-center mb-6">
+<h4 class="text-xl font-bold mb-1">New to the Arena?</h4>
+<p class="text-sm text-on-surface-variant">Sign up in seconds to claim your spot.</p>
+</div>
+<div class="space-y-4">
+<div>
+<input class="w-full bg-surface-container-highest border-none rounded-xl h-14 px-6 text-on-surface placeholder:text-outline focus:ring-1 focus:ring-primary/40 transition-all" placeholder="Pick a Banter Name" type="text"/>
+</div>
+<div>
+<input class="w-full bg-surface-container-highest border-none rounded-xl h-14 px-6 text-on-surface placeholder:text-outline focus:ring-1 focus:ring-primary/40 transition-all" placeholder="Email Address" type="email"/>
+</div>
+<!-- OUT OF SCOPE — IGNORAR: "Quick Join with Google". Google OAuth fuera de scope MVP.
+     El flujo correcto: formulario de registro propio (Banter Name + Email + Password).
+     Al completar el registro, la cuenta queda automáticamente ligada al torneo. Ver PRD decisión #11. -->
+<div class="pt-2">
+<button class="w-full bg-white/5 border border-white/10 text-on-surface h-14 rounded-xl font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+<img alt="Google Logo" class="w-5 h-5 grayscale invert brightness-200" data-alt="minimalist google icon logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgFSFXcRuAA61nZtspWL6zCYzZanbO9INrLr4BxvRgN2gB8VgaYa037ts8JP9WplxB012kBf5lYft93z4gBfOsIrSaMj3gSmplRFHZ5z4-nDOZv9xnpu78ZegwFGtRmYs6_-dsogaXpufW2L4fDGu1E00DfLY3fJRwc8TIaXzdfbEhlXSh5eMKFP3ENVgX8oEpR7uqFsQQfqGiIzKL_OX9c9JPqknjQbSPu0gx8QMBNCCavYmCLGyo-kWaVc1bHriShWPuQSigqtYz"/>
+                        Quick Join with Google
+                    </button>
+</div>
+<p class="text-[10px] text-center text-outline-variant uppercase tracking-widest mt-4">
+                    By joining, you agree to the Arena Rules.
+                </p>
+</div>
+</section>
+</main>
+<!-- Contextual FAB Suppression: No FAB on landing/onboarding page -->
+<!-- Mobile Navigation Shell (BottomNavBar) -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-6 pb-6 pt-3 lg:hidden bg-[#0d1323]/80 backdrop-blur-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.5)] rounded-t-[2rem] border-t border-primary/10">
+<div class="flex flex-col items-center justify-center bg-primary/20 text-primary-fixed-dim rounded-2xl px-5 py-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">sports_kabaddi</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-['Inter'] mt-1">Arena</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 p-2 hover:text-sky-200 transition-colors">
+<span class="material-symbols-outlined">military_tech</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-['Inter'] mt-1">Ranks</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 p-2 hover:text-sky-200 transition-colors">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-['Inter'] mt-1">Chat</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 p-2 hover:text-sky-200 transition-colors">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-['Inter'] mt-1">Profile</span>
+</div>
+</nav>
+</body></html>

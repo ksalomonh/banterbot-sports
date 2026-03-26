@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed": "#00cffc",
+              "surface-dim": "#090e1c",
+              "surface-tint": "#69daff",
+              "surface-container": "#13192b",
+              "error-container": "#9f0519",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "on-secondary": "#0b5800",
+              "inverse-primary": "#006880",
+              "tertiary-container": "#f5282b",
+              "primary-container": "#00cffc",
+              "on-primary-container": "#004050",
+              "inverse-surface": "#faf8ff",
+              "secondary-dim": "#2be800",
+              "on-secondary-fixed": "#064200",
+              "secondary": "#2ff801",
+              "surface-variant": "#1e253b",
+              "on-tertiary-fixed": "#3a0002",
+              "tertiary-fixed-dim": "#ff7b70",
+              "outline-variant": "#434759",
+              "error": "#ff716c",
+              "on-tertiary": "#4a0003",
+              "on-secondary-container": "#e7ffd9",
+              "tertiary-fixed": "#ff9287",
+              "surface-container-low": "#0d1323",
+              "background": "#090e1c",
+              "on-primary-fixed": "#002a35",
+              "on-background": "#e1e4fa",
+              "secondary-fixed": "#2ff801",
+              "error-dim": "#d7383b",
+              "on-surface-variant": "#a6aabf",
+              "surface-container-high": "#181f33",
+              "tertiary-dim": "#e51a22",
+              "secondary-container": "#106e00",
+              "on-surface": "#e1e4fa",
+              "surface-container-highest": "#1e253b",
+              "secondary-fixed-dim": "#2be800",
+              "on-error-container": "#ffa8a3",
+              "tertiary": "#ff7166",
+              "surface": "#090e1c",
+              "primary": "#69daff",
+              "outline": "#707588",
+              "inverse-on-surface": "#505466",
+              "surface-container-lowest": "#000000",
+              "on-secondary-fixed-variant": "#0d6200",
+              "surface-bright": "#242b43",
+              "primary-fixed-dim": "#00c0ea",
+              "on-primary": "#004a5d",
+              "on-primary-fixed-variant": "#004a5c",
+              "on-error": "#490006",
+              "primary-dim": "#00c0ea",
+              "on-tertiary-container": "#000000"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-card {
+            background: rgba(24, 31, 51, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .neon-glow-primary {
+            box-shadow: 0 0 20px rgba(105, 218, 255, 0.15);
+        }
+        .neon-glow-secondary {
+            box-shadow: 0 0 20px rgba(47, 248, 1, 0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full flex justify-between items-center px-6 h-16 bg-[#090e1c] z-50 shadow-[0_4px_40px_0_rgba(105,218,255,0.08)]">
+<div class="flex items-center gap-4">
+<button class="text-[#69daff] active:scale-95 transition-transform">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-['Inter'] font-black tracking-tight uppercase text-2xl text-[#69daff] tracking-tighter">BANTERBOT</h1>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/20 bg-surface-container-high">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="Close up portrait of a stylized digital avatar with neon blue accents and futuristic tech-wear" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEFpPz83zBQ5jkg7uakSmmbixpDC-_-FYpFrSfLWzmZpoVrVuR8Am9pf4-BSStms72fGMVvqIF5B9EW1cv0q8E0bhJcNHkHmdI-3lDDxLyYnxEKBvSpTedYOdyy0jP0uYbazLWRXg-dIyF4G4bqlJh8G9h1AtrkxmWaLJIWVZlDbI_auvIj4SxsqTrVtB4EqlXYeQXtWoIjJDAtIx03hLk3HojLjpYx56fBnL-xT4NdYfJS6XibbDElDHI-Ypv8QQ4vQnrG9KW19a3"/>
+</div>
+</header>
+<main class="pt-24 pb-32 px-4 max-w-md mx-auto">
+<!-- Header Section -->
+<div class="mb-8">
+<h2 class="text-[3.5rem] font-black leading-[1] tracking-tighter text-on-surface mb-2">ARCHIVE</h2>
+<div class="flex items-center gap-2">
+<span class="px-3 py-1 bg-surface-container-highest rounded-full text-[0.75rem] font-bold tracking-widest uppercase text-on-surface-variant">42 TOURNAMENTS COMPLETED</span>
+</div>
+</div>
+<!-- Lifetime Stats Banner (Asymmetric Bento Style) -->
+<div class="grid grid-cols-2 gap-4 mb-10">
+<div class="col-span-2 glass-card rounded-xl p-6 border-l-4 border-secondary flex flex-col justify-between relative overflow-hidden h-32 neon-glow-secondary">
+<div class="relative z-10">
+<p class="text-[0.75rem] font-bold tracking-widest text-on-surface-variant uppercase">Total Prize Pool</p>
+<p class="text-4xl font-black text-secondary mt-1 tracking-tighter">$12,450.00</p>
+</div>
+<span class="material-symbols-outlined absolute right-[-10px] bottom-[-10px] text-8xl text-secondary/5 rotate-12">payments</span>
+</div>
+<div class="glass-card rounded-xl p-4 border-t border-white/5">
+<p class="text-[0.65rem] font-bold tracking-widest text-on-surface-variant uppercase">Avg Rank</p>
+<p class="text-2xl font-black text-primary">#14</p>
+</div>
+<!-- POST-MVP — IGNORAR: "Win Rate 68%" es stat cross-torneo. No en MVP. Ver PRD decisión #6. -->
+<div class="glass-card rounded-xl p-4 border-t border-white/5">
+<p class="text-[0.65rem] font-bold tracking-widest text-on-surface-variant uppercase">Win Rate</p>
+<p class="text-2xl font-black text-tertiary">68%</p>
+</div>
+</div>
+<!-- Tournament History List -->
+<div class="space-y-6">
+<h3 class="text-xl font-bold tracking-tight text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">history</span>
+                Recent Results
+            </h3>
+<!-- Card 1 -->
+<div class="bg-surface-container-high rounded-xl overflow-hidden shadow-2xl active:scale-[0.98] transition-all">
+<div class="h-24 w-full relative">
+<img alt="Tournament Hero" class="w-full h-full object-cover opacity-50" data-alt="Cinematic wide shot of a modern football stadium at night illuminated by intense blue and green floodlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdbU2O7QFi7nNcepPe8fVXA7isU0z0idC6Iq3ycjuv5aEv_d7EjG08iDOZfbUC_q0NbG5ATUXqsWWnKGdmrhqBkQTUPaCAN9dk8WZVMlVOobhaWusy_fmXOiIX0Y1phXvkHeQBFL17wbdZq5ADrwNrT8nYrKNxl1bqyGDlEcaSDegWHAqzp3LSGLVprq2_gbX2HFS_SjV8wb7sznqTa1lOZf8bJxDgdpiFpwrSb7nGft0i86bYcYbyGLFj0YVhNLqQlH2WVkmjy8ih"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-high to-transparent"></div>
+<div class="absolute bottom-3 left-4">
+<span class="bg-secondary text-on-secondary text-[0.65rem] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Gold Tier</span>
+</div>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h4 class="text-lg font-bold text-on-surface leading-tight">Weekend Warriors Cup</h4>
+<p class="text-sm text-on-surface-variant">Oct 24 - Oct 26, 2023</p>
+</div>
+<div class="text-right">
+<p class="text-[0.65rem] font-bold text-on-surface-variant uppercase">Final Rank</p>
+<p class="text-2xl font-black text-primary">#04</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 py-4 border-y border-outline-variant/10">
+<div>
+<p class="text-[0.6rem] font-bold text-on-surface-variant uppercase mb-1">Points</p>
+<p class="font-bold text-on-surface">1,240</p>
+</div>
+<div>
+<p class="text-[0.6rem] font-bold text-on-surface-variant uppercase mb-1">Prize</p>
+<p class="font-bold text-secondary">+$450.00</p>
+</div>
+<div>
+<p class="text-[0.6rem] font-bold text-on-surface-variant uppercase mb-1">Participants</p>
+<p class="font-bold text-on-surface">1,024</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-high rounded-xl overflow-hidden shadow-2xl active:scale-[0.98] transition-all opacity-90">
+<div class="h-24 w-full relative grayscale-[0.5]">
+<img alt="Tournament Hero" class="w-full h-full object-cover opacity-50" data-alt="Abstract dynamic motion blur of soccer players in a dark arena with neon glowing trails" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCa0IkPKSdeHi8JE8WkjbNzDr-Z_sSV7WlV7j5aG6a2gXaSUVXkJxdlOi1Pe_hDkcabs2TH-7cv5RSeqGmW93-zCTZK_VHJc3PUnVVmY8zyuLr-U2XQOsfn7JgtKtTDdFQbfkxzMSAkfpjsNXErZ7gq3_1_KP3k_9h652RS4TLCeqk9Q7JMnFbZ6ESKVZGrnItCs2sWMDU-ocAJg1BDNGSddDX1azoJcCKPhY2_RJbUEE2kh4b2_eV-oOZiyYo3x2CDKXptbHwtw6EQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-high to-transparent"></div>
+<div class="absolute bottom-3 left-4">
+<span class="bg-outline-variant text-on-surface text-[0.65rem] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Silver Tier</span>
+</div>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h4 class="text-lg font-bold text-on-surface leading-tight">Midweek Madness</h4>
+<p class="text-sm text-on-surface-variant">Oct 19 - Oct 21, 2023</p>
+</div>
+<div class="text-right">
+<p class="text-[0.65rem] font-bold text-on-surface-variant uppercase">Final Rank</p>
+<p class="text-2xl font-black text-outline">#112</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 py-4 border-y border-outline-variant/10">
+<div>
+<p class="text-[0.6rem] font-bold text-on-surface-variant uppercase mb-1">Points</p>
+<p class="font-bold text-on-surface">840</p>
+</div>
+<div>
+<p class="text-[0.6rem] font-bold text-on-surface-variant uppercase mb-1">Prize</p>
+<p class="font-bold text-on-surface-variant">$0.00</p>
+</div>
+<div>
+<p class="text-[0.6rem] font-bold text-on-surface-variant uppercase mb-1">Participants</p>
+<p class="font-bold text-on-surface">5,000</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-high rounded-xl overflow-hidden shadow-2xl active:scale-[0.98] transition-all">
+<div class="h-24 w-full relative">
+<img alt="Tournament Hero" class="w-full h-full object-cover opacity-50" data-alt="Futuristic esports arena interior with high contrast neon red and blue lighting and rows of sleek gaming setups" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtuHwGqkPnm3rmZoTycMzsDeonEPCi0x_Sa5SBKieRh63yQGdErbGLD-eF95Op-MyZ-I_f2ehA_y1nfGcARv7_BGKpnl_eKb5vmIHpdQoUsnCsd5GhzzQAplIE8TgQ6Iu2giA1WltD-QQk6E1G5eaK0rmrm5XFUpZxzgJCpsojPsir0dJxsJuMaGujJMsj73amRHiFoBcOu6DGXYnQ6hMg3_f1JnnYXLTPD9pRvsibXqXUpTVjNh4nIMU32H_-L68bltGQUMV4A9ER"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-high to-transparent"></div>
+<div class="absolute bottom-3 left-4">
+<span class="bg-tertiary text-on-tertiary text-[0.65rem] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Diamond Elite</span>
+</div>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h4 class="text-lg font-bold text-on-surface leading-tight">Elite King's Gambits</h4>
+<p class="text-sm text-on-surface-variant">Oct 12 - Oct 15, 2023</p>
+</div>
+<div class="text-right">
+<p class="text-[0.65rem] font-bold text-on-surface-variant uppercase">Final Rank</p>
+<p class="text-2xl font-black text-secondary">#01</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 py-4 border-y border-outline-variant/10">
+<div>
+<p class="text-[0.6rem] font-bold text-on-surface-variant uppercase mb-1">Points</p>
+<p class="font-bold text-on-surface">3,890</p>
+</div>
+<div>
+<p class="text-[0.6rem] font-bold text-on-surface-variant uppercase mb-1">Prize</p>
+<p class="font-bold text-secondary">+$2,100</p>
+</div>
+<div>
+<p class="text-[0.6rem] font-bold text-on-surface-variant uppercase mb-1">Participants</p>
+<p class="font-bold text-on-surface">256</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Pagination/Load More -->
+<button class="w-full mt-8 py-4 border border-outline-variant/20 rounded-xl font-black tracking-widest uppercase text-on-surface-variant hover:bg-surface-container-high transition-colors">
+            Load Older History
+        </button>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-[#0d1323]/60 backdrop-blur-xl shadow-[0_-4px_40px_0_rgba(105,218,255,0.08)]">
+<div class="flex flex-col items-center justify-center text-[#e1e4fa]/60 hover:text-[#69daff] active:scale-90 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined mb-1">stadium</span>
+<span class="font-['Inter'] text-[0.75rem] font-bold tracking-[0.05em] uppercase">Lobby</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#e1e4fa]/60 hover:text-[#69daff] active:scale-90 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined mb-1">leaderboard</span>
+<span class="font-['Inter'] text-[0.75rem] font-bold tracking-[0.05em] uppercase">Results</span>
+</div>
+<!-- ACTIVE TAB: History -->
+<div class="flex flex-col items-center justify-center text-[#69daff] bg-[#242b43] rounded-xl px-4 py-1 active:scale-90 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined mb-1">history</span>
+<span class="font-['Inter'] text-[0.75rem] font-bold tracking-[0.05em] uppercase">History</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#e1e4fa]/60 hover:text-[#69daff] active:scale-90 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined mb-1">person</span>
+<span class="font-['Inter'] text-[0.75rem] font-bold tracking-[0.05em] uppercase">Profile</span>
+</div>
+</nav>
+</body></html>
