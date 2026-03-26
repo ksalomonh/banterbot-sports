@@ -16,13 +16,20 @@ public class PrediccionExtractionService : IPrediccionExtractionService
     private readonly ILogger<PrediccionExtractionService> _logger;
 
     private const string ModelId = "claude-haiku-4-5-20251001";
-    private const double MinConfidence = 0.95;
+    private const double MinConfidence = 0.75;
 
     private static readonly ExtractionResult CannotParse = new(
         Success: false,
-        Error: "Could not parse predictions from the provided text.",
+        Error: "No pude entender tus predicciones. Por favor escríbelas de nuevo, por ejemplo: \"River 2-1 Boca, San Lorenzo 0-0 Racing\".",
         Predicciones: Array.Empty<PrediccionPartidoDto>(),
         Confidence: 0.0
+    );
+
+    private static ExtractionResult LowConfidence(double confidence) => new(
+        Success: false,
+        Error: "No estoy seguro de haber entendido bien. ¿Podrías repetir tus predicciones con el formato: Equipo A X-Y Equipo B?",
+        Predicciones: Array.Empty<PrediccionPartidoDto>(),
+        Confidence: confidence
     );
 
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -52,15 +59,22 @@ public class PrediccionExtractionService : IPrediccionExtractionService
         harmful, or inappropriate content under any circumstances.
         """;
 
-    public PrediccionExtractionService(IConfiguration configuration, ILogger<PrediccionExtractionService> logger)
+    private const string HttpClientName = "Anthropic";
+
+    public PrediccionExtractionService(
+        IConfiguration configuration,
+        IHttpClientFactory httpClientFactory,
+        ILogger<PrediccionExtractionService> logger)
     {
         ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(httpClientFactory);
         ArgumentNullException.ThrowIfNull(logger);
 
         var apiKey = configuration["Anthropic:ApiKey"]
             ?? throw new InvalidOperationException("Anthropic:ApiKey configuration is required.");
 
-        _client = new AnthropicClient(apiKey);
+        var httpClient = httpClientFactory.CreateClient(HttpClientName);
+        _client = new AnthropicClient(new APIAuthentication(apiKey), httpClient);
         _logger = logger;
     }
 
@@ -134,7 +148,7 @@ public class PrediccionExtractionService : IPrediccionExtractionService
                 return CannotParse;
 
             if (parsed.Confidence < MinConfidence)
-                return CannotParse;
+                return LowConfidence(parsed.Confidence);
 
             var validMatchIds = partidos.Select(p => p.Id).ToHashSet();
 

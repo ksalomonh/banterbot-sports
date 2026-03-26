@@ -2,6 +2,7 @@ using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL.Repositories.Interfaces;
 using BanterBotSports.Entities;
 using BanterBotSports.Entities.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace BanterBotSports.BL.Services;
 
@@ -13,7 +14,15 @@ namespace BanterBotSports.BL.Services;
 public class JornadaService : IJornadaService
 {
     private readonly IJornadaRepository _jornadaRepository;
+    private readonly IPartidoRepository _partidoRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<JornadaService> _logger;
+
+    /// <summary>
+    /// Raised when a jornada transitions to Abierta.
+    /// Consumers subscribe to send match lists to participants via Telegram.
+    /// </summary>
+    public event Func<Jornada, Task>? JornadaAbierta;
 
     /// <summary>
     /// Raised when a jornada transitions to Finalizada.
@@ -21,13 +30,21 @@ public class JornadaService : IJornadaService
     /// </summary>
     public event Func<Jornada, Task>? JornadaFinalizada;
 
-    public JornadaService(IJornadaRepository jornadaRepository, IUnitOfWork unitOfWork)
+    public JornadaService(
+        IJornadaRepository jornadaRepository,
+        IPartidoRepository partidoRepository,
+        IUnitOfWork unitOfWork,
+        ILogger<JornadaService> logger)
     {
         ArgumentNullException.ThrowIfNull(jornadaRepository);
+        ArgumentNullException.ThrowIfNull(partidoRepository);
         ArgumentNullException.ThrowIfNull(unitOfWork);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _jornadaRepository = jornadaRepository;
+        _partidoRepository = partidoRepository;
         _unitOfWork = unitOfWork;
+        _logger = logger;
     }
 
     // ─── Queries ─────────────────────────────────────────────────────────────
@@ -50,9 +67,30 @@ public class JornadaService : IJornadaService
                 $"La jornada {jornada.Numero} no puede abrirse desde el estado '{jornada.Estado}'.");
         }
 
+        // Load partidos to set DeadlineUtc and validate that at least one exists
+        var partidos = await _partidoRepository.GetByJornadaIdAsync(jornadaId);
+
+        if (partidos.Count == 0)
+        {
+            throw new InvalidOperationException(
+                $"La jornada {jornada.Numero} no tiene partidos asignados y no puede abrirse.");
+        }
+
+        // DeadlineUtc = earliest kick-off so predictions lock at the first match start
+        var earliestKickOff = partidos.Min(p => p.KickOffUtc);
+        jornada.DeadlineUtc = earliestKickOff;
+
         jornada.Estado = EstadoJornada.Abierta;
         await _jornadaRepository.UpdateAsync(jornada);
         await _unitOfWork.SaveAsync();
+
+        _logger.LogInformation(
+            "Jornada {JornadaId} (#{Numero}) abierta. DeadlineUtc={DeadlineUtc}.",
+            jornada.Id, jornada.Numero, jornada.DeadlineUtc);
+
+        // Notify subscribers (e.g. Telegram match list notification)
+        if (JornadaAbierta is not null)
+            await JornadaAbierta.Invoke(jornada);
     }
 
     public async Task CerrarJornadaAsync(int jornadaId)

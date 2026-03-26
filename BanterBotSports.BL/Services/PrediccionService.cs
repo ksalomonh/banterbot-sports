@@ -80,6 +80,38 @@ public class PrediccionService : IPrediccionService
     }
 
     /// <summary>
+    /// Computes jornada-level goal points for each participant.
+    /// Compares each participant's GolesPronosticados with the sum of official goals across
+    /// all partidos in the jornada. Awards Torneo.PtosGolesJornada on an exact match,
+    /// persists zero otherwise. Creates a PrediccionJornada with PuntosObtenidos = 0
+    /// for participants who have no prior record.
+    /// Must be called after official results are entered (GolesEquipo1Oficial is set).
+    /// </summary>
+    public async Task CalcularPuntosGolesJornadaAsync(int jornadaId)
+    {
+        var jornada = await _jornadaRepository.GetByIdWithDetailsAsync(jornadaId)
+            ?? throw new InvalidOperationException($"Jornada {jornadaId} no encontrada.");
+
+        // Sum official goals across all partidos in the jornada
+        int totalGolesOficiales = jornada.Partidos
+            .Sum(p => (p.GolesEquipo1Oficial ?? 0) + (p.GolesEquipo2Oficial ?? 0));
+
+        // Load all PrediccionJornada records for this jornada
+        var prediccionesJornada = await _prediccionRepository.GetPrediccionesJornadaByJornadaAsync(jornadaId);
+
+        int ptosGolesJornada = jornada.Torneo.PtosGolesJornada;
+
+        foreach (var prediccionJornada in prediccionesJornada)
+        {
+            bool acierto = prediccionJornada.GolesPronosticados == totalGolesOficiales;
+            prediccionJornada.PuntosObtenidos = acierto ? ptosGolesJornada : 0;
+            await _prediccionRepository.UpdatePrediccionJornadaAsync(prediccionJornada);
+        }
+
+        await _unitOfWork.SaveAsync();
+    }
+
+    /// <summary>
     /// Aggregates total goals predicted by each participant across all match predictions
     /// in the jornada and persists the sum in PrediccionJornada.GolesPronosticados.
     /// </summary>

@@ -25,15 +25,22 @@ public class BanterEngine : IBanterEngine
         Respondé ÚNICAMENTE con el mensaje de banter, sin explicaciones ni formato extra.
         """;
 
-    public BanterEngine(IConfiguration configuration, ILogger<BanterEngine> logger)
+    private const string HttpClientName = "Anthropic";
+
+    public BanterEngine(
+        IConfiguration configuration,
+        IHttpClientFactory httpClientFactory,
+        ILogger<BanterEngine> logger)
     {
         ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(httpClientFactory);
         ArgumentNullException.ThrowIfNull(logger);
 
         var apiKey = configuration["Anthropic:ApiKey"]
             ?? throw new InvalidOperationException("Anthropic:ApiKey configuration is required.");
 
-        _client = new AnthropicClient(apiKey);
+        var httpClient = httpClientFactory.CreateClient(HttpClientName);
+        _client = new AnthropicClient(new APIAuthentication(apiKey), httpClient);
         _logger = logger;
     }
 

@@ -4,14 +4,15 @@ using BanterBotSports.Entities.Enums;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 
 namespace BanterBotSports.Tests.Unit;
 
 /// <summary>
 /// Unit tests for PrediccionExtractionService.
 ///
-/// The service wraps AnthropicClient directly (not injectable).  Tests verify
-/// observable contract behaviours:
+/// The service uses AnthropicClient with an IHttpClientFactory-provided HttpClient.
+/// Tests verify observable contract behaviours:
 ///
 ///   - When the Anthropic API call raises any exception (invalid key, network, etc.)
 ///     the service catches it and returns CannotParse (Success=false, empty list).
@@ -26,6 +27,13 @@ namespace BanterBotSports.Tests.Unit;
 /// </summary>
 public class PrediccionExtractionServiceTests
 {
+    private static IHttpClientFactory BuildHttpClientFactory()
+    {
+        var mock = new Mock<IHttpClientFactory>();
+        mock.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(new HttpClient());
+        return mock.Object;
+    }
+
     private static IPrediccionExtractionService BuildSut(string? apiKey = "fake-key-unit-test")
     {
         var dict = new Dictionary<string, string?> { ["Anthropic:ApiKey"] = apiKey };
@@ -33,7 +41,7 @@ public class PrediccionExtractionServiceTests
             .AddInMemoryCollection(dict)
             .Build();
 
-        return new PrediccionExtractionService(config, NullLogger<PrediccionExtractionService>.Instance);
+        return new PrediccionExtractionService(config, BuildHttpClientFactory(), NullLogger<PrediccionExtractionService>.Instance);
     }
 
     private static IReadOnlyList<PartidoDto> BuildPartidos(params (int id, string eq1, string eq2)[] partidos)
@@ -75,7 +83,7 @@ public class PrediccionExtractionServiceTests
         var config = new ConfigurationBuilder().AddInMemoryCollection(dict).Build();
 
         // Act & Assert: constructor must throw because ApiKey is required
-        var act = () => new PrediccionExtractionService(config, NullLogger<PrediccionExtractionService>.Instance);
+        var act = () => new PrediccionExtractionService(config, BuildHttpClientFactory(), NullLogger<PrediccionExtractionService>.Instance);
         act.Should().Throw<InvalidOperationException>()
             .WithMessage("*Anthropic:ApiKey*");
     }
@@ -146,9 +154,9 @@ public class PrediccionExtractionServiceTests
 
         var result = InvokeParseResponse(sut, claudeJson, partidos);
 
-        result.Success.Should().BeFalse("confidence 0.3 is below the 0.7 threshold");
+        result.Success.Should().BeFalse("confidence 0.3 is below the 0.75 threshold");
         result.Predicciones.Should().BeEmpty();
-        result.Confidence.Should().Be(0.0, "CannotParse constant uses 0.0");
+        result.Confidence.Should().Be(0.3, "LowConfidence preserves the actual parsed confidence");
     }
 
     [Fact]

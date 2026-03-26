@@ -63,10 +63,18 @@ public class TorneoController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var userId = _userManager.GetUserId(User)!;
-        var torneoCreado = await _torneoService.CrearTorneoAsync(model, userId);
-
-        return RedirectToAction(nameof(Dashboard), new { id = torneoCreado.Id });
+        try
+        {
+            var userId = _userManager.GetUserId(User)!;
+            var torneoCreado = await _torneoService.CrearTorneoAsync(model, userId);
+            return RedirectToAction(nameof(Dashboard), new { id = torneoCreado.Id });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating torneo for user {UserId}", _userManager.GetUserId(User));
+            ModelState.AddModelError(string.Empty, "Ocurrió un error al crear el torneo. Intenta de nuevo.");
+            return View(model);
+        }
     }
 
     // GET /torneo/{id}
