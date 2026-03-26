@@ -289,4 +289,118 @@ public class PrediccionServiceIntegrationTests : IAsyncLifetime
         result[0].ParticipanteId.Should().Be(participante.Id);
         result[0].GolesPronosticados.Should().Be(5);
     }
+
+    // ---------------------------------------------------------------------------
+    // Goles de Jornada scoring scenarios
+    // ---------------------------------------------------------------------------
+
+    [Fact]
+    public async Task CalcularPuntosGolesJornadaAsync_ExactMatch_AwardsPtosGolesJornada()
+    {
+        // Arrange: partido with official goals = 3 (2+1); participant predicts exactly 3
+        var (torneo, jornada, partido, participante) = await SeedBasicScenarioAsync();
+
+        // Set official result on the partido
+        partido.GolesEquipo1Oficial = 2;
+        partido.GolesEquipo2Oficial = 1;
+        _context.Partidos.Update(partido);
+
+        // Seed a PrediccionJornada with exactly 3 predicted goals
+        _context.PrediccionesJornada.Add(new PrediccionJornada
+        {
+            JornadaId = jornada.Id,
+            ParticipanteId = participante.Id,
+            GolesPronosticados = 3  // matches 2+1 = 3 official goals
+        });
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _prediccionService.CalcularPuntosGolesJornadaAsync(jornada.Id);
+
+        // Assert: PuntosObtenidos equals torneo.PtosGolesJornada
+        var result = await _context.PrediccionesJornada
+            .FirstAsync(pj => pj.JornadaId == jornada.Id && pj.ParticipanteId == participante.Id);
+
+        result.PuntosObtenidos.Should().Be(torneo.PtosGolesJornada,
+            "exact match on total jornada goals earns PtosGolesJornada");
+    }
+
+    [Fact]
+    public async Task CalcularPuntosGolesJornadaAsync_GoalMismatch_AwardsZero()
+    {
+        // Arrange: official total = 3 (2+1); participant predicts 5 → mismatch
+        var (_, jornada, partido, participante) = await SeedBasicScenarioAsync();
+
+        partido.GolesEquipo1Oficial = 2;
+        partido.GolesEquipo2Oficial = 1;
+        _context.Partidos.Update(partido);
+
+        _context.PrediccionesJornada.Add(new PrediccionJornada
+        {
+            JornadaId = jornada.Id,
+            ParticipanteId = participante.Id,
+            GolesPronosticados = 5  // does NOT match 3 official goals
+        });
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _prediccionService.CalcularPuntosGolesJornadaAsync(jornada.Id);
+
+        // Assert
+        var result = await _context.PrediccionesJornada
+            .FirstAsync(pj => pj.JornadaId == jornada.Id && pj.ParticipanteId == participante.Id);
+
+        result.PuntosObtenidos.Should().Be(0, "goal mismatch → zero points");
+    }
+
+    [Fact]
+    public async Task CalcularPuntosGolesJornadaAsync_NoPrediccionJornada_NoPuntosAwarded()
+    {
+        // Arrange: participant has no PrediccionJornada record at all
+        var (_, jornada, partido, _) = await SeedBasicScenarioAsync();
+
+        partido.GolesEquipo1Oficial = 1;
+        partido.GolesEquipo2Oficial = 0;
+        _context.Partidos.Update(partido);
+        await _context.SaveChangesAsync();
+
+        // Act — should not throw; simply no records to update
+        await _prediccionService.CalcularPuntosGolesJornadaAsync(jornada.Id);
+
+        // Assert: no PrediccionJornada rows exist → nothing was awarded
+        var count = await _context.PrediccionesJornada
+            .CountAsync(pj => pj.JornadaId == jornada.Id);
+
+        count.Should().Be(0, "no PrediccionJornada rows → nothing to score");
+    }
+
+    [Fact]
+    public async Task CalcularPuntosGolesJornadaAsync_PuntosObtenidos_PersistedToDb()
+    {
+        // Arrange: exact match scenario and verify persistence
+        var (torneo, jornada, partido, participante) = await SeedBasicScenarioAsync();
+
+        partido.GolesEquipo1Oficial = 1;
+        partido.GolesEquipo2Oficial = 1;
+        _context.Partidos.Update(partido);
+
+        _context.PrediccionesJornada.Add(new PrediccionJornada
+        {
+            JornadaId = jornada.Id,
+            ParticipanteId = participante.Id,
+            GolesPronosticados = 2  // 1+1 = 2 official goals
+        });
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _prediccionService.CalcularPuntosGolesJornadaAsync(jornada.Id);
+
+        // Reload fresh from DB — verify the value was actually persisted (not just in memory)
+        _context.ChangeTracker.Clear();
+        var persisted = await _context.PrediccionesJornada
+            .FirstAsync(pj => pj.JornadaId == jornada.Id && pj.ParticipanteId == participante.Id);
+
+        persisted.PuntosObtenidos.Should().Be(torneo.PtosGolesJornada,
+            "PuntosObtenidos must be persisted to DB after CalcularPuntosGolesJornadaAsync");
+    }
 }

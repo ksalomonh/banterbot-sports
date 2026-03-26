@@ -1,0 +1,169 @@
+using BanterBotSports.BL.Services.Interfaces;
+using BanterBotSports.DAL;
+using BanterBotSports.Entities;
+using BanterBotSports.Entities.ViewModels;
+using BanterBotSports.Web.Controllers;
+using FluentAssertions;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
+
+namespace BanterBotSports.Tests.Unit;
+
+/// <summary>
+/// Unit tests for TorneoController.
+/// Verifies graceful error handling on service exceptions:
+/// - No stack traces exposed to the view
+/// - Adds a user-friendly model error
+/// - Returns the same view (not an error view or redirect that would lose form state)
+/// </summary>
+public class TorneoControllerTests
+{
+    // ---------------------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------------------
+
+    private static TorneoController BuildSut(
+        Mock<ITorneoService>? torneoServiceMock = null,
+        Mock<IJornadaService>? jornadaServiceMock = null)
+    {
+        var torneoSvc = torneoServiceMock ?? new Mock<ITorneoService>();
+        var jornadaSvc = jornadaServiceMock ?? new Mock<IJornadaService>();
+
+        // DataProtectionProvider: use ephemeral (in-memory) keys for unit tests
+        var dataProtectionProvider = new EphemeralDataProtectionProvider();
+
+        // UserManager<AppUser>: mock the minimum surface needed.
+        // Nullable optional params suppressed — standard UserManager test pattern.
+#pragma warning disable CS8625
+        var userStoreMock = new Mock<IUserStore<AppUser>>();
+        var userManager = new Mock<UserManager<AppUser>>(
+            userStoreMock.Object, null, null, null, null, null, null, null, null);
+#pragma warning restore CS8625
+
+        // GetUserId returns a stable test user ID
+        userManager
+            .Setup(um => um.GetUserId(It.IsAny<System.Security.Claims.ClaimsPrincipal>()))
+            .Returns("test-user-id");
+
+        var controller = new TorneoController(
+            torneoSvc.Object,
+            jornadaSvc.Object,
+            dataProtectionProvider,
+            userManager.Object,
+            NullLogger<TorneoController>.Instance);
+
+        // Provide a fake HttpContext so ControllerContext is not null
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new Microsoft.AspNetCore.Http.DefaultHttpContext()
+        };
+
+        return controller;
+    }
+
+    // ---------------------------------------------------------------------------
+    // Tests
+    // ---------------------------------------------------------------------------
+
+    [Fact]
+    public async Task Nuevo_Post_ServiceThrows_AddsModelError_ReturnsView()
+    {
+        // Arrange: service throws a generic exception (DB failure, etc.)
+        var torneoSvcMock = new Mock<ITorneoService>();
+        torneoSvcMock
+            .Setup(s => s.CrearTorneoAsync(It.IsAny<TorneoCreateViewModel>(), It.IsAny<string>()))
+            .ThrowsAsync(new Exception("Internal DB failure with stack trace detail"));
+
+        var sut = BuildSut(torneoServiceMock: torneoSvcMock);
+        var model = new TorneoCreateViewModel
+        {
+            Nombre = "Test Torneo",
+            NumJornadas = 5,
+            MontoInscripcion = 100m,
+            PtosResultado = 3,
+            PtosMarcador = 5,
+            PtosGolesJornada = 2
+        };
+
+        // Act
+        var result = await sut.Nuevo(model);
+
+        // Assert: must return the same view (not redirect, not error page)
+        result.Should().BeOfType<ViewResult>("service exception must not bubble up — returns view");
+        var viewResult = (ViewResult)result;
+
+        viewResult.ViewName.Should().BeNullOrEmpty("no explicit view name = uses action name 'Nuevo'");
+        viewResult.Model.Should().Be(model, "the original model must be passed back to the view");
+    }
+
+    [Fact]
+    public async Task Nuevo_Post_ServiceThrows_AddsGenericUserFriendlyError_NoStackTrace()
+    {
+        // Arrange: service throws with a stack-trace-revealing message
+        var torneoSvcMock = new Mock<ITorneoService>();
+        const string internalMessage = "at BanterBotSports.BL.TorneoService.CrearTorneoAsync() line 42";
+
+        torneoSvcMock
+            .Setup(s => s.CrearTorneoAsync(It.IsAny<TorneoCreateViewModel>(), It.IsAny<string>()))
+            .ThrowsAsync(new InvalidOperationException(internalMessage));
+
+        var sut = BuildSut(torneoServiceMock: torneoSvcMock);
+        var model = new TorneoCreateViewModel
+        {
+            Nombre = "Test Torneo",
+            NumJornadas = 3,
+            MontoInscripcion = 50m,
+            PtosResultado = 3,
+            PtosMarcador = 5,
+            PtosGolesJornada = 2
+        };
+
+        // Act
+        var result = await sut.Nuevo(model);
+
+        // Assert: ModelState has an error, but it must NOT contain the internal exception message
+        sut.ModelState.IsValid.Should().BeFalse("an error must be added to ModelState");
+
+        var errors = sut.ModelState
+            .SelectMany(ms => ms.Value!.Errors.Select(e => e.ErrorMessage))
+            .ToList();
+
+        errors.Should().NotBeEmpty("at least one user-friendly error must be present");
+
+        // The raw internal exception message must NOT be exposed
+        errors.Should().NotContain(msg => msg.Contains(internalMessage),
+            "raw exception details must never be exposed to the user — no stack traces");
+
+        // The displayed message must be a safe, generic user-facing string
+        errors.Should().Contain(msg => msg.Contains("error") || msg.Contains("torneo") || msg.Contains("intenta"),
+            "the user must receive a friendly, non-technical error message");
+    }
+
+    [Fact]
+    public async Task Nuevo_Post_ServiceThrows_DoesNotBubbleException()
+    {
+        // Arrange
+        var torneoSvcMock = new Mock<ITorneoService>();
+        torneoSvcMock
+            .Setup(s => s.CrearTorneoAsync(It.IsAny<TorneoCreateViewModel>(), It.IsAny<string>()))
+            .ThrowsAsync(new TimeoutException("DB timeout"));
+
+        var sut = BuildSut(torneoServiceMock: torneoSvcMock);
+        var model = new TorneoCreateViewModel
+        {
+            Nombre = "Test Torneo",
+            NumJornadas = 2,
+            MontoInscripcion = 75m,
+            PtosResultado = 3,
+            PtosMarcador = 5,
+            PtosGolesJornada = 2
+        };
+
+        // Act & Assert: the controller must catch the exception and NOT re-throw
+        var act = async () => await sut.Nuevo(model);
+        await act.Should().NotThrowAsync("controller must swallow service exceptions gracefully");
+    }
+}

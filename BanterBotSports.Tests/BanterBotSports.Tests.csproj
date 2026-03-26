@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
     <PackageReference Include="FluentAssertions" Version="8.9.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="*" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="Testcontainers.PostgreSql" Version="4.11.0" />
@@ -30,6 +31,7 @@
     <ProjectReference Include="..\BanterBotSports.DAL\BanterBotSports.DAL.csproj" />
     <ProjectReference Include="..\BanterBotSports.Entities\BanterBotSports.Entities.csproj" />
     <ProjectReference Include="..\BanterBotSports.Integrations\BanterBotSports.Integrations.csproj" />
+    <ProjectReference Include="..\BanterBotSports.Web\BanterBotSports.Web.csproj" />
   </ItemGroup>
 
 </Project>
