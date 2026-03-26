@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create Tournament - Match Selection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container": "#13192b",
+              "on-primary-fixed-variant": "#004a5c",
+              "error-container": "#9f0519",
+              "tertiary-fixed-dim": "#ff7b70",
+              "on-secondary-fixed-variant": "#0d6200",
+              "on-background": "#e1e4fa",
+              "tertiary-dim": "#e51a22",
+              "inverse-primary": "#006880",
+              "error": "#ff716c",
+              "tertiary-fixed": "#ff9287",
+              "surface": "#090e1c",
+              "primary-fixed-dim": "#00c0ea",
+              "error-dim": "#d7383b",
+              "on-secondary-container": "#e7ffd9",
+              "surface-container-lowest": "#000000",
+              "on-secondary": "#0b5800",
+              "on-tertiary-fixed": "#3a0002",
+              "on-surface": "#e1e4fa",
+              "surface-variant": "#1e253b",
+              "primary-dim": "#00c0ea",
+              "on-error": "#490006",
+              "tertiary-container": "#f5282b",
+              "primary": "#69daff",
+              "surface-tint": "#69daff",
+              "secondary-fixed-dim": "#2be800",
+              "on-surface-variant": "#a6aabf",
+              "on-error-container": "#ffa8a3",
+              "primary-fixed": "#00cffc",
+              "secondary-dim": "#2be800",
+              "primary-container": "#00cffc",
+              "tertiary": "#ff7166",
+              "outline-variant": "#434759",
+              "surface-container-highest": "#1e253b",
+              "surface-bright": "#242b43",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "surface-dim": "#090e1c",
+              "secondary": "#2ff801",
+              "outline": "#707588",
+              "on-primary-container": "#004050",
+              "secondary-fixed": "#2ff801",
+              "on-primary": "#004a5d",
+              "on-tertiary-container": "#000000",
+              "surface-container-high": "#181f33",
+              "on-primary-fixed": "#002a35",
+              "background": "#090e1c",
+              "on-secondary-fixed": "#064200",
+              "on-tertiary": "#4a0003",
+              "secondary-container": "#106e00",
+              "inverse-surface": "#faf8ff",
+              "inverse-on-surface": "#505466",
+              "surface-container-low": "#0d1323"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(13, 19, 35, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .hero-glow {
+            background: radial-gradient(circle at 50% -20%, rgba(105, 218, 255, 0.15) 0%, transparent 70%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body min-h-screen hero-glow pb-32">
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 bg-[#0d1323]/60 backdrop-blur-xl shadow-[0_4px_40px_0_rgba(105,218,255,0.08)]">
+<div class="flex justify-between items-center px-6 h-16 w-full">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#69daff] text-2xl">sports_kabaddi</span>
+<h1 class="text-xl font-black tracking-tighter text-[#69daff] italic uppercase">BANTERBOT</h1>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-bright border border-primary/20 overflow-hidden">
+<img alt="User profile" data-alt="Stylized avatar of a modern gamer with neon accents and futuristic headset" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkhO2n63lJGOHPuoyJ7x58gWX2T5m5TjLAS2JAYLi0T5zizNQ9moHc-wg8Yjwg8e7fL_iCrLn5H5sY3cCjJmdgusC_nU0KlOSGSXwJX_x_ku-Jo2GDBY0aw5qhCG3ntUGLqHgt04k7l5n8p6cmTOioqh1IBRjPDabMAbCjWLxHTPUdfiB3fB48wQ8OtduM_me_L5QeUVhFBL5DPGcKULldLYzvTxwtqQyx6mFHNf7srqRlo9oAxKiVdA6ep8vfa88gMDYzoEuCLL82"/>
+</div>
+</div>
+</header>
+<main class="pt-20 px-4">
+<!-- Wizard Progress Header -->
+<section class="mb-8">
+<div class="flex justify-between items-end mb-4">
+<div>
+<span class="text-[10px] uppercase tracking-[0.2em] text-primary font-bold">Step 04 / 05</span>
+<h2 class="text-3xl font-black tracking-tight mt-1 text-on-surface">SELECT MATCHES</h2>
+</div>
+<div class="flex gap-1 mb-1">
+<div class="h-1.5 w-4 rounded-full bg-primary"></div>
+<div class="h-1.5 w-4 rounded-full bg-primary"></div>
+<div class="h-1.5 w-4 rounded-full bg-primary"></div>
+<div class="h-1.5 w-8 rounded-full bg-primary shadow-[0_0_10px_rgba(105,218,255,0.5)]"></div>
+<div class="h-1.5 w-4 rounded-full bg-surface-container-highest"></div>
+</div>
+</div>
+<!-- Search Bar -->
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full h-14 bg-surface-container-high rounded-xl border-none pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-1 focus:ring-primary/30 focus:bg-surface-bright transition-all" placeholder="Search leagues, teams, or dates..." type="text"/>
+</div>
+</section>
+<!-- Category Pills (Asymmetric Layout) -->
+<section class="flex gap-3 overflow-x-auto pb-6 no-scrollbar">
+<button class="whitespace-nowrap px-6 py-2.5 bg-primary text-on-primary-container font-bold text-xs rounded-full shadow-[0_0_20px_rgba(105,218,255,0.3)]">CHAMPIONS LEAGUE</button>
+<button class="whitespace-nowrap px-6 py-2.5 bg-surface-container-high text-on-surface-variant font-bold text-xs rounded-full hover:bg-surface-bright transition-colors">PREMIER LEAGUE</button>
+<button class="whitespace-nowrap px-6 py-2.5 bg-surface-container-high text-on-surface-variant font-bold text-xs rounded-full hover:bg-surface-bright transition-colors">LA LIGA</button>
+<button class="whitespace-nowrap px-6 py-2.5 bg-surface-container-high text-on-surface-variant font-bold text-xs rounded-full hover:bg-surface-bright transition-colors">SERIE A</button>
+</section>
+<!-- Match List -->
+<section class="space-y-4">
+<!-- League Divider -->
+<div class="flex items-center gap-4 py-2">
+<div class="flex-none w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center border border-outline-variant/10">
+<span class="material-symbols-outlined text-sm text-primary">stadium</span>
+</div>
+<h3 class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Tonight's Main Events</h3>
+<div class="flex-grow h-[1px] bg-gradient-to-r from-outline-variant/20 to-transparent"></div>
+</div>
+<!-- Match Card 1 (Active/Live) -->
+<div class="relative group p-4 rounded-2xl bg-surface-container-high border-l-4 border-secondary/50 overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="inline-block w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="text-[10px] font-bold text-secondary tracking-tighter uppercase">LIVE • 64'</span>
+</div>
+<span class="text-[10px] font-medium text-outline">UEFA CHAMPIONS LEAGUE</span>
+</div>
+<div class="flex items-center justify-between gap-4">
+<div class="flex flex-col items-center gap-2 flex-1">
+<img alt="Team A" class="w-10 h-10" data-alt="Minimalist geometric shield logo for a professional football team in white and gold" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDEKT_UeUBR9MiupWlvUmEjIuvgLRC9PNUQtLZHL8DEzOc2ySFuFQpxfk0NtZJjMapPVYWz15rGLh4U5Z5JdtLDleiflSCGpwM-IvjRUtLrt7mFU--WIByotZxIdHAW2tnXLCrMEeTAr_urnNgYBSa65VpcZ5nJHCAByPdYsB9ci553LdMOXfi1tXz8K2qRie7RAivPDhrf69BxILzN7ccNgDWND8LzyjvXSm9LfNVvLs-_wxWU9GQjdJZeJB7vZnKqV0Z9Q-K2t4p"/>
+<span class="text-xs font-bold text-center">Real Madrid</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-2xl font-black italic tracking-tighter text-on-surface">2 - 1</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1">
+<img alt="Team B" class="w-10 h-10" data-alt="Minimalist geometric shield logo for a professional football team in sky blue and navy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdpaUHMshbOqX9hgs8bULJMDbw7b2KGJXxAAXwRMHY4Ofm3j3iOZR7YV-zlQETgWNjbts1h6zZjZIspeP1FqhrQip8sxijZcT7TeoUDbf6N-coYRnLURGK_RTMFkQauElcwoYbc7dr6g6QfjqrBPVMGBWDTtVu9stspS96jW574AoBg6VJkCHWLF6IwCVYGfx3iDQlXBD9kI03b55xeX1yq9do-Y48QavPcbTB0eV_nXu9NZS2QB-X8D4WZ0Qm0iV7YbTHPwder1db"/>
+<span class="text-xs font-bold text-center">Man City</span>
+</div>
+</div>
+<button class="mt-4 w-full h-10 bg-secondary/10 text-secondary border border-secondary/20 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-secondary hover:text-on-secondary transition-all active:scale-95">
+                    ADD TO TOURNAMENT
+                </button>
+</div>
+<!-- Match Card 2 (Upcoming) -->
+<div class="relative p-4 rounded-2xl bg-surface-container-high border-l-4 border-primary/20 overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<span class="text-[10px] font-bold text-on-surface-variant tracking-tighter uppercase">TODAY • 21:00</span>
+<span class="text-[10px] font-medium text-outline">UEFA CHAMPIONS LEAGUE</span>
+</div>
+<div class="flex items-center justify-between gap-4">
+<div class="flex flex-col items-center gap-2 flex-1">
+<img alt="Team A" class="w-10 h-10" data-alt="Minimalist geometric shield logo for a professional football team in red and white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBh_CrJ6YrYJjQlcdf6p9-dfUcoIIWGLtuVdC-sYM2JaZBicUIA9hX08L_AoIYk3WVef9oQ40rfhFBUPHfOG0MwHkv4GNR5E3sewxtJAkgwADT-68o-2-Tllab1RZAgW-dVd927WGiTUwUX9mJj6svH0KB936_JKO4v2b_AwAiFJGYjnY7GEBzjp70GQLlB1HCMRtX1xPeR8x2Bi3olka2NHOTNcZ9hXUnLNGaTUayNdVAvFIFzONiRFhzr-L954icG4LPqlrc0TptA"/>
+<span class="text-xs font-bold text-center">Arsenal</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xl font-black italic text-outline/40">VS</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1">
+<img alt="Team B" class="w-10 h-10" data-alt="Minimalist geometric shield logo for a professional football team in red and blue" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCr0fWA78kxfw4lQ1lOtkSyt_V9QTgyfw-aKEHsZtESuLxQI1AIDYtbgbHMK3ZerDjSatnbagg0A8RgfmLPokTxT5N9zcXVYkfdQNTe8psPEbQISMv7Lq47LoTiyPhpMcEFysBkltlzGfKfvmak4udOSKFEirVmwvpXubmFB4RXJ2BFxJFTQe8Dkz8cwd-0a310SyTxHDUvMNiwyVX54YKbTAdcOFUqfoXWYDS1wvG5Ru4nbTBcH3hl6WrKOHyArfVRmfECKMYruca"/>
+<span class="text-xs font-bold text-center">Bayern</span>
+</div>
+</div>
+<!-- Selection State: Added -->
+<button class="mt-4 w-full h-10 bg-primary text-on-primary-container rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(105,218,255,0.2)]">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                    MATCH ADDED
+                </button>
+</div>
+<!-- Match Card 3 -->
+<div class="relative p-4 rounded-2xl bg-surface-container-high border-l-4 border-primary/20 overflow-hidden opacity-80">
+<div class="flex justify-between items-start mb-4">
+<span class="text-[10px] font-bold text-on-surface-variant tracking-tighter uppercase">TOMORROW • 20:45</span>
+<span class="text-[10px] font-medium text-outline">LA LIGA</span>
+</div>
+<div class="flex items-center justify-between gap-4">
+<div class="flex flex-col items-center gap-2 flex-1">
+<img alt="Team A" class="w-10 h-10" data-alt="Minimalist geometric shield logo for a professional football team in maroon and blue" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQN3NIS5QCVWh1w-pjZ1yh-kiNbU0itsQ2w6SE9tQADU75k69dRvu6MrrVBOOZw3jEzf1jcYeao0HQI08gNodLzmYk_S8WB1GjZgr5D6n0TqkDSxswRtyvJEQ2T_j4R_6XG1nhIJfOnaNZ417ZcYKeJsBSGh6IF0HZZwNJG1ZIPIE_o51s7npAuWZpJCgogp8wpl1OM59Fr33rTU97Eil170vXE0T2iKmWKkYfT_Yy3FhWdUOVziylk-ZKEvenhCqASTamuqA_e2Ih"/>
+<span class="text-xs font-bold text-center">Barcelona</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xl font-black italic text-outline/40">VS</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1">
+<img alt="Team B" class="w-10 h-10" data-alt="Minimalist geometric shield logo for a professional football team in red and white stripes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmT9dBeWezCL7zEtJ9eX2cpQlsszHfokT6ZVYrYSnKUGQLWJm0Rb0wlsEYTH_6DsuMPerWDwu29whWIA55N7PjIPAHsvykmG7rC-o81wEAVxYu7dF9f3tE-1SH88VLl8AunVHatT85KRZwTKTAzE_qjA2qUfOs60ty_UCgPCH0JxJAmSJcECloJuvxqrUnsX0qj-igm0ruwwdIYAk09m5K11tnaejeliAR2dVzFXo1HqaaWsX71moaUiElzSxnRotEevwxtSAw29YC"/>
+<span class="text-xs font-bold text-center">Atleti</span>
+</div>
+</div>
+<button class="mt-4 w-full h-10 bg-surface-bright text-on-surface border border-outline-variant/30 rounded-xl text-[10px] font-black uppercase tracking-widest hover:border-primary transition-all">
+                    ADD TO TOURNAMENT
+                </button>
+</div>
+</section>
+</main>
+<!-- Floating Action Summary / Bottom Sheet Mock -->
+<div class="fixed bottom-0 left-0 w-full z-50 p-4">
+<div class="glass-panel rounded-3xl p-5 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] border-t border-primary/10">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="absolute inset-0 bg-primary/20 blur-lg rounded-full animate-pulse"></div>
+<div class="relative bg-primary text-on-primary-container w-10 h-10 rounded-full flex items-center justify-center font-black italic">12</div>
+</div>
+<div>
+<h4 class="text-xs font-black tracking-tight text-on-surface">Matches Selected</h4>
+<p class="text-[10px] text-outline uppercase tracking-wider font-bold">Total Banter Weight: 4.8x</p>
+</div>
+</div>
+<button class="w-10 h-10 rounded-full bg-surface-bright flex items-center justify-center text-primary active:scale-90 transition-transform">
+<span class="material-symbols-outlined">expand_less</span>
+</button>
+</div>
+<!-- ERROR EN MOCKUP: el botón dice "PROCEED TO REWARDS" pero este es el paso 4 de 5.
+     El siguiente paso es el Review (paso 5), no el premio. Debe decir "NEXT: REVIEW →".
+     Ver PRD.md § Wizard de Creación de Torneo. -->
+<button class="w-full bg-gradient-to-r from-primary to-primary-fixed h-14 rounded-2xl flex items-center justify-center gap-3 shadow-[0_8px_32px_rgba(105,218,255,0.3)] active:scale-95 transition-all">
+<span class="text-sm font-black uppercase tracking-[0.15em] text-on-primary-container">PROCEED TO REWARDS</span>
+<span class="material-symbols-outlined text-on-primary-container">trending_flat</span>
+</button>
+</div>
+</div>
+<!-- Navigation Bar -->
+<nav class="fixed bottom-0 w-full z-[60] rounded-t-[2rem] bg-[#0d1323]/60 backdrop-blur-xl shadow-[0_-4px_40px_0_rgba(105,218,255,0.08)] pointer-events-none opacity-0">
+<!-- Hidden but keeping for shell consistency -->
+<div class="flex justify-around items-center h-20 pb-safe px-4 w-full">
+<div class="flex flex-col items-center justify-center text-[#e1e4fa]/60 px-4 py-1">
+<span class="material-symbols-outlined">stadium</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-wider">Arena</span>
+</div>
+</div>
+</nav>
+</body></html>

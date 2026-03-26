@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create Tournament - Scoring</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container": "#13192b",
+                        "on-primary-fixed-variant": "#004a5c",
+                        "error-container": "#9f0519",
+                        "tertiary-fixed-dim": "#ff7b70",
+                        "on-secondary-fixed-variant": "#0d6200",
+                        "on-background": "#e1e4fa",
+                        "tertiary-dim": "#e51a22",
+                        "inverse-primary": "#006880",
+                        "error": "#ff716c",
+                        "tertiary-fixed": "#ff9287",
+                        "surface": "#090e1c",
+                        "primary-fixed-dim": "#00c0ea",
+                        "error-dim": "#d7383b",
+                        "on-secondary-container": "#e7ffd9",
+                        "surface-container-lowest": "#000000",
+                        "on-secondary": "#0b5800",
+                        "on-tertiary-fixed": "#3a0002",
+                        "on-surface": "#e1e4fa",
+                        "surface-variant": "#1e253b",
+                        "primary-dim": "#00c0ea",
+                        "on-error": "#490006",
+                        "tertiary-container": "#f5282b",
+                        "primary": "#69daff",
+                        "surface-tint": "#69daff",
+                        "secondary-fixed-dim": "#2be800",
+                        "on-surface-variant": "#a6aabf",
+                        "on-error-container": "#ffa8a3",
+                        "primary-fixed": "#00cffc",
+                        "secondary-dim": "#2be800",
+                        "primary-container": "#00cffc",
+                        "tertiary": "#ff7166",
+                        "outline-variant": "#434759",
+                        "surface-container-highest": "#1e253b",
+                        "surface-bright": "#242b43",
+                        "on-tertiary-fixed-variant": "#7a0008",
+                        "surface-dim": "#090e1c",
+                        "secondary": "#2ff801",
+                        "outline": "#707588",
+                        "on-primary-container": "#004050",
+                        "secondary-fixed": "#2ff801",
+                        "on-primary": "#004a5d",
+                        "on-tertiary-container": "#000000",
+                        "surface-container-high": "#181f33",
+                        "on-primary-fixed": "#002a35",
+                        "background": "#090e1c",
+                        "on-secondary-fixed": "#064200",
+                        "on-tertiary": "#4a0003",
+                        "secondary-container": "#106e00",
+                        "inverse-surface": "#faf8ff",
+                        "inverse-on-surface": "#505466",
+                        "surface-container-low": "#0d1323"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(13, 19, 35, 0.6);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body min-h-screen pb-32">
+<!-- Top Navigation Anchor -->
+<header class="fixed top-0 w-full z-50 bg-[#0d1323]/60 backdrop-blur-xl shadow-[0_4px_40px_0_rgba(105,218,255,0.08)]">
+<div class="flex justify-between items-center px-6 h-16 w-full">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#69daff]" data-icon="sports_kabaddi">sports_kabaddi</span>
+<span class="text-xl font-black tracking-tighter text-[#69daff] italic">BANTERBOT</span>
+</div>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/20">
+<img alt="User" data-alt="Close up of a modern 3D rendered user avatar with vibrant neon blue highlights on dark clothing" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOCGhWe3APYrf7FV_-TTo4frTP1xkPQ-31Ye6dZXC9yLle4cS79-kDoU_32tT9AfjIFRZRu17nLlEqU13tmVpFz8as9q3xmQgPm_7vvaSVIYmQuuIgJMFAS1GQRmRBkkvJygKnzzQN0TOj2ItjrnTLZuFwTGHPQDD4nnlxevBKZLUR8cVqxwaG-UapBmcCKhHImXPSCZs8PdjGeo4cQ_sXOrEpbo6BlOscORy-V8FTzDWYsSCaDzs8rzrAO3lUbh46KK4WBtO7SLi1"/>
+</div>
+</div>
+</header>
+<main class="pt-20 px-4 max-w-md mx-auto">
+<!-- Wizard Header -->
+<section class="mb-8">
+<div class="flex items-center justify-between mb-4">
+<h1 class="text-2xl font-bold tracking-tight text-on-background">Scoring Setup</h1>
+<!-- ERROR EN MOCKUP: dice "2/4" pero el wizard tiene 5 pasos (Basics→Scoring→Prizes→Matches→Review).
+     Debe decir "Step 2/5". Ver PRD.md § Wizard de Creación de Torneo. -->
+<span class="text-primary font-bold text-sm tracking-widest uppercase">Step 2/4</span>
+</div>
+<!-- Progress Bar -->
+<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container w-1/2 rounded-full"></div>
+</div>
+</section>
+<!-- Scoring Cards Grid -->
+<div class="space-y-6">
+<!-- Card 1: Correct Result -->
+<div class="bg-surface-container-high rounded-xl p-5 relative overflow-hidden group transition-all active:scale-[0.98]">
+<div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl" data-icon="check_circle">check_circle</span>
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="sports_score">sports_score</span>
+</div>
+<div>
+<h3 class="font-bold text-lg text-on-surface">Correct Result</h3>
+<p class="text-xs text-on-surface-variant">Win, Loss, or Draw outcome</p>
+</div>
+</div>
+<div class="flex items-center justify-between bg-surface-container-highest rounded-xl p-4">
+<span class="text-sm font-medium text-on-surface-variant uppercase tracking-wider">Points Awarded</span>
+<div class="flex items-center gap-4">
+<button class="w-8 h-8 rounded-lg bg-surface-bright flex items-center justify-center active:bg-primary/20">
+<span class="material-symbols-outlined text-sm" data-icon="remove">remove</span>
+</button>
+<span class="text-2xl font-black text-primary w-8 text-center">3</span>
+<button class="w-8 h-8 rounded-lg bg-surface-bright flex items-center justify-center active:bg-primary/20">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2: Exact Scoreline -->
+<div class="bg-surface-container-high rounded-xl p-5 relative overflow-hidden group transition-all active:scale-[0.98]">
+<div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl" data-icon="target">target</span>
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" data-icon="precision_manufacturing">precision_manufacturing</span>
+</div>
+<div>
+<h3 class="font-bold text-lg text-on-surface">Exact Scoreline</h3>
+<p class="text-xs text-on-surface-variant">Matching the final digits exactly</p>
+</div>
+</div>
+<div class="flex items-center justify-between bg-surface-container-highest rounded-xl p-4 border border-secondary/10 shadow-[0_0_15px_rgba(47,248,1,0.05)]">
+<span class="text-sm font-medium text-on-surface-variant uppercase tracking-wider">Bonus Points</span>
+<div class="flex items-center gap-4">
+<button class="w-8 h-8 rounded-lg bg-surface-bright flex items-center justify-center active:bg-secondary/20">
+<span class="material-symbols-outlined text-sm" data-icon="remove">remove</span>
+</button>
+<span class="text-2xl font-black text-secondary w-8 text-center">5</span>
+<button class="w-8 h-8 rounded-lg bg-surface-bright flex items-center justify-center active:bg-secondary/20">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3: Total Goals -->
+<div class="bg-surface-container-high rounded-xl p-5 relative overflow-hidden group transition-all active:scale-[0.98]">
+<div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl" data-icon="sports_soccer">sports_soccer</span>
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-full bg-tertiary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary" data-icon="rebase_edit">rebase_edit</span>
+</div>
+<div>
+<h3 class="font-bold text-lg text-on-surface">Total Goals</h3>
+<p class="text-xs text-on-surface-variant">Predict combined match goals</p>
+</div>
+</div>
+<div class="flex items-center justify-between bg-surface-container-highest rounded-xl p-4">
+<span class="text-sm font-medium text-on-surface-variant uppercase tracking-wider">Points Awarded</span>
+<div class="flex items-center gap-4">
+<button class="w-8 h-8 rounded-lg bg-surface-bright flex items-center justify-center active:bg-tertiary/20">
+<span class="material-symbols-outlined text-sm" data-icon="remove">remove</span>
+</button>
+<span class="text-2xl font-black text-tertiary w-8 text-center">2</span>
+<button class="w-8 h-8 rounded-lg bg-surface-bright flex items-center justify-center active:bg-tertiary/20">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Pro-tip Card -->
+<section class="mt-8 mb-12">
+<div class="bg-gradient-to-br from-surface-container-high to-surface-container-low rounded-2xl p-6 border-l-4 border-primary">
+<div class="flex gap-4 items-start">
+<span class="material-symbols-outlined text-primary mt-1" data-icon="lightbulb" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+<div>
+<h4 class="font-bold text-primary text-sm uppercase tracking-widest mb-1">Pro-tip</h4>
+<p class="text-on-surface-variant text-sm leading-relaxed">High "Exact Scoreline" bonuses create more volatile leaderboards. Keep it at 5-7 points for maximum tension in short tournaments.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Navigation Actions -->
+<div class="flex gap-4 mb-8">
+<button class="flex-1 py-4 rounded-xl bg-surface-container-high text-on-surface font-bold uppercase tracking-widest text-sm transition-all active:scale-95">
+                Back
+            </button>
+<button class="flex-[2] py-4 rounded-xl bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-black uppercase tracking-widest text-sm shadow-[0_10px_30px_-10px_rgba(105,218,255,0.4)] transition-all active:scale-95">
+                Next: Payouts
+            </button>
+</div>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-[2rem] bg-[#0d1323]/60 backdrop-blur-xl shadow-[0_-4px_40px_0_rgba(105,218,255,0.08)]">
+<div class="flex justify-around items-center h-20 pb-safe px-4 w-full">
+<a class="flex flex-col items-center justify-center text-[#e1e4fa]/60 px-4 py-1 hover:text-[#69daff] transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="stadium">stadium</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-wider">Arena</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#e1e4fa]/60 px-4 py-1 hover:text-[#69daff] transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="trophy">trophy</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-wider">Leagues</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#69daff] bg-[#181f33] rounded-xl px-4 py-1 shadow-[0_0_15px_rgba(105,218,255,0.3)] active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="online_prediction">online_prediction</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-wider">Predict</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#e1e4fa]/60 px-4 py-1 hover:text-[#69daff] transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="shield_person">shield_person</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-wider">Admin</span>
+</a>
+</div>
+</nav>
+</body></html>

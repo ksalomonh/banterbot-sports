@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-high": "#181f33",
+              "on-surface-variant": "#a6aabf",
+              "on-error": "#490006",
+              "surface-container-low": "#0d1323",
+              "inverse-on-surface": "#505466",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "secondary-fixed-dim": "#2be800",
+              "error": "#ff716c",
+              "on-error-container": "#ffa8a3",
+              "surface-dim": "#090e1c",
+              "on-surface": "#e1e4fa",
+              "secondary-container": "#106e00",
+              "inverse-surface": "#faf8ff",
+              "secondary-dim": "#2be800",
+              "background": "#090e1c",
+              "primary-fixed-dim": "#00c0ea",
+              "surface-tint": "#69daff",
+              "surface-bright": "#242b43",
+              "on-tertiary": "#4a0003",
+              "outline": "#707588",
+              "on-primary": "#004a5d",
+              "tertiary-dim": "#e51a22",
+              "primary": "#69daff",
+              "on-secondary-container": "#e7ffd9",
+              "error-dim": "#d7383b",
+              "on-secondary-fixed": "#064200",
+              "on-tertiary-container": "#000000",
+              "on-primary-fixed-variant": "#004a5c",
+              "primary-fixed": "#00cffc",
+              "primary-dim": "#00c0ea",
+              "tertiary-container": "#f5282b",
+              "on-primary-container": "#004050",
+              "secondary-fixed": "#2ff801",
+              "surface": "#090e1c",
+              "on-background": "#e1e4fa",
+              "tertiary-fixed-dim": "#ff7b70",
+              "surface-variant": "#1e253b",
+              "inverse-primary": "#006880",
+              "on-primary-fixed": "#002a35",
+              "error-container": "#9f0519",
+              "secondary": "#2ff801",
+              "tertiary": "#ff7166",
+              "outline-variant": "#434759",
+              "surface-container": "#13192b",
+              "surface-container-highest": "#1e253b",
+              "on-secondary": "#0b5800",
+              "surface-container-lowest": "#000000",
+              "on-secondary-fixed-variant": "#0d6200",
+              "primary-container": "#00cffc",
+              "tertiary-fixed": "#ff9287",
+              "on-tertiary-fixed": "#3a0002"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .stadium-glow {
+            box-shadow: 0 0 60px -15px rgba(105, 218, 255, 0.2);
+        }
+        .neon-border-bottom {
+            border-bottom: 2px solid #2ff801;
+            box-shadow: 0 4px 12px -2px rgba(47, 248, 1, 0.3);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary">
+<!-- Header Navigation (Hidden for Transactional/Registration focus) -->
+<header class="bg-[#090e1c] flex items-center justify-between px-6 py-4 w-full docked full-width top-0 z-50">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#69daff] text-2xl" data-icon="sports_kabaddi">sports_kabaddi</span>
+<span class="font-['Inter'] font-black tracking-tighter uppercase text-2xl italic text-[#69daff]">BANTERBOT</span>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+</header>
+<main class="min-h-screen pt-20 pb-12 px-6 flex flex-col items-center">
+<!-- Hero Section -->
+<section class="w-full max-w-md mb-10 text-center relative">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 w-64 h-64 bg-primary/10 rounded-full blur-[80px] -z-10"></div>
+<h1 class="font-headline text-[3.5rem] font-black leading-[0.9] tracking-tighter mb-4 italic">
+                ENTER THE <span class="text-secondary block">ARENA</span>
+</h1>
+<p class="text-on-surface-variant text-lg font-medium leading-tight">
+                Stop watching from the sidelines. Banter with AI, bet with edge, and claim glory.
+            </p>
+</section>
+<!-- Value Propositions Bento Grid -->
+<div class="w-full max-w-md grid grid-cols-2 gap-4 mb-10">
+<div class="bg-surface-container-high p-4 rounded-xl stadium-glow border-l-2 border-primary/30">
+<span class="material-symbols-outlined text-primary mb-2" data-icon="redeem">redeem</span>
+<h3 class="font-bold text-sm uppercase tracking-wider mb-1">Win Real Prizes</h3>
+<p class="text-xs text-on-surface-variant">Turn your trash talk into real-world rewards and digital assets.</p>
+</div>
+<div class="bg-surface-container-high p-4 rounded-xl stadium-glow border-l-2 border-secondary/30">
+<span class="material-symbols-outlined text-secondary mb-2" data-icon="smart_toy">smart_toy</span>
+<h3 class="font-bold text-sm uppercase tracking-wider mb-1">Banter with AI</h3>
+<p class="text-xs text-on-surface-variant">Challenge our ultra-fast neural bots in the trash-talk pit.</p>
+</div>
+</div>
+<!-- Registration Form -->
+<div class="w-full max-w-md bg-surface-container-low rounded-[1.5rem] p-6 relative overflow-hidden">
+<form action="#" class="space-y-6">
+<!-- Inputs -->
+<div class="space-y-4">
+<div class="relative">
+<label class="block text-[0.7rem] font-black uppercase tracking-[0.1em] text-on-surface-variant mb-2 ml-1">Full Name</label>
+<input class="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface placeholder:text-on-surface-variant/30 focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all" placeholder="GLADIATOR NAME" type="text"/>
+</div>
+<div class="relative">
+<label class="block text-[0.7rem] font-black uppercase tracking-[0.1em] text-on-surface-variant mb-2 ml-1">Email Address</label>
+<input class="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface placeholder:text-on-surface-variant/30 focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all" placeholder="YOUR@EMPIRE.COM" type="email"/>
+</div>
+<div class="relative">
+<label class="block text-[0.7rem] font-black uppercase tracking-[0.1em] text-on-surface-variant mb-2 ml-1">Secure Password</label>
+<input class="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface placeholder:text-on-surface-variant/30 focus:ring-2 focus:ring-primary/20 focus:bg-surface-bright transition-all" placeholder="••••••••••••" type="password"/>
+</div>
+</div>
+<!-- Primary CTA -->
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-black py-5 rounded-xl uppercase tracking-widest text-lg shadow-[0_8px_30px_rgb(105,218,255,0.2)] active:scale-95 transition-transform" type="submit">
+                    Claim Your Seat
+                </button>
+<!-- Divider -->
+<div class="flex items-center gap-4 py-2">
+<div class="h-[1px] flex-1 bg-outline-variant/20"></div>
+<span class="text-[0.65rem] font-black text-on-surface-variant/40 uppercase tracking-[0.2em]">OR RECRUIT VIA</span>
+<div class="h-[1px] flex-1 bg-outline-variant/20"></div>
+</div>
+<!-- Social Sign-up -->
+<!-- OUT OF SCOPE — IGNORAR: El botón de Discord no se implementa.
+     Autenticación social (Discord, Google, Facebook) está fuera de scope MVP.
+     Solo ASP.NET Core Identity. Ver PRD.md § Decisiones de Diseño — Resueltas, decisión #1. -->
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-2 bg-surface-variant/40 py-4 rounded-xl border border-outline-variant/10 hover:bg-surface-variant transition-colors group" type="button">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform" data-icon="forum">forum</span>
+<span class="text-xs font-black uppercase tracking-tight">Discord</span>
+</button>
+<button class="flex items-center justify-center gap-2 bg-surface-variant/40 py-4 rounded-xl border border-outline-variant/10 hover:bg-surface-variant transition-colors group" type="button">
+<span class="material-symbols-outlined text-secondary group-hover:scale-110 transition-transform" data-icon="send">send</span>
+<span class="text-xs font-black uppercase tracking-tight">Telegram</span>
+</button>
+</div>
+</form>
+</div>
+<!-- Footer -->
+<footer class="mt-8 text-center">
+<p class="text-on-surface-variant text-sm">
+                Already a veteran? <a class="text-primary font-bold hover:underline decoration-2 underline-offset-4" href="#">Sign In</a>
+</p>
+<p class="mt-12 text-[0.65rem] text-on-surface-variant/30 uppercase tracking-widest max-w-[200px] mx-auto leading-relaxed">
+                By entering, you agree to the Arena Rules &amp; Terms of Combat.
+            </p>
+</footer>
+</main>
+<!-- Visual Accents -->
+<div class="fixed top-20 -right-20 w-64 h-64 bg-secondary/5 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="fixed bottom-0 left-0 w-full h-1 neon-border-bottom pointer-events-none opacity-50"></div>
+<!-- Hidden Navigation Check: Suppressed for Registration Screen -->
+</body></html>

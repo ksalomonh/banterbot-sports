@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BanterBot - Create Tournament - Prizes</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container": "#13192b",
+              "on-primary-fixed-variant": "#004a5c",
+              "error-container": "#9f0519",
+              "tertiary-fixed-dim": "#ff7b70",
+              "on-secondary-fixed-variant": "#0d6200",
+              "on-background": "#e1e4fa",
+              "tertiary-dim": "#e51a22",
+              "inverse-primary": "#006880",
+              "error": "#ff716c",
+              "tertiary-fixed": "#ff9287",
+              "surface": "#090e1c",
+              "primary-fixed-dim": "#00c0ea",
+              "error-dim": "#d7383b",
+              "on-secondary-container": "#e7ffd9",
+              "surface-container-lowest": "#000000",
+              "on-secondary": "#0b5800",
+              "on-tertiary-fixed": "#3a0002",
+              "on-surface": "#e1e4fa",
+              "surface-variant": "#1e253b",
+              "primary-dim": "#00c0ea",
+              "on-error": "#490006",
+              "tertiary-container": "#f5282b",
+              "primary": "#69daff",
+              "surface-tint": "#69daff",
+              "secondary-fixed-dim": "#2be800",
+              "on-surface-variant": "#a6aabf",
+              "on-error-container": "#ffa8a3",
+              "primary-fixed": "#00cffc",
+              "secondary-dim": "#2be800",
+              "primary-container": "#00cffc",
+              "tertiary": "#ff7166",
+              "outline-variant": "#434759",
+              "surface-container-highest": "#1e253b",
+              "surface-bright": "#242b43",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "surface-dim": "#090e1c",
+              "secondary": "#2ff801",
+              "outline": "#707588",
+              "on-primary-container": "#004050",
+              "secondary-fixed": "#2ff801",
+              "on-primary": "#004a5d",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "surface-dim": "#090e1c",
+              "secondary": "#2ff801",
+              "outline": "#707588",
+              "on-primary-container": "#004050",
+              "secondary-fixed": "#2ff801",
+              "on-primary": "#004a5d",
+              "on-tertiary": "#4a0003",
+              "secondary-container": "#106e00",
+              "inverse-surface": "#faf8ff",
+              "inverse-on-surface": "#505466",
+              "surface-container-low": "#0d1323"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-midnight-stadium {
+            background: radial-gradient(circle at top right, #1e253b 0%, #090e1c 100%);
+        }
+        .glow-primary {
+            text-shadow: 0 0 15px rgba(105, 218, 255, 0.5);
+        }
+        .glass-panel {
+            background: rgba(13, 19, 35, 0.6);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col">
+<!-- Top Navigation Anchor -->
+<header class="fixed top-0 w-full z-50 bg-[#0d1323]/60 backdrop-blur-xl shadow-[0_4px_40px_0_rgba(105,218,255,0.08)]">
+<div class="flex justify-between items-center px-6 h-16 w-full">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#69daff] text-2xl" data-icon="sports_kabaddi">sports_kabaddi</span>
+<h1 class="text-xl font-black tracking-tighter text-[#69daff] italic font-['Inter'] uppercase">BANTERBOT</h1>
+</div>
+<div class="w-8 h-8 rounded-full border border-primary/20 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Professional user profile avatar with sharp focus and warm studio lighting on a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_Kys2t5_xEr1Ney7JAZf5mqcnvAwWqj9baTS6ylSTjJWE9AJLNEamJnXsijC3lDJDtmMLBa3IWKKm6YJDyZ-_Uj-O5he_ochAER3eXZxyrtCFtFcnwzEfZmkSYRlkOvVKKYcJKDITLcVy_8YPSUPq8W1rrFk_0oDE6vzQ-id7lYD0lzI_Skgzc1Q_6kkKe5b06gPsJyDR7ncqvQ-r7X2W0dKszE4MMbi8B-Fd8rXUdg0rYYR6qCDDSNUJrEEQsE6r-O1h7T-1YPcD"/>
+</div>
+</div>
+</header>
+<main class="flex-1 pt-20 pb-32 px-6 bg-midnight-stadium">
+<!-- Wizard Progress -->
+<div class="flex items-center justify-between mb-8 px-2">
+<div class="flex items-center gap-2">
+<div class="h-1 w-8 rounded-full bg-primary shadow-[0_0_10px_rgba(105,218,255,0.5)]"></div>
+<div class="h-1 w-8 rounded-full bg-primary shadow-[0_0_10px_rgba(105,218,255,0.5)]"></div>
+<div class="h-1 w-12 rounded-full bg-primary shadow-[0_0_15px_rgba(105,218,255,0.8)]"></div>
+<div class="h-1 w-8 rounded-full bg-surface-variant"></div>
+</div>
+<!-- ERROR EN MOCKUP: dice "3 of 4" pero el wizard tiene 5 pasos (Basics→Scoring→Prizes→Matches→Review).
+     Debe decir "Step 3 of 5". Ver PRD.md § Wizard de Creación de Torneo. -->
+<span class="text-[10px] uppercase tracking-widest font-bold text-primary">Step 3 of 4</span>
+</div>
+<!-- Heading -->
+<div class="mb-8">
+<h2 class="text-3xl font-black tracking-tight leading-none mb-2">PRIZE <br/><span class="text-primary italic">DISTRIBUTION</span></h2>
+<p class="text-on-surface-variant text-sm font-medium">Define how the spoils of war are divided.</p>
+</div>
+<!-- Calculated Total Pot - Big Display -->
+<div class="bg-surface-container-high rounded-full p-8 mb-8 relative overflow-hidden flex flex-col items-center justify-center border-l-4 border-primary">
+<div class="absolute -right-4 -top-4 opacity-10">
+<span class="material-symbols-outlined text-[120px]" data-icon="payments">payments</span>
+</div>
+<span class="text-[10px] uppercase tracking-[0.2em] font-bold text-on-surface-variant mb-1">Estimated Total Pot</span>
+<div class="flex items-baseline gap-1">
+<span class="text-primary font-black text-5xl glow-primary tracking-tighter">$2,450</span>
+<span class="text-primary text-xl font-bold">.00</span>
+</div>
+<div class="mt-4 flex items-center gap-2 bg-secondary/10 px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="trending_up">trending_up</span>
+<span class="text-secondary text-[10px] font-bold uppercase tracking-wider">Based on 50 entries</span>
+</div>
+</div>
+<!-- Prize Inputs -->
+<div class="space-y-6 mb-10">
+<!-- 1st Place -->
+<div class="bg-surface-container-low rounded-xl p-5 relative">
+<div class="flex justify-between items-center mb-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="looks_one">looks_one</span>
+</div>
+<span class="font-bold text-sm uppercase tracking-wide">Champion</span>
+</div>
+<span class="text-primary font-black text-xl">$1,470</span>
+</div>
+<div class="flex items-center gap-4">
+<input class="flex-1 accent-primary h-1.5 bg-surface-variant rounded-full appearance-none cursor-pointer" max="100" min="0" type="range" value="60"/>
+<div class="bg-surface-container-highest px-3 py-2 rounded-lg w-20 text-center font-black text-primary border border-primary/10">
+                        60%
+                    </div>
+</div>
+</div>
+<!-- 2nd Place -->
+<div class="bg-surface-container-low rounded-xl p-5 relative">
+<div class="flex justify-between items-center mb-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-secondary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-xl" data-icon="looks_two">looks_two</span>
+</div>
+<span class="font-bold text-sm uppercase tracking-wide">Runner Up</span>
+</div>
+<span class="text-secondary font-black text-xl">$735</span>
+</div>
+<div class="flex items-center gap-4">
+<input class="flex-1 accent-secondary h-1.5 bg-surface-variant rounded-full appearance-none cursor-pointer" max="100" min="0" type="range" value="30"/>
+<div class="bg-surface-container-highest px-3 py-2 rounded-lg w-20 text-center font-black text-secondary border border-secondary/10">
+                        30%
+                    </div>
+</div>
+</div>
+<!-- 3rd Place -->
+<div class="bg-surface-container-low rounded-xl p-5 relative">
+<div class="flex justify-between items-center mb-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-tertiary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-xl" data-icon="looks_3">looks_3</span>
+</div>
+<span class="font-bold text-sm uppercase tracking-wide">3rd Place</span>
+</div>
+<span class="text-tertiary font-black text-xl">$245</span>
+</div>
+<div class="flex items-center gap-4">
+<input class="flex-1 accent-tertiary h-1.5 bg-surface-variant rounded-full appearance-none cursor-pointer" max="100" min="0" type="range" value="10"/>
+<div class="bg-surface-container-highest px-3 py-2 rounded-lg w-20 text-center font-black text-tertiary border border-tertiary/10">
+                        10%
+                    </div>
+</div>
+</div>
+</div>
+<!-- Visual Distribution Bar -->
+<div class="mb-12">
+<div class="flex justify-between mb-3 px-1">
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Distribution Mix</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-secondary">Total: 100%</span>
+</div>
+<div class="h-10 w-full flex rounded-full overflow-hidden shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]">
+<div class="h-full bg-primary w-[60%] flex items-center justify-center">
+<span class="text-[10px] font-black text-on-primary-container">60%</span>
+</div>
+<div class="h-full bg-secondary w-[30%] flex items-center justify-center border-l border-surface/20">
+<span class="text-[10px] font-black text-on-secondary-container">30%</span>
+</div>
+<div class="h-full bg-tertiary w-[10%] flex items-center justify-center border-l border-surface/20">
+<span class="text-[10px] font-black text-on-tertiary-container">10%</span>
+</div>
+</div>
+</div>
+<!-- Next Step Button -->
+<div class="fixed bottom-24 left-0 w-full px-6 z-40">
+<button class="w-full h-16 bg-gradient-to-br from-primary to-primary-container rounded-full flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(105,218,255,0.3)] active:scale-95 transition-all">
+<span class="text-on-primary-container font-black uppercase tracking-tighter text-lg italic">Finalize Rules</span>
+<span class="material-symbols-outlined text-on-primary-container" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</main>
+<!-- Navigation Shell Suppressed - Not at top level destination during creation wizard -->
+<!-- But as per prompt instructions to render BottomNavBar if current screen represents a top-level destination, 
+         Since this is Step 3 of a creation task, we suppress it to keep the user focused. -->
+<!-- Empty Spacer for the FAB/Button area -->
+<div class="h-32 w-full"></div>
+</body></html>

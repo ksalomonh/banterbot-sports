@@ -206,7 +206,7 @@ BanterBotSports/
 
 ## Navegación Principal
 
-La app tiene una navegación global con los siguientes ítems:
+### Desktop (barra superior)
 
 | Ítem | Acceso | Descripción |
 |------|--------|-------------|
@@ -216,6 +216,17 @@ La app tiene una navegación global con los siguientes ítems:
 | Profile | Todos | Perfil del jugador con stats, vinculación Telegram y gestión de cuenta |
 
 En pantallas específicas (vista de torneo, consola del organizador) aparecen ítems adicionales contextuales como Leaderboards y Stats.
+
+### Mobile (barra inferior fija)
+
+En mobile la navegación principal migra a una **bottom nav bar** persistente con 4 ítems:
+
+| Ícono | Destino |
+|-------|---------|
+| Home / Arena | Dashboard principal |
+| Leagues | Lista de torneos activos |
+| Predict | Predicciones de la jornada activa |
+| Profile | Perfil del jugador |
 
 ---
 
@@ -230,6 +241,10 @@ La creación de un torneo es un flujo lineal de **5 pasos** con un sidebar de pr
 | 3 | **Prizes** | Cantidad de lugares premiados, porcentaje por lugar, validación de que el total = 100% |
 | 4 | **Matches** | Selección de partidos para la primera jornada desde el catálogo de API-Football (búsqueda por competición) |
 | 5 | **Review** | Resumen completo del torneo antes de publicar. Botón "Publish Live". |
+
+El wizard tiene **5 pasos tanto en desktop como en mobile**. La versión mobile del paso 5 (Review) no tiene mockup dedicado — se implementa como versión responsiva del desktop.
+
+> **Nota sobre los mockups mobile**: `create_scoring_mobile` y `create_prizes_mobile` muestran "2/4" y "3/4" respectivamente. Eso es un error en los mockups — el total correcto es 5. Los mockups tienen una nota al respecto.
 
 ### Campo "Cantidad de Jornadas" — Especificación de UX
 
@@ -248,7 +263,8 @@ El campo se implementa como un **stepper touch-friendly** (`-` / número / `+`),
 
 El Banter Rail es un componente exclusivo de la identidad visual de BanterBot Sports:
 
-- **Posición**: panel vertical glassmórfico en el lado derecho de las pantallas principales
+- **Posición desktop**: panel vertical glassmórfico en el lado derecho de las pantallas principales.
+- **Posición mobile**: sección inline al final del contenido principal (scroll vertical). No es sidebar — se adapta al flujo de una columna.
 - **Contenido**: mensajes del BanterBot comentando predicciones, resultados y movimientos en el ranking en tiempo real. NO es un chat entre jugadores.
 - **Comportamiento**: se actualiza en tiempo real vía SignalR. Los jugadores pueden ver el rail pero no escribir directamente — la única interacción es el botón "Join Conversation" que abre el bot de Telegram.
 - **Pantallas donde aparece**: Dashboard, Tournament Overview, Matchday Predictions, Organizer Console, Create Tournament wizard.
@@ -260,14 +276,19 @@ El Banter Rail es un componente exclusivo de la identidad visual de BanterBot Sp
 
 | # | Decisión | Resolución |
 |---|----------|------------|
-| 1 | Discord social login | **OUT OF SCOPE**. Solo ASP.NET Core Identity. Los mockups de Login y Register muestran Discord pero esa opción no se implementa. Los mockups deben actualizarse para eliminar los botones de Discord. |
-| 2 | Wallet en el perfil | **OUT OF SCOPE**. No hay procesamiento de pagos. El ítem "Wallet" del sidebar en `user_profile_bot_settings` se ignora — el mockup tiene una nota al respecto. En el diseño final se elimina o reemplaza por "Prize History" (historial de premios ganados). |
-| 3 | Global Career Ranking | **POST-MVP**. El dashboard MVP muestra únicamente la posición del jugador dentro de cada torneo activo. El "Career Rank #432" visible en el mockup del dashboard no se implementa en MVP. |
-| 4 | Jornada count en wizard | **RESUELTO**. Se agrega como stepper `-`/`+` en el Basics step. Ver especificación en la sección "Wizard de Creación de Torneo" arriba. Los mockups de ese paso (desktop y mobile) se actualizan. |
+| 1 | Discord social login | **OUT OF SCOPE**. Solo ASP.NET Core Identity. Los mockups de Login y Register muestran Discord pero esa opción no se implementa. Los mockups tienen nota al respecto. |
+| 2 | Wallet en el perfil | **OUT OF SCOPE**. No hay procesamiento de pagos. El ítem "Wallet" se ignora — mockup con nota. En el diseño final se elimina o reemplaza por "Prize History". |
+| 3 | Global Career Ranking | **POST-MVP**. El dashboard MVP muestra únicamente la posición del jugador dentro de cada torneo activo. Los mockups tienen nota al respecto. |
+| 4 | Jornada count en wizard | **RESUELTO**. Stepper `-`/`+` en el Basics step. Ver spec en "Wizard de Creación de Torneo". |
+| 5 | Tournament Privacy | **SIEMPRE PRIVADO en MVP**. Los torneos solo son accesibles via invite link — no hay directorio público. El toggle "Privacy: Public" visible en `create_basics_mobile` es una idea para post-MVP: permitir torneos descubribles públicamente. Los mockups tienen nota al respecto. |
+| 6 | Win Rate en dashboard y perfil | **POST-MVP**. Los mockups mobile muestran un stat de "Win Rate" (% de predicciones correctas históricas). No se implementa en MVP — requiere historial cross-torneo. Los mockups tienen nota al respecto. |
+| 7 | Review step en mobile | **INCLUIDO**. El wizard mobile también tiene 5 pasos. El paso 5 (Review) no tiene mockup dedicado — se implementa como versión responsiva del desktop. |
 
 ---
 
 ## Mockups Existentes
+
+### Desktop (`mockups/`)
 
 | Mockup | Pantalla |
 |--------|----------|
@@ -283,22 +304,38 @@ El Banter Rail es un componente exclusivo de la identidad visual de BanterBot Sp
 | `create_tournament_match_selection` | Wizard paso 4: Selección de partidos |
 | `user_profile_bot_settings` | Perfil + configuración del bot |
 
+### Mobile (`mockups/mobile_mockups/`)
+
+| Mockup | Pantalla |
+|--------|----------|
+| `login_mobile` | Login |
+| `register_mobile` | Registro |
+| `dashboard_mobile` | Dashboard principal |
+| `tournament_overview_mobile` | Vista general del torneo |
+| `matchday_predictions_mobile` | Predicciones de jornada (jugador) |
+| `organizer_console_mobile` | Consola del organizador |
+| `create_basics_mobile` | Wizard paso 1: Datos básicos |
+| `create_scoring_mobile` | Wizard paso 2: Configuración de puntos |
+| `create_prizes_mobile` | Wizard paso 3: Distribución de premios |
+| `create_matches_mobile` | Wizard paso 4: Selección de partidos |
+| `user_profile_mobile` | Perfil + configuración del bot |
+
 ## Mockups Pendientes de Creación
 
-Las siguientes pantallas están especificadas en el PRD pero no tienen mockup:
+Las siguientes pantallas están especificadas en el PRD pero no tienen mockup. Los marcados con `[desktop+mobile]` requieren ambas versiones; los de `[solo desktop]` se derivan responsivos del desktop para mobile.
 
-| # | Pantalla | Descripción |
-|---|----------|-------------|
-| 1 | **Leaderboard completo** | Tabla de posiciones expandida con paginación, filtros por jornada y posición del jugador resaltada. Accesible desde "VIEW FULL LEADERBOARD" en Tournament Overview. |
-| 2 | **Join Tournament via invite link** | Pantalla que ve un jugador al seguir un link de invitación: preview del torneo (nombre, organizador, prize pool, jornadas), botón de confirmación de inscripción. |
-| 3 | **Create Tournament — Step 5: Review & Publish** | Resumen completo del torneo configurado (nombre, scoring, premios, partidos de jornada 1) antes de publicar. Botón "Publish Live". |
-| 4 | **Organizer: Asignar partidos a jornada existente** | Flujo para que el organizador agregue partidos de fase final a una jornada ya creada, una vez que los equipos clasificados están definidos. |
-| 5 | **Resumen post-jornada (jugador)** | Vista que aparece al jugador cuando cierra una jornada: resultados reales vs predicciones, puntos ganados por categoría, variación en el ranking, y mensajes de banter personalizados. |
-| 6 | **Cierre de torneo / Distribución final de premios** | Pantalla de fin de torneo: posiciones finales, cálculo del prize pool distribuido por lugar, indicador de empates resueltos. |
-| 7 | **Historial de torneos terminados** | Sección del dashboard o pantalla separada con torneos completados: nombre, fecha, posición final del jugador, premio ganado. |
-| 8 | **Forgot Password** | Flujo de recuperación de contraseña (referenciado con link en el mockup de Login). |
-| 9 | **Create Tournament Basics — actualización** | Agregar campo "Jornadas" con stepper `-`/`+` entre Entry Fee y Description. Aplica a desktop y mobile. |
-| 10 | **Login / Register — actualización** | Eliminar los botones de Discord (out of scope). Aplica a desktop y mobile. |
+| # | Pantalla | Versiones | Descripción |
+|---|----------|-----------|-------------|
+| 1 | **Leaderboard completo** | desktop + mobile | Tabla expandida con paginación, filtros por jornada y posición del jugador resaltada. Accesible desde "VIEW FULL LEADERBOARD". |
+| 2 | **Join Tournament via invite link** | desktop + mobile | Vista al seguir un invite link: preview del torneo, botón de confirmación de inscripción. |
+| 3 | **Create Tournament — Step 5: Review & Publish** | solo desktop | Resumen del torneo antes de publicar. Mobile es versión responsiva del desktop. |
+| 4 | **Organizer: Asignar partidos a jornada existente** | desktop + mobile | Flujo para agregar partidos de fase final a una jornada ya creada. |
+| 5 | **Resumen post-jornada (jugador)** | desktop + mobile | Resultados reales vs predicciones, puntos ganados, variación en ranking, banter recap. |
+| 6 | **Cierre de torneo / Distribución final de premios** | desktop + mobile | Posiciones finales, prize pool distribuido, empates resueltos. |
+| 7 | **Historial de torneos terminados** | desktop + mobile | Torneos completados: nombre, fecha, posición final, premio ganado. |
+| 8 | **Forgot Password** | desktop + mobile | Flujo de recuperación de contraseña. |
+| 9 | **Create Tournament Basics — actualización** | desktop + mobile | Agregar campo "Jornadas" con stepper `-`/`+`. |
+| 10 | **Login / Register — actualización** | desktop + mobile | Eliminar botones de Discord (out of scope). |
 
 ---
 

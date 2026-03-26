@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BANTER ARENA - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-dim": "#00c0ea",
+              "on-tertiary": "#4a0003",
+              "inverse-on-surface": "#505466",
+              "surface-tint": "#69daff",
+              "on-surface": "#e1e4fa",
+              "tertiary-container": "#f5282b",
+              "tertiary-fixed": "#ff9287",
+              "on-secondary-container": "#e7ffd9",
+              "on-secondary-fixed": "#064200",
+              "on-primary-container": "#004050",
+              "primary-fixed": "#00cffc",
+              "surface-container-low": "#0d1323",
+              "surface-container-high": "#181f33",
+              "inverse-primary": "#006880",
+              "secondary": "#2ff801",
+              "on-error-container": "#ffa8a3",
+              "outline-variant": "#434759",
+              "secondary-fixed-dim": "#2be800",
+              "on-primary-fixed": "#002a35",
+              "surface-dim": "#090e1c",
+              "on-primary": "#004a5d",
+              "on-error": "#490006",
+              "secondary-fixed": "#2ff801",
+              "secondary-container": "#106e00",
+              "tertiary-fixed-dim": "#ff7b70",
+              "surface": "#090e1c",
+              "background": "#090e1c",
+              "surface-container-lowest": "#000000",
+              "on-secondary": "#0b5800",
+              "on-surface-variant": "#a6aabf",
+              "error": "#ff716c",
+              "surface-container-highest": "#1e253b",
+              "primary-container": "#00cffc",
+              "surface-variant": "#1e253b",
+              "error-container": "#9f0519",
+              "tertiary-dim": "#e51a22",
+              "secondary-dim": "#2be800",
+              "on-secondary-fixed-variant": "#0d6200",
+              "surface-bright": "#242b43",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "tertiary": "#ff7166",
+              "on-primary-fixed-variant": "#004a5c",
+              "primary": "#69daff",
+              "on-background": "#e1e4fa",
+              "primary-fixed-dim": "#00c0ea",
+              "inverse-surface": "#faf8ff",
+              "outline": "#707588",
+              "surface-container": "#13192b",
+              "on-tertiary-container": "#000000",
+              "error-dim": "#d7383b",
+              "on-tertiary-fixed": "#3a0002"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .glass-panel {
+        background: rgba(24, 31, 51, 0.6);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30 min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-[#090e1c] shadow-[0_40px_40px_rgba(105,218,255,0.08)]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#69daff] text-2xl" data-icon="sports_kabaddi">sports_kabaddi</span>
+<h1 class="text-2xl font-black italic tracking-tighter text-[#69daff]">BANTER ARENA</h1>
+</div>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/20 bg-surface-container-high">
+<img alt="User Profile" data-alt="close-up portrait of a competitive male gamer with neon blue backlighting in a dark high-tech room" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgF-095P3HhSDUlXkdw-IEeu6Yfz3ooRxBTnH1rjBiZNrFUGx_zB1EQJM-OegS1H1N0_VjHQAjvDs1YRIEAf2XeWVkmGGoqrlcLJsW1h_hQ1QWJlP6EX4UgFA_b3ZBpuATRRmxmpQ6ybuMR9QFyH-u8n7C5pa_sOjp0zUuLiTQPo52MUVLjYVUcxEOHTEvId8SB3VJrxiniiJLOGDtLAvOf_Z5r_TXOqCUvyOFS-vSX08-B9oNy7PzEEdMJ1BiF864hM3U6sYMv74s"/>
+</div>
+</header>
+<main class="pt-20 pb-28 px-4 max-w-md mx-auto space-y-8">
+<!-- Welcome Section -->
+<section class="mt-4">
+<h2 class="text-[3.5rem] leading-[0.9] font-black tracking-tighter text-on-surface mb-2">
+                WELCOME BACK, KEVIN!
+            </h2>
+<div class="flex items-center gap-2 text-secondary font-bold text-sm tracking-wider uppercase">
+<span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_10px_#2ff801]"></span>
+<span>Live Stadium Status: High Energy</span>
+</div>
+</section>
+<!-- Quick Stats Bento -->
+<!-- POST-MVP — IGNORAR: "Rank #1,240" es un Global Career Rank cross-torneo.
+     En MVP el dashboard solo muestra la posición del jugador dentro de cada torneo activo.
+     El ranking global se implementará en post-MVP. Ver PRD.md § Decisiones de Diseño — Resueltas, decisión #3.
+     También: "Win Rate" en la stat de al lado es post-MVP. Ver decisión #6. -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-low p-5 rounded-full flex flex-col justify-between">
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Rank</span>
+<span class="text-3xl font-black text-primary">#1,240</span>
+</div>
+<div class="bg-surface-container-low p-5 rounded-full flex flex-col justify-between">
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Win Rate</span>
+<span class="text-3xl font-black text-secondary">68%</span>
+</div>
+</div>
+<!-- Active Tournaments (Asymmetric Horizontal Scroll) -->
+<section>
+<div class="flex justify-between items-end mb-4">
+<h3 class="text-2xl font-bold tracking-tight">ACTIVE ARENAS</h3>
+<span class="text-primary text-xs font-bold uppercase tracking-widest">See All</span>
+</div>
+<div class="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+<!-- World Cup Card -->
+<div class="min-w-[280px] bg-surface-container-high rounded-full overflow-hidden relative group">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest to-transparent opacity-80"></div>
+<div class="h-40 w-full overflow-hidden">
+<img alt="World Cup Stadium" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="dramatic wide angle shot of a massive football stadium illuminated at night under a deep blue sky with golden light beams" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvVL1lCEwxq3NUOKwIwvjhYWcEInj0vXKHQzrtWW67mS0MzHl24pQ51EriNbPoBUrDhNk5KIgRa76oPUmhyFSRSajWawdaC_auUXil0z_F6yEQdKImzmuQCuczGr4OMk4CYtpj2GN6XAkQlHU8vGYJq7mUMAaHvaGlHt_fYZ7nSOPrgGBt42SXnR2jf9p3JpydelJrXpt7cTUXc_nVjenGykbW5-lxURpbZKiVEydozAZtMKjROyhg8HlpMk6JkjwORwc3Gxs5Kzlc"/>
+</div>
+<div class="absolute bottom-0 left-0 p-6 w-full">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-xl font-extrabold italic text-white uppercase leading-tight">World Cup 2026</h4>
+<span class="px-2 py-1 bg-secondary text-on-secondary text-[10px] font-black rounded-lg">LIVE</span>
+</div>
+<div class="flex items-center justify-between">
+<p class="text-xs text-on-surface/70 font-bold uppercase tracking-wider">Group Stage • D-12</p>
+<span class="text-primary font-black">2.4k Players</span>
+</div>
+</div>
+</div>
+<!-- Euro 2024 Card -->
+<div class="min-w-[280px] bg-surface-container-high rounded-full overflow-hidden relative group">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest to-transparent opacity-80"></div>
+<div class="h-40 w-full overflow-hidden">
+<img alt="Euro 2024 Arena" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="atmospheric shot of a sleek modern stadium with glowing neon structural elements and a lush green pitch" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVRbl2sOYtSGoWn18ExPumG82T7IsfR9Na2YxlWpXPERBW2JsQ4-TdlJpCDTP54raqgx7LHDlDVrOV6-hN7-437-zKNvF4FrN7Ni6JEyrXaHSwcehF_MwfpC7kOZfCG5L2vRyzqzki7E8ELfQ73hFQMYGQrhsdMBw270Fju0XS6RMd93D9KEkjw-Pb6eKyFErcooNAn8fePj7v3Tl_2OcXRAVKN4VNGYet1JjywHELwpHdMoEmJmd-d2Zes9YMeA7eDk-b8KbzaSTr"/>
+</div>
+<div class="absolute bottom-0 left-0 p-6 w-full">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-xl font-extrabold italic text-white uppercase leading-tight">Euro 2024</h4>
+<span class="px-2 py-1 bg-surface-bright text-on-surface text-[10px] font-black rounded-lg uppercase">Pre-Match</span>
+</div>
+<div class="flex items-center justify-between">
+<p class="text-xs text-on-surface/70 font-bold uppercase tracking-wider">Quarter Finals</p>
+<span class="text-primary font-black">1.1k Players</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Upcoming Deadlines -->
+<section class="bg-surface-container-low rounded-full p-6 space-y-4">
+<h3 class="text-lg font-bold tracking-tight text-primary">URGENT PREDICTIONS</h3>
+<div class="space-y-4">
+<div class="flex items-center gap-4 bg-surface-container-high p-4 rounded-xl border-l-4 border-tertiary">
+<div class="flex-1">
+<p class="text-xs font-black text-tertiary uppercase mb-1">Locks in 14m</p>
+<p class="font-bold text-on-surface">Spain vs. Germany</p>
+</div>
+<button class="bg-tertiary px-4 py-2 rounded-lg text-white font-black text-xs uppercase tracking-tighter">Predict</button>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-high p-4 rounded-xl">
+<div class="flex-1">
+<p class="text-xs font-black text-on-surface-variant uppercase mb-1">Locks in 2h 45m</p>
+<p class="font-bold text-on-surface">Brazil vs. Uruguay</p>
+</div>
+<button class="bg-surface-bright px-4 py-2 rounded-lg text-primary font-black text-xs uppercase tracking-tighter">Open</button>
+</div>
+</div>
+</section>
+<!-- Banter Rail (Mobile Feed) -->
+<section class="pb-8">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-secondary" data-icon="forum">forum</span>
+<h3 class="text-2xl font-bold tracking-tight uppercase">Banter Rail</h3>
+<span class="ml-auto flex items-center gap-1 bg-secondary/10 text-secondary px-2 py-0.5 rounded-full text-[10px] font-black">
+<span class="animate-pulse w-1.5 h-1.5 bg-secondary rounded-full"></span> AI LIVE
+                </span>
+</div>
+<div class="glass-panel rounded-full p-4 space-y-6">
+<!-- Chat Item -->
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary-dim shrink-0 flex items-center justify-center font-black text-on-primary">B</div>
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="text-xs font-black text-primary uppercase">BanterBot AI</span>
+<span class="text-[10px] text-on-surface-variant font-medium">Just now</span>
+</div>
+<p class="text-sm leading-relaxed text-on-surface">Germany's defense is looking like Swiss cheese today. Kevin, your Spain pick is looking 🤌</p>
+</div>
+</div>
+<!-- User Item -->
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-bright shrink-0 flex items-center justify-center font-black text-secondary">MP</div>
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="text-xs font-black text-on-surface uppercase">MacroPro_99</span>
+<span class="text-[10px] text-on-surface-variant font-medium">2m ago</span>
+</div>
+<p class="text-sm leading-relaxed text-on-surface/80">Keep talking BanterBot, wait until Musiala finds his rhythm.</p>
+</div>
+</div>
+<!-- Input Field -->
+<div class="relative mt-4">
+<input class="w-full bg-surface-container-highest border-none rounded-xl py-4 px-6 text-sm focus:ring-2 focus:ring-primary/50 placeholder:text-on-surface-variant" placeholder="Drop some banter..." type="text"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-primary">
+<span class="material-symbols-outlined" data-icon="send">send</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-[#181f33]/60 backdrop-blur-xl rounded-t-[0.75rem] shadow-[0_-4px_20px_rgba(0,0,0,0.4)]">
+<a class="flex flex-col items-center justify-center bg-gradient-to-br from-[#69daff] to-[#00cffc] text-white rounded-[0.75rem] px-5 py-2 shadow-[0_0_15px_rgba(105,218,255,0.4)] transition-all active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="stadium">stadium</span>
+<span class="text-[10px] font-bold uppercase tracking-[0.05em]">Arena</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#e1e4fa]/50 px-5 py-2 hover:text-[#69daff] transition-all active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+<span class="text-[10px] font-bold uppercase tracking-[0.05em]">Leagues</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#e1e4fa]/50 px-5 py-2 hover:text-[#69daff] transition-all active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="edit_square">edit_square</span>
+<span class="text-[10px] font-bold uppercase tracking-[0.05em]">Predict</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#e1e4fa]/50 px-5 py-2 hover:text-[#69daff] transition-all active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings_applications">settings_applications</span>
+<span class="text-[10px] font-bold uppercase tracking-[0.05em]">Admin</span>
+</a>
+</nav>
+<!-- Contextual FAB -->
+<button class="fixed right-6 bottom-24 w-14 h-14 bg-gradient-to-br from-primary to-primary-container rounded-full shadow-[0_10px_30px_rgba(105,218,255,0.4)] flex items-center justify-center text-on-primary-container z-40 active:scale-90 transition-transform">
+<span class="material-symbols-outlined font-bold" data-icon="add">add</span>
+</button>
+</body></html>
