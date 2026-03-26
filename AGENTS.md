@@ -65,3 +65,13 @@ Layered architecture inherited from legacy app:
 - Unit tests for all scoring calculation logic
 - Integration tests for prize distribution with tie scenarios
 - Use xUnit + FluentAssertions
+
+## SDD Skills Registry
+
+| Skill | Description | Path |
+|-------|-------------|------|
+| `sdd-certifier` | QA Certification coordinator — receives app-type from orchestrator, loads the matching cert-* skill, certifies live behavior against Spec scenarios | [SKILL.md](~/.claude/skills/sdd-certifier/SKILL.md) |
+| `cert-web` | Web app testing toolbox — Playwright headless browser, form interaction, screenshots | [SKILL.md](~/.claude/skills/cert-web/SKILL.md) |
+| `cert-mobile` | Mobile app testing toolbox — Appium + UIAutomator2/XCUITest, emulator, element interaction | [SKILL.md](~/.claude/skills/cert-mobile/SKILL.md) |
+| `cert-service` | Service/API testing toolbox — curl, httpie, grpcurl, response validation | [SKILL.md](~/.claude/skills/cert-service/SKILL.md) |
+| `cert-console` | Console/CLI testing toolbox — stdin/stdout/exit codes, workers, log validation | [SKILL.md](~/.claude/skills/cert-console/SKILL.md) |
