@@ -1,4 +1,5 @@
 using System.Text;
+using BanterBotSports.Entities.DTOs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
@@ -64,6 +65,29 @@ public class TelegramBotService : ITelegramBotService
         for (int i = 0; i < predictions.Count; i++)
         {
             sb.AppendLine($"{i + 1}. {predictions[i]}");
+        }
+
+        await SendMessageAsync(chatId, sb.ToString().TrimEnd());
+    }
+
+    public async Task SendMatchesListAsync(long chatId, IReadOnlyList<PartidoDto> partidos)
+    {
+        if (partidos.Count == 0)
+        {
+            await SendMessageAsync(chatId, "No hay partidos programados para esta jornada.");
+            return;
+        }
+
+        var sb = new StringBuilder();
+        sb.AppendLine("⚽ Partidos de la próxima jornada:");
+        sb.AppendLine();
+
+        foreach (var partido in partidos)
+        {
+            // Format kick-off in a human-readable local-ish string (UTC explicit)
+            var kickOff = partido.KickOffUtc.ToString("ddd dd/MM HH:mm");
+            sb.AppendLine($"🏟 {partido.Equipo1} vs {partido.Equipo2}");
+            sb.AppendLine($"   🕐 {kickOff} UTC");
         }
 
         await SendMessageAsync(chatId, sb.ToString().TrimEnd());

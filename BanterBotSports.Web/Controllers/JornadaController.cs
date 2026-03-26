@@ -1,6 +1,8 @@
+using BanterBotSports.BanterAI;
 using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.Entities.DTOs;
 using BanterBotSports.Integrations.ApiFootball;
+using BanterBotSports.Integrations.Telegram;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +25,9 @@ public class JornadaController : Controller
         ITorneoService torneoService,
         IApiFootballClient apiFootballClient,
         UserManager<DAL.AppUser> userManager,
-        ILogger<JornadaController> logger)
+        ILogger<JornadaController> logger,
+        JornadaAbiertaNotifier jornadaAbiertaNotifier,
+        IBanterDispatchService banterDispatchService)
     {
         ArgumentNullException.ThrowIfNull(jornadaService);
         ArgumentNullException.ThrowIfNull(partidoService);
@@ -31,6 +35,8 @@ public class JornadaController : Controller
         ArgumentNullException.ThrowIfNull(apiFootballClient);
         ArgumentNullException.ThrowIfNull(userManager);
         ArgumentNullException.ThrowIfNull(logger);
+        ArgumentNullException.ThrowIfNull(jornadaAbiertaNotifier);
+        ArgumentNullException.ThrowIfNull(banterDispatchService);
 
         _jornadaService = jornadaService;
         _partidoService = partidoService;
@@ -38,6 +44,10 @@ public class JornadaController : Controller
         _apiFootballClient = apiFootballClient;
         _userManager = userManager;
         _logger = logger;
+
+        // Wire event subscribers in the composition root (per-scope, per-request)
+        jornadaService.JornadaAbierta += jornadaAbiertaNotifier.OnJornadaAbiertaAsync;
+        jornadaService.JornadaFinalizada += banterDispatchService.OnJornadaFinalizadaAsync;
     }
 
     // GET /jornada/{id}

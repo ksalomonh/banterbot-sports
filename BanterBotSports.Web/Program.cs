@@ -60,6 +60,7 @@ builder.Services.AddScoped<ITelegramVinculacionService, TelegramVinculacionServi
 
 // ─── Named HttpClients ───────────────────────────────────────────────────────
 builder.Services.AddHttpClient("ApiFootball");
+builder.Services.AddHttpClient("Anthropic");
 builder.Services.AddHttpClient("Whisper");
 builder.Services.AddHttpClient("TelegramBot");
 
@@ -67,6 +68,7 @@ builder.Services.AddHttpClient("TelegramBot");
 builder.Services.AddScoped<IApiFootballClient, ApiFootballClient>();
 builder.Services.AddScoped<IWhisperService, WhisperService>();
 builder.Services.AddSingleton<ITelegramBotService, TelegramBotService>();
+builder.Services.AddSingleton<JornadaAbiertaNotifier>();
 
 // ─── BanterAI Services (Scoped) ──────────────────────────────────────────────
 builder.Services.AddScoped<IPrediccionExtractionService, PrediccionExtractionService>();
