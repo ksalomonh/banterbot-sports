@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BanterBot - Tournament Results</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed": "#00cffc",
+              "surface-dim": "#090e1c",
+              "surface-tint": "#69daff",
+              "surface-container": "#13192b",
+              "error-container": "#9f0519",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "on-secondary": "#0b5800",
+              "inverse-primary": "#006880",
+              "tertiary-container": "#f5282b",
+              "primary-container": "#00cffc",
+              "on-primary-container": "#004050",
+              "inverse-surface": "#faf8ff",
+              "secondary-dim": "#2be800",
+              "on-secondary-fixed": "#064200",
+              "secondary": "#2ff801",
+              "surface-variant": "#1e253b",
+              "on-tertiary-fixed": "#3a0002",
+              "tertiary-fixed-dim": "#ff7b70",
+              "outline-variant": "#434759",
+              "error": "#ff716c",
+              "on-tertiary": "#4a0003",
+              "on-secondary-container": "#e7ffd9",
+              "tertiary-fixed": "#ff9287",
+              "surface-container-low": "#0d1323",
+              "background": "#090e1c",
+              "on-primary-fixed": "#002a35",
+              "on-background": "#e1e4fa",
+              "secondary-fixed": "#2ff801",
+              "error-dim": "#d7383b",
+              "on-surface-variant": "#a6aabf",
+              "surface-container-high": "#181f33",
+              "tertiary-dim": "#e51a22",
+              "secondary-container": "#106e00",
+              "on-surface": "#e1e4fa",
+              "surface-container-highest": "#1e253b",
+              "secondary-fixed-dim": "#2be800",
+              "on-error-container": "#ffa8a3",
+              "tertiary": "#ff7166",
+              "surface": "#090e1c",
+              "primary": "#69daff",
+              "outline": "#707588",
+              "inverse-on-surface": "#505466",
+              "surface-container-lowest": "#000000",
+              "on-secondary-fixed-variant": "#0d6200",
+              "surface-bright": "#242b43",
+              "primary-fixed-dim": "#00c0ea",
+              "on-primary": "#004a5d",
+              "on-primary-fixed-variant": "#004a5c",
+              "on-error": "#490006",
+              "primary-dim": "#00c0ea",
+              "on-tertiary-container": "#000000"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-card {
+        background: rgba(30, 37, 59, 0.6);
+        backdrop-filter: blur(20px);
+      }
+      .stadium-glow {
+        box-shadow: 0 0 50px -12px rgba(105, 218, 255, 0.25);
+      }
+      .neon-border-primary {
+        box-shadow: 0 0 15px rgba(105, 218, 255, 0.3);
+      }
+      .neon-border-secondary {
+        box-shadow: 0 0 15px rgba(47, 248, 1, 0.3);
+      }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary">
+<!-- Top Navigation Bar -->
+<nav class="bg-[#090e1c]/60 backdrop-blur-xl text-[#69daff] font-['Inter'] font-bold tracking-tight docked full-width top-0 sticky z-50 shadow-[0_8px_32px_0_rgba(105,218,255,0.08)]">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-screen-2xl mx-auto">
+<div class="text-2xl font-black tracking-tighter text-[#69daff] italic">BanterBot</div>
+<div class="hidden md:flex items-center space-x-8">
+<a class="text-[#e1e4fa]/60 hover:text-[#e1e4fa] transition-all duration-300" href="#">Tournaments</a>
+<a class="text-[#69daff] border-b-2 border-[#69daff] pb-1 transition-all duration-300" href="#">Results</a>
+<a class="text-[#e1e4fa]/60 hover:text-[#e1e4fa] transition-all duration-300" href="#">Ranking</a>
+<a class="text-[#e1e4fa]/60 hover:text-[#e1e4fa] transition-all duration-300" href="#">Rules</a>
+</div>
+<div class="flex items-center space-x-4">
+<button class="material-symbols-outlined text-[#e1e4fa]/60 hover:bg-[#242b43] p-2 rounded-full transition-all duration-300">notifications</button>
+<button class="material-symbols-outlined text-[#e1e4fa]/60 hover:bg-[#242b43] p-2 rounded-full transition-all duration-300">account_circle</button>
+</div>
+</div>
+</nav>
+<main class="max-w-screen-2xl mx-auto px-6 py-12 lg:flex lg:gap-8">
+<!-- Left Column: Results Detail -->
+<div class="lg:w-3/4 space-y-12">
+<!-- Tournament Header -->
+<header class="relative overflow-hidden rounded-3xl p-8 lg:p-12 bg-surface-container-low stadium-glow">
+<div class="absolute inset-0 z-0 opacity-20" data-alt="Dark futuristic sports stadium at night with blue and green neon lights illuminating a synthetic turf field">
+<img alt="stadium background" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSZ_xevMT5Btj5O1M1GplO5PCQPPjQR43yhvHpg1ZjfIMhXVAp2qIdESqkHOB1C-DUK6fzQdZXtuRoMaKUp5piHzQl_g4RHCNuTELa_ZIVo3wJwzm_zY7GxlJtRZP_r8tIfBn0a8TEle5gMbxvVmru8Dgwm4GmakXF5LCefmJJIXXkLknN6P-C3H2R40ilalaA5LHBZLlmNxYyXf-yQYH4d9i8CCWfuoSMt3_QI68s1CqDcbKbakUekgnZm7I6Tuc2sqE2hn4E2O7i"/>
+</div>
+<div class="relative z-10">
+<div class="flex items-center space-x-3 mb-4">
+<span class="bg-secondary text-on-secondary text-[0.75rem] font-bold px-3 py-1 rounded-full tracking-widest uppercase">CONCLUDED</span>
+<span class="text-on-surface-variant font-medium">Tournament ID: BB-9821</span>
+</div>
+<h1 class="text-display-lg text-5xl md:text-6xl font-black tracking-tight mb-2 uppercase italic text-primary">Cyber Cup: Alpha Series</h1>
+<p class="text-xl text-on-surface-variant max-w-2xl">The final whistles have blown. The trash talk has settled. Here is the final standing of the most intense arena of the month.</p>
+</div>
+</header>
+<!-- The Podium: Asymmetrical Visuals -->
+<section class="relative">
+<h2 class="text-headline-lg text-3xl font-bold mb-8 flex items-center">
+<span class="material-symbols-outlined mr-3 text-secondary" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+                    Final Podium Positions
+                </h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
+<!-- 2nd Place -->
+<div class="order-2 md:order-1 flex flex-col items-center">
+<div class="w-24 h-24 rounded-full overflow-hidden mb-4 border-4 border-outline-variant/30 relative">
+<img alt="Runner up avatar" data-alt="portrait of a focused young man with short dark hair in front of a blue studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3IcXtNtqOm679SCTvHnulV9MbtZrEL-ymIqJJjGhI00PHxfR_eHBp76j6rS8MK1jxnjPikNsdis7nW3sYOOJO-1wSxv8QwhLhKz678k5wAwJYYieaCDljeSMZa3wVpMVWto-hm2Bl2i3zQoil-lka5BtSoSgpOd0AxP9mTZf2iH0z0vqaMpzL-xMoWsh5FoCGF-2h3ikiszZ3jDmeVen77QtPB1dqMFHTzkOeGFHcTNchWaxE9jnihzoNyh_XZD0Pz_0lDWuFUeBa"/>
+<div class="absolute bottom-0 right-0 bg-outline-variant text-on-surface px-2 py-0.5 text-xs font-bold rounded-tl-lg">2nd</div>
+</div>
+<div class="bg-surface-container-high rounded-t-3xl p-6 w-full text-center space-y-2 h-48 flex flex-col justify-end">
+<h3 class="font-bold text-xl">ShadowStriker</h3>
+<div class="text-primary text-2xl font-black italic">4,820 pts</div>
+<div class="text-on-surface-variant text-sm font-bold uppercase tracking-widest">Prize: $2,500.00</div>
+</div>
+</div>
+<!-- 1st Place (CHAMPION) -->
+<div class="order-1 md:order-2 flex flex-col items-center scale-110 z-20">
+<div class="relative mb-6">
+<div class="absolute -top-12 left-1/2 -translate-x-1/2">
+<span class="material-symbols-outlined text-6xl text-secondary animate-pulse" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+<div class="w-32 h-32 rounded-full overflow-hidden border-4 border-secondary neon-border-secondary">
+<img alt="Champion avatar" data-alt="Portrait of a smiling young person with curly hair and glasses in vibrant cool lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6QZTapUITggh_OdgLFGL1cifhx-KcpbZ6Qxh3TBjmMczCWGh3raKdnzKjBcpNHEd1z3qs1ydgH6ZwFiRrzSFTmRRF9eKzr1s7ja-IJ_mpQ_TP60KflQWcpiBsO47ChNWdWV7QFwyG-W7Kw0w0v4WPeVStNkVEws47qq1NXZj5-AS4CKntyZw7k5LSvhpZ6wNPQKKCJ_egqGcnwuL2sCgVhsTAWjUXFl85RUlhtAvcIk3IOqtTntYJ_h7ui_14aBQ99Uy5KeipuDcq"/>
+</div>
+</div>
+<div class="bg-surface-bright rounded-t-3xl p-8 w-full text-center space-y-3 h-64 flex flex-col justify-end shadow-2xl relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-secondary to-transparent"></div>
+<h3 class="font-black text-2xl uppercase tracking-tighter">BanterLord_X</h3>
+<div class="text-secondary text-4xl font-black italic">6,150 pts</div>
+<div class="bg-secondary/10 text-secondary border border-secondary/20 py-2 rounded-xl text-lg font-bold uppercase tracking-widest">
+                                Prize: $10,000.00
+                            </div>
+</div>
+</div>
+<!-- 3rd Place -->
+<div class="order-3 md:order-3 flex flex-col items-center">
+<div class="w-24 h-24 rounded-full overflow-hidden mb-4 border-4 border-outline-variant/30 relative">
+<img alt="3rd place avatar" data-alt="Portrait of a confident young woman with braided hair against a dark urban background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcFlzB06lQGwQmZ-HDx5y-E940okK_ark1bu051iYxIIjBstsEVLp0FzvhAAfEcFD2iM9TiWgYFLth3olYzsIvSvOL0_D9VitYz0ZSiboZKcDyidWZloB89b1xdvZaLceolU1POQyUB7kU6i80sQ55chdIIt7b-lg1knbyWZSU7gEHinrwDXyFOBEC55kepKMKlzXkc2w0bfIzgsEiBucoNlXfzH-x5F_aFmpkcUAjkk9P9wMgX48bUpgiFb55fuTI0XVdoM5XOUyA"/>
+<div class="absolute bottom-0 right-0 bg-tertiary text-on-tertiary px-2 py-0.5 text-xs font-bold rounded-tl-lg">3rd</div>
+</div>
+<div class="bg-surface-container-high rounded-t-3xl p-6 w-full text-center space-y-2 h-40 flex flex-col justify-end">
+<h3 class="font-bold text-xl">VibeChecker</h3>
+<div class="text-primary text-2xl font-black italic">3,950 pts</div>
+<div class="text-on-surface-variant text-sm font-bold uppercase tracking-widest">Prize: $1,200.00</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Distribution Breakdown (Bento Style) -->
+<section class="space-y-6">
+<h2 class="text-headline-lg text-2xl font-bold uppercase tracking-widest">Prize Pool Distribution</h2>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="md:col-span-2 bg-surface-container-low p-6 rounded-3xl border border-primary/5">
+<h4 class="text-on-surface-variant font-bold uppercase text-xs tracking-widest mb-4">Total Tournament Liquidity</h4>
+<div class="text-4xl font-black text-primary">$25,000.00</div>
+<div class="mt-4 flex items-center text-secondary text-sm font-bold">
+<span class="material-symbols-outlined mr-1">trending_up</span>
+                            +12% from last season
+                        </div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-3xl border border-primary/5">
+<h4 class="text-on-surface-variant font-bold uppercase text-xs tracking-widest mb-4">Total Participants</h4>
+<div class="text-3xl font-black">1,248</div>
+<div class="mt-4 text-on-surface-variant text-xs uppercase font-bold tracking-widest">Active Players</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-3xl border border-primary/5">
+<h4 class="text-on-surface-variant font-bold uppercase text-xs tracking-widest mb-4">Avg. Win Amount</h4>
+<div class="text-3xl font-black">$452.00</div>
+<div class="mt-4 text-on-surface-variant text-xs uppercase font-bold tracking-widest">Global Payout</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Banter Rail -->
+<aside class="hidden lg:block lg:w-1/4">
+<div class="sticky top-24 glass-card rounded-3xl border border-outline-variant/10 h-[calc(100vh-8rem)] flex flex-col">
+<!-- ARENA CHAT — IN SCOPE: Este panel con input de texto es el Arena Chat interactivo.
+     El mockup lo llama "Banter Rail" pero por PRD el Banter Rail es solo lectura.
+     Renombrar a "Arena Chat" en la implementación. Ver PRD § Arena Chat. -->
+<div class="p-6 border-b border-outline-variant/15 flex justify-between items-center">
+<h3 class="font-black text-primary tracking-widest uppercase text-sm italic">Banter Rail</h3>
+<span class="bg-secondary/20 text-secondary px-2 py-0.5 rounded text-[10px] font-bold">LIVE CHAT</span>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-hide">
+<!-- Chat Item -->
+<div class="space-y-2">
+<div class="flex items-center space-x-2">
+<img class="w-6 h-6 rounded-full" data-alt="Avatar of a young woman with intense expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7fNHYkdqgtIinU0malE77HLbzAm910mqDUFjzel9HnKiciEpn9sfRlF1hi7VMBLc81ewU-uTdpjpBfKSz_4lmoN6wiAU1DF5xu9FAj6vS0WkQCydO_YGBN7X6KQ8d8TUB1KStYIyF8h-ekyvzBARqDTsDh-2VW4pQ7azHTlUzah0kQs0xGmmP01hYdSGB_0kY_rXipZ3ZnrU1VIe_nUEykVC5UnaioF_99cBkYaPUwEJKAhjeRCYMb5XVfTUv49qHMm3fh4wQL1sh"/>
+<span class="font-bold text-xs text-primary">GG_Easy</span>
+<span class="text-[10px] text-on-surface-variant">12:04</span>
+</div>
+<p class="text-sm bg-surface-container rounded-2xl rounded-tl-none p-3 border-l-2 border-secondary">BanterLord_X was untouchable in that last match! Well deserved 1st place.</p>
+</div>
+<div class="space-y-2">
+<div class="flex items-center space-x-2">
+<img class="w-6 h-6 rounded-full" data-alt="Avatar of a bearded man smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAebHZ6BYEjAEz1Bzqm5T8HGgnpp0ITCJnx4BHq-79Au1mSaMUx9ma6dnx33zspNWWrssBbU7A1MPwl1_9BbGGMmpeiEpp97MmKtk5dAxdfKbZcZaFUBV2qmk-Ep3JeoFMWuugbwvkNZvvnkQTuP6DaN477o3PNtxPQXy9-qGu3DH93M0zQPZ6KIQ05p0RuTnwZvzLI-c-DqkkQl0kCTF08V7MtAPZmILgTcuST4tWgrKXwdzaW1fdUpRy-gkdxJYnUbuGJ2xcTBgh-"/>
+<span class="font-bold text-xs text-on-surface">NoCap_Mike</span>
+<span class="text-[10px] text-on-surface-variant">12:06</span>
+</div>
+<p class="text-sm bg-surface-container rounded-2xl rounded-tl-none p-3">Wait until next month. I'm coming for that trophy. 🏆</p>
+</div>
+<div class="space-y-2">
+<div class="flex items-center space-x-2">
+<img class="w-6 h-6 rounded-full" data-alt="Avatar of a woman with red hair" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCevzRiuJl6CFAQ-1ONO11bVVlRSNJL3EtOaipr1_07uNlPfk8oldLUibu7Mh4YcMavX5Gcz-gCyYH8olx18Fwruz1nsn3aQDHa1h5-IVQmLadJFmOKCQYtmoomCFr6lrEnFRAerjzJbSyM02GiWbPlEwOUsbTofnVV2ha0slYMI0QHmfXPNUXDuic47vT8UxWRsWY0raHOO8uQOBzXYBR6sdhJRTo2NfTnwtqvXFYhx7au0FWLEsjx2D7WRHqKM8Z2DeNWqieI0G4R"/>
+<span class="font-bold text-xs text-primary">BanterLord_X</span>
+<span class="text-[10px] text-on-surface-variant">12:10</span>
+</div>
+<div class="bg-secondary/10 border border-secondary/20 rounded-2xl rounded-tl-none p-3">
+<p class="text-sm text-on-surface">Thanks for the games everyone! See you in the Arena.</p>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-outline-variant/15">
+<div class="relative">
+<input class="w-full bg-surface-container-highest border-none rounded-2xl py-3 px-4 text-sm focus:ring-1 focus:ring-primary/20 placeholder:text-on-surface-variant/40" placeholder="Talk trash or pay respects..." type="text"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-primary text-xl">send</button>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<!-- Global CTA (Sticky on Mobile) -->
+<div class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 md:bottom-8 lg:left-auto lg:right-12 lg:translate-x-0">
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary-container px-8 py-4 rounded-full font-black text-sm uppercase tracking-widest shadow-2xl flex items-center space-x-3 active:scale-95 transition-transform hover:brightness-110">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+<span>Join Next Tournament</span>
+</button>
+</div>
+<!-- Bottom Navigation Bar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-[#0d1323]/90 backdrop-blur-2xl rounded-t-3xl border-t border-[#434759]/15 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+<div class="flex flex-col items-center justify-center text-[#e1e4fa]/50 hover:text-[#2ff801] active:scale-90 duration-150">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-[#69daff]/10 text-[#69daff] rounded-2xl px-4 py-2 shadow-[0_0_15px_rgba(105,218,255,0.3)] active:scale-90 duration-150">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">sports_soccer</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Matches</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#e1e4fa]/50 hover:text-[#2ff801] active:scale-90 duration-150">
+<span class="material-symbols-outlined">forum</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Banter</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#e1e4fa]/50 hover:text-[#2ff801] active:scale-90 duration-150">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Profile</span>
+</div>
+</nav>
+</body></html>

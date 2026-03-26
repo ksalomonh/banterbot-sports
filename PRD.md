@@ -114,13 +114,14 @@ El canal principal de interacción de los **jugadores** con el sistema es Telegr
 - **Pantalla de cierre de torneo**: posiciones finales y distribución de premios calculada
 - El organizador puede participar como jugador
 - **IA Banter Engine vía Telegram**: mensajes personalizados por jugador al cerrar cada jornada (máx. 280 caracteres por mensaje)
-- **Banter Rail**: feed en tiempo real visible en las pantallas principales (dashboard, vista de torneo, predicciones, consola del organizador). Componente glassmórfico asimétrico en el lado derecho. No es un chat entre jugadores — es el BanterBot comentando en vivo.
+- **Banter Rail**: feed de anuncios en tiempo real del BanterBot — solo lectura. Visible en las pantallas principales (dashboard, vista de torneo, predicciones, consola del organizador). Componente glassmórfico asimétrico en el lado derecho. No recibe input del jugador.
+- **Arena Chat**: chat interactivo peer-to-peer en tiempo real vía SignalR donde los jugadores pueden hablar, bromear e interactuar. El BanterBot participa activamente: comenta los resultados de los jugadores con humor (sin groserías), provoca a los que tuvieron mala jornada, celebra jugadas brillantes o rachas de suerte inusual. En mobile es flotante (FAB) y se expande al tocar.
+- **Join Tournament via invite link con registro inline**: un usuario no registrado que recibe un invite link puede crear su cuenta directamente en esa pantalla. Al completar el registro, la cuenta queda automáticamente ligada al torneo sin pasos adicionales.
 - Historial de torneos (activos e historial de torneos completados)
 
 ### Out of Scope (MVP)
 - Integración de pagos reales (el dinero se gestiona fuera de la app). El perfil no tendrá sección "Wallet".
 - App móvil nativa (web responsiva + Telegram)
-- Chat directo entre jugadores (el Banter Rail es solo BanterBot, no mensajería peer-to-peer)
 - Autenticación social (Google, Facebook, Discord) — solo ASP.NET Core Identity
 - Otros canales de mensajería (WhatsApp, Discord) — post-MVP
 - Predicciones grupales o en equipo
@@ -236,7 +237,7 @@ La creación de un torneo es un flujo lineal de **5 pasos** con un sidebar de pr
 
 | Paso | Nombre | Contenido |
 |------|--------|-----------|
-| 1 | **Basics** | Nombre del torneo, **cantidad de jornadas** (stepper `-`/`+`), monto de inscripción (USD), descripción, imagen de portada |
+| 1 | **Basics** | Nombre del torneo, **cantidad de jornadas** (stepper `-`/`+`), monto de inscripción (USD), **máximo de jugadores** (opcional), descripción, imagen de portada |
 | 2 | **Scoring** | Puntos por resultado correcto (W/D/L), puntos bonus por marcador exacto, puntos por goles totales de jornada |
 | 3 | **Prizes** | Cantidad de lugares premiados, porcentaje por lugar, validación de que el total = 100% |
 | 4 | **Matches** | Selección de partidos para la primera jornada desde el catálogo de API-Football (búsqueda por competición) |
@@ -261,14 +262,33 @@ El campo se implementa como un **stepper touch-friendly** (`-` / número / `+`),
 
 ## Banter Rail
 
-El Banter Rail es un componente exclusivo de la identidad visual de BanterBot Sports:
+El Banter Rail es el feed de anuncios del BanterBot — **solo lectura**:
 
 - **Posición desktop**: panel vertical glassmórfico en el lado derecho de las pantallas principales.
-- **Posición mobile**: sección inline al final del contenido principal (scroll vertical). No es sidebar — se adapta al flujo de una columna.
-- **Contenido**: mensajes del BanterBot comentando predicciones, resultados y movimientos en el ranking en tiempo real. NO es un chat entre jugadores.
-- **Comportamiento**: se actualiza en tiempo real vía SignalR. Los jugadores pueden ver el rail pero no escribir directamente — la única interacción es el botón "Join Conversation" que abre el bot de Telegram.
+- **Posición mobile**: sección inline al final del contenido principal (scroll vertical).
+- **Contenido**: anuncios automáticos del BanterBot sobre eventos del torneo — goles anotados, cambios de posición en el ranking, predicciones que se cumplieron, deadlines próximos. Son mensajes de broadcasting, no conversación.
+- **Comportamiento**: se actualiza en tiempo real vía SignalR. Los jugadores **no pueden escribir** en el Banter Rail.
 - **Pantallas donde aparece**: Dashboard, Tournament Overview, Matchday Predictions, Organizer Console, Create Tournament wizard.
-- **Límite de mensajes**: 280 caracteres por mensaje (misma regla que el banter de Telegram).
+- **Límite de mensajes**: 280 caracteres por mensaje.
+
+---
+
+## Arena Chat
+
+El Arena Chat es el componente de interacción social en tiempo real. **Distinto al Banter Rail.**
+
+- **Participantes**: todos los jugadores del torneo + el BanterBot como participante activo.
+- **Posición desktop**: panel lateral derecho interactivo con campo de texto. Reemplaza al Banter Rail en las pantallas donde el contexto es social (leaderboard, join tournament, cierre de torneo).
+- **Posición mobile**: botón flotante (FAB) que al tocarse expande el chat en un drawer o modal de pantalla completa.
+- **Comportamiento del BanterBot en el chat**:
+  - Comenta resultados positivos y negativos de los jugadores con humor y picardía.
+  - Provoca a los que tuvieron mala jornada ("¿En serio no viste ese gol viniendo?").
+  - Celebra jugadas brillantes o predicciones exactas ("Exacto 3-1... ¿sabías algo que no nos contaste?").
+  - Se sorprende de rachas de suerte inusual o predicciones perfectas encadenadas.
+  - Nunca usa groserías. Tono: compañero de tribuna, no árbitro.
+  - Los mensajes del BanterBot en el chat son generados por Claude API, contextualizados con los resultados reales de la jornada del jugador al que comenta.
+- **Pantallas donde aparece**: Leaderboard completo, Join Tournament, Cierre de torneo, Post-jornada summary.
+- **Implementación**: SignalR hub dedicado para el chat por torneo. Los mensajes del BanterBot se inyectan vía el mismo hub.
 
 ---
 
@@ -283,6 +303,12 @@ El Banter Rail es un componente exclusivo de la identidad visual de BanterBot Sp
 | 5 | Tournament Privacy | **SIEMPRE PRIVADO en MVP**. Los torneos solo son accesibles via invite link — no hay directorio público. El toggle "Privacy: Public" visible en `create_basics_mobile` es una idea para post-MVP: permitir torneos descubribles públicamente. Los mockups tienen nota al respecto. |
 | 6 | Win Rate en dashboard y perfil | **POST-MVP**. Los mockups mobile muestran un stat de "Win Rate" (% de predicciones correctas históricas). No se implementa en MVP — requiere historial cross-torneo. Los mockups tienen nota al respecto. |
 | 7 | Review step en mobile | **INCLUIDO**. El wizard mobile también tiene 5 pasos. El paso 5 (Review) no tiene mockup dedicado — se implementa como versión responsiva del desktop. |
+| 8 | Arena Chat (peer-to-peer) | **IN SCOPE**. Los jugadores pueden chatear entre sí en tiempo real vía SignalR. El BanterBot participa activamente. Distinto al Banter Rail (solo lectura). Ver sección "Arena Chat". |
+| 9 | Moneda "BANTER" en mockups | **IGNORAR**. Los mockups usan nombres ficticios. La implementación usa USD para todos los montos. |
+| 10 | Paso "TEAMS" en wizard review | **ERROR DE MOCKUP**. El sidebar de `create_review_publish_web` muestra "3. TEAMS". El paso correcto es "4. MATCHES". Nota en el mockup. |
+| 11 | Join Tournament con registro inline | **IN SCOPE**. Usuario sin cuenta puede registrarse directamente desde la pantalla de invitación. Al registrarse, queda automáticamente ligado al torneo. No hay Google/Discord OAuth — formulario propio. |
+| 12 | Max Players por torneo | **IN SCOPE**. Campo opcional en el Basics step del wizard. Sin límite = torneo abierto. |
+| 13 | Componentes esports en mockups (brackets, eliminate.) | **PENDIENTE DE DECISIÓN** — ver sección "Opciones de Gamificación con Playoffs" al final del PRD. |
 
 ---
 
@@ -303,6 +329,14 @@ El Banter Rail es un componente exclusivo de la identidad visual de BanterBot Sp
 | `create_tournament_prizes` | Wizard paso 3: Distribución de premios |
 | `create_tournament_match_selection` | Wizard paso 4: Selección de partidos |
 | `user_profile_bot_settings` | Perfil + configuración del bot |
+| `create_review_publish_web` | Wizard paso 5: Review & Publish |
+| `forgot_password_web` | Recuperación de contraseña |
+| `full_leaderboard_web` | Leaderboard completo del torneo |
+| `join_tournament_web` | Unirse a torneo via invite link |
+| `playoff_management_web` | Organizer: gestión de partidos fase final |
+| `post_matchday_summary_web` | Resumen post-jornada (jugador) |
+| `tournament_closure_prizes_web` | Cierre de torneo y distribución de premios |
+| `tournament_history_web` | Historial de torneos completados |
 
 ### Mobile (`mockups/mobile_mockups/`)
 
@@ -319,23 +353,45 @@ El Banter Rail es un componente exclusivo de la identidad visual de BanterBot Sp
 | `create_prizes_mobile` | Wizard paso 3: Distribución de premios |
 | `create_matches_mobile` | Wizard paso 4: Selección de partidos |
 | `user_profile_mobile` | Perfil + configuración del bot |
+| `create_review_mobile` | Wizard paso 5: Review & Publish |
+| `forgot_password_mobile` | Recuperación de contraseña |
+| `full_leaderboard_mobile` | Leaderboard completo del torneo |
+| `join_tournament_mobile` | Unirse a torneo via invite link |
+| `playoff_management_mobile` | Organizer: gestión de partidos fase final |
+| `post_matchday_summary_mobile` | Resumen post-jornada (jugador) |
+| `tournament_closure_prizes_mobile` | Cierre de torneo y distribución de premios |
+| `tournament_history_mobile` | Historial de torneos completados |
 
 ## Mockups Pendientes de Creación
 
-Las siguientes pantallas están especificadas en el PRD pero no tienen mockup. Los marcados con `[desktop+mobile]` requieren ambas versiones; los de `[solo desktop]` se derivan responsivos del desktop para mobile.
-
 | # | Pantalla | Versiones | Descripción |
 |---|----------|-----------|-------------|
-| 1 | **Leaderboard completo** | desktop + mobile | Tabla expandida con paginación, filtros por jornada y posición del jugador resaltada. Accesible desde "VIEW FULL LEADERBOARD". |
-| 2 | **Join Tournament via invite link** | desktop + mobile | Vista al seguir un invite link: preview del torneo, botón de confirmación de inscripción. |
-| 3 | **Create Tournament — Step 5: Review & Publish** | solo desktop | Resumen del torneo antes de publicar. Mobile es versión responsiva del desktop. |
-| 4 | **Organizer: Asignar partidos a jornada existente** | desktop + mobile | Flujo para agregar partidos de fase final a una jornada ya creada. |
-| 5 | **Resumen post-jornada (jugador)** | desktop + mobile | Resultados reales vs predicciones, puntos ganados, variación en ranking, banter recap. |
-| 6 | **Cierre de torneo / Distribución final de premios** | desktop + mobile | Posiciones finales, prize pool distribuido, empates resueltos. |
-| 7 | **Historial de torneos terminados** | desktop + mobile | Torneos completados: nombre, fecha, posición final, premio ganado. |
-| 8 | **Forgot Password** | desktop + mobile | Flujo de recuperación de contraseña. |
-| 9 | **Create Tournament Basics — actualización** | desktop + mobile | Agregar campo "Jornadas" con stepper `-`/`+`. |
-| 10 | **Login / Register — actualización** | desktop + mobile | Eliminar botones de Discord (out of scope). |
+| 1 | **Create Tournament Basics — actualización** | desktop + mobile | Agregar campo "Jornadas" (stepper) y "Max Players". Eliminar Discord de Login/Register. |
+
+> Los mockups pendientes #2-#10 del ciclo anterior ya tienen cobertura con los nuevos mockups entregados.
+
+---
+
+## Opciones de Gamificación con Playoffs (Decisión Pendiente #13)
+
+Los mockups de `playoff_management_web/mobile` y `create_review_mobile` incluyen componentes de bracket/eliminación provenientes de un diseño de esports. Estos componentes son visualmente potentes y reutilizables. Dos opciones para adaptarlos al formato de quiniela:
+
+### Opción A — "Duelos por Jornada"
+- Cada jornada el sistema empareja a los jugadores de a dos (por proximidad en el ranking).
+- Si ganás el duelo (más puntos que tu rival en esa jornada) recibís un bonus de puntos.
+- El leaderboard acumulado sigue siendo el que define al ganador final del torneo.
+- **Ventaja**: sin cambiar las reglas base. Capa de emoción adicional. Fácil de implementar.
+- **Impacto en la UI**: el organizer console muestra los emparejamientos de cada jornada.
+
+### Opción B — "Fase Final de Playoffs"
+- Las primeras N jornadas son la Fase de Grupos: todos predicen normalmente, se acumulan puntos.
+- Los X mejores clasificados avanzan a un bracket de playoffs (octavos, cuartos, semis, final).
+- En cada ronda de playoff, tu predicción compite directamente contra la de tu rival asignado: el que más puntos acumule en esa jornada avanza.
+- El campeón del bracket recibe un premio adicional (o el organizador puede configurarlo como el único premio).
+- **Ventaja**: reutiliza el `playoff_management` mockup casi tal cual. Altísima emoción en las últimas jornadas. Formato Champions League.
+- **Impacto en la UI**: el organizer console maneja la asignación del bracket. SignalR actualiza el bracket en vivo.
+
+> **Decisión requerida**: ¿Opción A, Opción B, ninguna (solo quiniela tradicional), o ambas como modos configurables por el organizador?
 
 ---
 

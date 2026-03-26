@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BanterBot | Recover Your Account</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-fixed": "#00cffc",
+                        "surface-dim": "#090e1c",
+                        "surface-tint": "#69daff",
+                        "surface-container": "#13192b",
+                        "error-container": "#9f0519",
+                        "on-tertiary-fixed-variant": "#7a0008",
+                        "on-secondary": "#0b5800",
+                        "inverse-primary": "#006880",
+                        "tertiary-container": "#f5282b",
+                        "primary-container": "#00cffc",
+                        "on-primary-container": "#004050",
+                        "inverse-surface": "#faf8ff",
+                        "secondary-dim": "#2be800",
+                        "on-secondary-fixed": "#064200",
+                        "secondary": "#2ff801",
+                        "surface-variant": "#1e253b",
+                        "on-tertiary-fixed": "#3a0002",
+                        "tertiary-fixed-dim": "#ff7b70",
+                        "outline-variant": "#434759",
+                        "error": "#ff716c",
+                        "on-tertiary": "#4a0003",
+                        "on-secondary-container": "#e7ffd9",
+                        "tertiary-fixed": "#ff9287",
+                        "surface-container-low": "#0d1323",
+                        "background": "#090e1c",
+                        "on-primary-fixed": "#002a35",
+                        "on-background": "#e1e4fa",
+                        "secondary-fixed": "#2ff801",
+                        "error-dim": "#d7383b",
+                        "on-surface-variant": "#a6aabf",
+                        "surface-container-high": "#181f33",
+                        "tertiary-dim": "#e51a22",
+                        "secondary-container": "#106e00",
+                        "on-surface": "#e1e4fa",
+                        "surface-container-highest": "#1e253b",
+                        "secondary-fixed-dim": "#2be800",
+                        "on-error-container": "#ffa8a3",
+                        "tertiary": "#ff7166",
+                        "surface": "#090e1c",
+                        "primary": "#69daff",
+                        "outline": "#707588",
+                        "inverse-on-surface": "#505466",
+                        "surface-container-lowest": "#000000",
+                        "on-secondary-fixed-variant": "#0d6200",
+                        "surface-bright": "#242b43",
+                        "primary-fixed-dim": "#00c0ea",
+                        "on-primary": "#004a5d",
+                        "on-primary-fixed-variant": "#004a5c",
+                        "on-error": "#490006",
+                        "primary-dim": "#00c0ea",
+                        "on-tertiary-container": "#000000"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .stadium-mesh {
+            background-image: radial-gradient(circle at 2px 2px, rgba(105, 218, 255, 0.05) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body min-h-screen flex flex-col overflow-x-hidden">
+<!-- Hero Backdrop with Stadium Aesthetic -->
+<div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute inset-0 bg-gradient-to-b from-surface-dim via-background to-background"></div>
+<div class="absolute inset-0 stadium-mesh opacity-30"></div>
+<!-- Ambient Stadium Glows -->
+<div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[120px]"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-secondary/5 blur-[100px]"></div>
+</div>
+<!-- Main Content Canvas -->
+<main class="relative z-10 flex-grow flex items-center justify-center p-6">
+<div class="w-full max-w-md">
+<!-- Branding Header -->
+<div class="text-center mb-12">
+<h1 class="text-4xl font-black italic tracking-tighter text-primary mb-2">BanterBot</h1>
+<p class="text-on-surface-variant font-medium tracking-wide uppercase text-[0.7rem] opacity-60">Digital Colosseum Access</p>
+</div>
+<!-- Recovery Card (Step 1) -->
+<div class="relative group">
+<!-- Decorative Glow Layer -->
+<div class="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-transparent rounded-xl blur opacity-30 group-hover:opacity-50 transition duration-500"></div>
+<div class="relative bg-surface-container-low/80 backdrop-blur-2xl p-8 rounded-xl shadow-2xl border border-outline-variant/10">
+<div class="mb-8">
+<h2 class="text-2xl font-bold font-headline text-on-surface mb-2 tracking-tight">Recover Account</h2>
+<p class="text-on-surface-variant text-sm leading-relaxed">Enter your registered email. We’ll send a high-octane recovery link to get you back in the arena.</p>
+</div>
+<form action="#" class="space-y-6" method="POST">
+<div class="space-y-2">
+<label class="block text-[0.65rem] font-black uppercase tracking-[0.15em] text-primary/80 ml-1" for="email">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">mail</span>
+<input class="w-full bg-surface-container-highest border-none rounded-xl py-4 pl-12 pr-4 text-on-surface placeholder:text-outline/50 focus:ring-1 focus:ring-primary/40 focus:bg-surface-bright transition-all duration-300" id="email" placeholder="champion@arena.gg" required="" type="email"/>
+</div>
+</div>
+<button class="w-full relative overflow-hidden group/btn bg-gradient-to-br from-primary to-primary-container text-on-primary-container font-black py-4 rounded-xl shadow-[0_0_20px_rgba(105,218,255,0.2)] active:scale-95 transition-all duration-200" type="submit">
+<span class="relative z-10 flex items-center justify-center gap-2 tracking-tight">
+                                Send Recovery Link
+                                <span class="material-symbols-outlined text-sm">rocket_launch</span>
+</span>
+<div class="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300"></div>
+</button>
+</form>
+<div class="mt-10 pt-8 border-t border-outline-variant/10 text-center">
+<a class="inline-flex items-center gap-2 text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+                            Back to Login
+                        </a>
+</div>
+</div>
+</div>
+<!-- Success Visual (Hidden by default, shown for Step 2) -->
+<!-- Note: In a real implementation, visibility would be toggled via logic. Representing here as an alternative state indicator -->
+<div class="hidden mt-8 relative group">
+<div class="relative bg-surface-container-high/90 backdrop-blur-xl p-8 rounded-xl border border-secondary/20 shadow-[0_0_30px_rgba(47,248,1,0.05)]">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<h3 class="text-lg font-bold text-on-surface">Check Your Inbox</h3>
+<p class="text-sm text-on-surface-variant">The link is in play.</p>
+</div>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed">We've dispatched a recovery link to your email. Check your spam if it doesn't land in the next 60 seconds.</p>
+<button class="mt-6 text-xs font-bold uppercase tracking-widest text-secondary hover:underline underline-offset-4">Resend Link</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Contextual Footer -->
+<footer class="relative z-10 py-8 px-6 text-center border-t border-outline-variant/5">
+<p class="text-xs text-on-surface-variant/40 font-medium tracking-widest uppercase">
+            © 2024 BanterBot Pro • Midnight Stadium Infrastructure
+        </p>
+</footer>
+<!-- Image Placeholders for Dynamic Theme (Decorative) -->
+<div class="fixed bottom-0 left-0 w-full h-[200px] pointer-events-none opacity-20">
+<img alt="" class="w-full h-full object-cover mix-blend-screen grayscale" data-alt="dramatic wide shot of a futuristic neon sports arena at night with deep blue and cyan lighting effects" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7jUKknecpBsyNpTENShNM5h0NbloI4RnjDpaGWWDaLRZaY--tczlmGjMUd30kYOqbYjuk2QA4leo5EssvEs2dOPFgQck8rymTCGvK589lVkEno9CFvL-KdAgS_g2jXYEmx26kXdQzL-NQAa3hQjL-OSispQPqckQNY5-kvFz0Vl8atw1t1REB5enQxEAvi6_3zFFyw97DZ52owYBDQjaOtAu7H_fTDHRtYAgxm-0E4y8FtAhE9wcbvz_yf718pCtCcfjXlLAhZJh8"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
+</div>
+</body></html>

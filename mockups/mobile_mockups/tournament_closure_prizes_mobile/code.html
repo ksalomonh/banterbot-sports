@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BanterBot - Tournament Results</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed": "#00cffc",
+              "surface-dim": "#090e1c",
+              "surface-tint": "#69daff",
+              "surface-container": "#13192b",
+              "error-container": "#9f0519",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "on-secondary": "#0b5800",
+              "inverse-primary": "#006880",
+              "tertiary-container": "#f5282b",
+              "primary-container": "#00cffc",
+              "on-primary-container": "#004050",
+              "inverse-surface": "#faf8ff",
+              "secondary-dim": "#2be800",
+              "on-secondary-fixed": "#064200",
+              "secondary": "#2ff801",
+              "surface-variant": "#1e253b",
+              "on-tertiary-fixed": "#3a0002",
+              "tertiary-fixed-dim": "#ff7b70",
+              "outline-variant": "#434759",
+              "error": "#ff716c",
+              "on-tertiary": "#4a0003",
+              "on-secondary-container": "#e7ffd9",
+              "tertiary-fixed": "#ff9287",
+              "surface-container-low": "#0d1323",
+              "background": "#090e1c",
+              "on-primary-fixed": "#002a35",
+              "on-background": "#e1e4fa",
+              "secondary-fixed": "#2ff801",
+              "error-dim": "#d7383b",
+              "on-surface-variant": "#a6aabf",
+              "surface-container-high": "#181f33",
+              "tertiary-dim": "#e51a22",
+              "secondary-container": "#106e00",
+              "on-surface": "#e1e4fa",
+              "surface-container-highest": "#1e253b",
+              "secondary-fixed-dim": "#2be800",
+              "on-error-container": "#ffa8a3",
+              "tertiary": "#ff7166",
+              "surface": "#090e1c",
+              "primary": "#69daff",
+              "outline": "#707588",
+              "inverse-on-surface": "#505466",
+              "surface-container-lowest": "#000000",
+              "on-secondary-fixed-variant": "#0d6200",
+              "surface-bright": "#242b43",
+              "primary-fixed-dim": "#00c0ea",
+              "on-primary": "#004a5d",
+              "on-primary-fixed-variant": "#004a5c",
+              "on-error": "#490006",
+              "primary-dim": "#00c0ea",
+              "on-tertiary-container": "#000000"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .podium-gradient-1 { background: linear-gradient(180deg, rgba(105, 218, 255, 0.2) 0%, rgba(105, 218, 255, 0.05) 100%); }
+        .podium-gradient-2 { background: linear-gradient(180deg, rgba(47, 248, 1, 0.2) 0%, rgba(47, 248, 1, 0.05) 100%); }
+        .podium-gradient-3 { background: linear-gradient(180deg, rgba(255, 113, 102, 0.2) 0%, rgba(255, 113, 102, 0.05) 100%); }
+        .glass-panel { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full flex justify-between items-center px-6 h-16 bg-[#090e1c] dark:bg-[#090e1c] z-50 shadow-[0_4px_40px_0_rgba(105,218,255,0.08)]">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-[#69daff] active:scale-95 transition-transform">menu</button>
+<h1 class="font-['Inter'] font-black tracking-tight uppercase text-2xl text-[#69daff] tracking-tighter">BANTERBOT</h1>
+</div>
+<div class="h-10 w-10 rounded-full bg-surface-container-high border-2 border-primary/20 overflow-hidden">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="close up 3D stylized avatar of a cool gamer with neon glasses and a hoodie, vibrant blue background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVknV54wpQnsGI00AOmMDemPxsxnGyypgVhhOxIMpA4CVMNhfQ7EtzlQxrq6bJYShB25YzXFnT6-SB6MuP7iXQ7Tji4f3FHyHtEa3ClvjB09f14nPfMZlZBBVBFd1XvqwhSD6IuQrvt0XwEV14BpmvI34qsh7mN-nRdoiZ0TlVmFzzR9n2tzXr05766FfhpljnlblutETcgBoEy3mx1CI4XZf9-BlejtoYxZ1HLw6xX4P3Os1-l3y42geFPhXL3HKUUZ5nB3goKnMY"/>
+</div>
+</header>
+<main class="pt-20 pb-32 px-4 max-w-md mx-auto min-h-screen">
+<!-- Celebration Header -->
+<section class="text-center py-8 relative overflow-hidden">
+<div class="absolute inset-0 bg-primary/5 blur-[100px] rounded-full -z-10"></div>
+<span class="text-secondary font-black tracking-[0.2em] uppercase text-[0.75rem] mb-2 block">TOURNAMENT COMPLETE</span>
+<h2 class="text-[3.5rem] font-black leading-none tracking-tight text-white mb-2 drop-shadow-[0_0_20px_rgba(105,218,255,0.4)]">VICTORY</h2>
+<p class="text-on-surface-variant text-sm px-12">The Banter Arena has spoken. The spoils have been distributed to the victors.</p>
+</section>
+<!-- Podium Section (Asymmetric / Dynamic) -->
+<section class="grid grid-cols-3 items-end gap-2 mb-12 h-64 relative">
+<!-- 2nd Place -->
+<div class="flex flex-col items-center">
+<div class="relative mb-4 group">
+<div class="absolute -inset-1 bg-primary/20 blur-md rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<img class="w-16 h-16 rounded-full border-2 border-primary/40 relative z-10" data-alt="stylized portrait avatar of a competitive player, dark lighting with cyan rim light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCegub4rLsxHPzkkAgA-vIwKXy84UIsqevVREnSE5m1VPFGgkdiJ9MN9zp0ySPYwanlyrlLztLsSY7qfomZjRIZEJTS-D_e1JsOlR1Zkscsthhiz4L0SfohOanSTj9cIv_sTCznf4ECGtd6ZNFevF4f-CP6Z9YDD6BTkUPHz4uKKNRFMRXKbvfXqLr0T_diUz8j6Ix7SNwXdQ05ZxfCPDMhbUBkVfwx32kDrtxJgrNGDUKJgKwn5kB3X-t9oaU4z-hoU4-hQzWrWPMF"/>
+<div class="absolute -bottom-1 -right-1 bg-surface-container-high rounded-full w-6 h-6 flex items-center justify-center border border-primary/30 z-20">
+<span class="text-[10px] font-bold text-primary">2</span>
+</div>
+</div>
+<div class="podium-gradient-1 w-full h-24 rounded-t-xl flex flex-col items-center justify-center p-2 border-x border-t border-primary/10">
+<span class="text-[10px] font-black uppercase tracking-wider text-primary mb-1">PROPHET</span>
+<span class="text-white font-bold text-xs">840 PTS</span>
+</div>
+</div>
+<!-- 1st Place -->
+<div class="flex flex-col items-center">
+<div class="relative mb-6 scale-110">
+<div class="absolute -inset-4 bg-secondary/20 blur-2xl rounded-full animate-pulse"></div>
+<img class="w-20 h-20 rounded-full border-4 border-secondary relative z-10 shadow-[0_0_30px_rgba(47,248,1,0.3)]" data-alt="heroic avatar of a gamer with a crown, cinematic lighting, neon green and black aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuATGKxdSfJsL-mhd4KaHvH9Ck15lFBzMQq-ySZiUZ0VJQJiusOg76XJUvU6-NMwPzqpCjck-M_MZh66AMwVPmFSlpRnPJxr5eBmpliRdeM6Ue5-twvBiaVwhttgzd9nglzrrl7BSOpPcxKUqKLHAlIuKfOBUOIG4Ni0fhO_yhScAuG3lkNCe2no-4NJ4suxkAL04bYh_kN0YQcdeJmxVrGdDtHE23Wxr0gfjZ92NmcRBaFeZUOqX5bXnKxyPwtMq65kVwNII6a30-a-"/>
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 text-secondary text-2xl material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">emoji_events</div>
+<div class="absolute -bottom-2 -right-1 bg-secondary rounded-full w-8 h-8 flex items-center justify-center border-2 border-background z-20">
+<span class="text-xs font-black text-on-secondary">1</span>
+</div>
+</div>
+<div class="bg-secondary/10 w-full h-40 rounded-t-2xl flex flex-col items-center justify-center p-2 border-x border-t border-secondary/30 relative">
+<div class="absolute top-0 w-full h-1 bg-secondary"></div>
+<span class="text-[10px] font-black uppercase tracking-wider text-secondary mb-1">BANTER KING</span>
+<span class="text-white font-extrabold text-sm">1,240 PTS</span>
+</div>
+</div>
+<!-- 3rd Place -->
+<div class="flex flex-col items-center">
+<div class="relative mb-4">
+<img class="w-16 h-16 rounded-full border-2 border-tertiary/40" data-alt="edgy gamer avatar with headphones, vibrant red accents on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-YoN75kaGPMDdc6TujSKpsu0aVVcARoBlg2VyzRLqCUWhOQMJ6bjR51t8fmuxFy3-rsHUDE3mw8K2rc0OZ3_dARCp2W1BsJIsfLAcoqoIyjiI2Js85zJrDkxSVN_ZTWPF5IUNgAOr4Wm_XUz-3NkiFwQoH_0EBl0ADAuK26blDTVXRs1wuaJPVqP4KipirrmqztskroToyftQbrCKaOv1He0Je3yZF1r-ERy3J5xEUjoa6Aef__SIb99VcClQZ7pFxDoYC3G6_SyO"/>
+<div class="absolute -bottom-1 -right-1 bg-surface-container-high rounded-full w-6 h-6 flex items-center justify-center border border-tertiary/30">
+<span class="text-[10px] font-bold text-tertiary">3</span>
+</div>
+</div>
+<div class="podium-gradient-3 w-full h-16 rounded-t-xl flex flex-col items-center justify-center p-2 border-x border-t border-tertiary/10">
+<span class="text-[10px] font-black uppercase tracking-wider text-tertiary mb-1">ZEPHYR</span>
+<span class="text-white font-bold text-xs">710 PTS</span>
+</div>
+</div>
+</section>
+<!-- Prize Pool Distribution Bento -->
+<section class="space-y-4 mb-12">
+<h3 class="text-xl font-bold tracking-tight px-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">payments</span>
+                PRIZE DISTRIBUTION
+            </h3>
+<div class="grid grid-cols-2 gap-4">
+<!-- Main Prize Card -->
+<div class="col-span-2 bg-surface-container-high rounded-full p-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-primary/20 transition-colors"></div>
+<div class="relative z-10 flex justify-between items-center">
+<div>
+<span class="text-[0.65rem] font-black text-primary uppercase tracking-[0.1em]">Your Final Reward</span>
+<div class="flex items-baseline gap-1">
+<span class="text-3xl font-black text-white">$450.00</span>
+<span class="text-secondary text-sm font-bold">+120 XP</span>
+</div>
+</div>
+<button class="bg-primary hover:bg-primary-container text-on-primary-container h-12 w-12 rounded-full flex items-center justify-center active:scale-95 transition-all">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</button>
+</div>
+</div>
+<!-- Small Stats Cards -->
+<div class="bg-surface-container-low p-4 rounded-full border border-white/5">
+<span class="text-[0.6rem] font-bold text-on-surface-variant uppercase block mb-1">Rank Reached</span>
+<div class="flex items-center gap-2">
+<span class="text-xl font-black text-white">#42</span>
+<span class="material-symbols-outlined text-secondary text-lg">trending_up</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-4 rounded-full border border-white/5">
+<span class="text-[0.6rem] font-bold text-on-surface-variant uppercase block mb-1">Total Players</span>
+<div class="flex items-center gap-2">
+<span class="text-xl font-black text-white">1.2K</span>
+<span class="material-symbols-outlined text-primary text-lg">groups</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Final Rankings List (Tonal Layering) -->
+<section class="bg-surface-container-low rounded-full p-6 mb-8">
+<div class="flex justify-between items-center mb-6">
+<h4 class="text-sm font-black uppercase tracking-widest text-on-surface">LEADERBOARD TOP 10</h4>
+<span class="text-xs text-primary font-bold">VIEW ALL</span>
+</div>
+<div class="space-y-6">
+<!-- List Item 4 -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="text-on-surface-variant font-black w-4 text-xs italic">04</span>
+<img class="w-8 h-8 rounded-full bg-surface-bright" data-alt="minimalist user avatar on dark circular background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBE8uOh232r56EW64lvz3yyYauOQR8m49FP6cCZZEfyXZRujwuKU9GwL7qxuW62sHw9axGjQaiTjYiViFIrh5ahZU9SJrXxkV_FSr9aNfCyBysivjek-5xX92BS3ZFrIVIN0xeh4TGzfGthzox4lRCa59TTYZbqjBW5fsy_bQoZBId78ko9NRG7TmwjjRDAbHbx6AZH4moKp6QW9-x5QdeGfKHl7FQ7-Mhx9ZXGdev1pceKK3jmaP0RSxn16cpNeHufR3SuljYRbmvg"/>
+<span class="text-sm font-bold">GLITCH_HUNTER</span>
+</div>
+<span class="text-sm font-black text-white">680 PTS</span>
+</div>
+<!-- List Item 5 -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="text-on-surface-variant font-black w-4 text-xs italic">05</span>
+<img class="w-8 h-8 rounded-full bg-surface-bright" data-alt="minimalist user avatar on dark circular background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgbIQEitmxHICRQsoHrWWrgF7HTWG1y4ADRYbYpOXT8bCWjlr-aZNlPIR80IjFj3GAUIjFWnNOvlIiqIYdN6PsFgOyuDskKGq5SUpf3f8Rhp-gQqWhQRoELRUmeil4HG2Y8JugDDlRXBpD7oEMnYxrIkdPutWiLNI7EM01WkFNXxaYvSPMwIc2wnAESLqv87rkfFF4-EAON2l4fNe876rMyq6D8mAVW62SXMy_Vxu3F7JxFGPJM-jchN3gZ8_kfkGrMzhMJC7uRtPu"/>
+<span class="text-sm font-bold">STADIUM_BOSS</span>
+</div>
+<span class="text-sm font-black text-white">645 PTS</span>
+</div>
+<!-- Separator (Tonal shift, no line) -->
+<div class="h-10 flex items-center justify-center">
+<div class="w-1 h-1 bg-outline-variant/30 rounded-full mx-1"></div>
+<div class="w-1 h-1 bg-outline-variant/30 rounded-full mx-1"></div>
+<div class="w-1 h-1 bg-outline-variant/30 rounded-full mx-1"></div>
+</div>
+<!-- Your Position Highlight -->
+<div class="bg-primary/10 border border-primary/20 -mx-2 p-4 rounded-full flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="text-primary font-black w-4 text-xs italic">42</span>
+<div class="relative">
+<img class="w-8 h-8 rounded-full bg-surface-bright" data-alt="User avatar thumbnail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkYCL40EivLZUrS2juF6519dZA-HBpLM7tJA34pgVmddW5t-IO1ynPKSUQNiT8hoy3yc244wZFfBX0CsuI51J3tZYzGqKoct0WVIGUCOcLBBmryGb0yUQUrcbweLmPeEYduXEBTVh0Lz7m8XTCygcyxiNTotKpoAEw1fFq9F4e4CoNMD_O-kVVcH6Lv196Zb1V2UwvFq-0blHHQ-Bajh2UqsUjsJMwuywnlLQMtMY7hM5XHLUHhrt_yI3GArgiw8U4ZZt_rJhVVlKC"/>
+<div class="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full border-2 border-surface-container-low"></div>
+</div>
+<span class="text-sm font-bold text-primary uppercase">YOU</span>
+</div>
+<span class="text-sm font-black text-white">312 PTS</span>
+</div>
+</div>
+</section>
+<!-- CTA Action -->
+<button class="w-full h-16 bg-gradient-to-r from-primary to-primary-container rounded-full text-on-primary-container font-black uppercase tracking-widest text-sm flex items-center justify-center gap-2 shadow-[0_10px_30px_rgba(0,207,252,0.3)] hover:scale-[1.02] active:scale-95 transition-all">
+            JOIN NEXT TOURNAMENT
+            <span class="material-symbols-outlined">rocket_launch</span>
+</button>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-[#0d1323]/60 dark:bg-[#0d1323]/60 backdrop-blur-xl shadow-[0_-4px_40px_0_rgba(105,218,255,0.08)]">
+<a class="flex flex-col items-center justify-center text-[#e1e4fa]/60 font-['Inter'] text-[0.75rem] font-bold tracking-[0.05em] uppercase hover:text-[#69daff] active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mb-1">stadium</span>
+            Lobby
+        </a>
+<a class="flex flex-col items-center justify-center text-[#69daff] bg-[#242b43] rounded-xl px-4 py-1 font-['Inter'] text-[0.75rem] font-bold tracking-[0.05em] uppercase active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mb-1">leaderboard</span>
+            Results
+        </a>
+<a class="flex flex-col items-center justify-center text-[#e1e4fa]/60 font-['Inter'] text-[0.75rem] font-bold tracking-[0.05em] uppercase hover:text-[#69daff] active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mb-1">history</span>
+            History
+        </a>
+<a class="flex flex-col items-center justify-center text-[#e1e4fa]/60 font-['Inter'] text-[0.75rem] font-bold tracking-[0.05em] uppercase hover:text-[#69daff] active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mb-1">person</span>
+            Profile
+        </a>
+</nav>
+</body></html>
