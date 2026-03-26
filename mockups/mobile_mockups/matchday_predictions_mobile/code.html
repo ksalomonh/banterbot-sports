@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Matchday Predictions | BANTER ARENA</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-dim": "#00c0ea",
+              "on-tertiary": "#4a0003",
+              "inverse-on-surface": "#505466",
+              "surface-tint": "#69daff",
+              "on-surface": "#e1e4fa",
+              "tertiary-container": "#f5282b",
+              "tertiary-fixed": "#ff9287",
+              "on-secondary-container": "#e7ffd9",
+              "on-secondary-fixed": "#064200",
+              "on-primary-container": "#004050",
+              "primary-fixed": "#00cffc",
+              "surface-container-low": "#0d1323",
+              "surface-container-high": "#181f33",
+              "inverse-primary": "#006880",
+              "secondary": "#2ff801",
+              "on-error-container": "#ffa8a3",
+              "outline-variant": "#434759",
+              "secondary-fixed-dim": "#2be800",
+              "on-primary-fixed": "#002a35",
+              "surface-dim": "#090e1c",
+              "on-primary": "#004a5d",
+              "on-error": "#490006",
+              "secondary-fixed": "#2ff801",
+              "secondary-container": "#106e00",
+              "tertiary-fixed-dim": "#ff7b70",
+              "surface": "#090e1c",
+              "background": "#090e1c",
+              "surface-container-lowest": "#000000",
+              "on-secondary": "#0b5800",
+              "on-surface-variant": "#a6aabf",
+              "error": "#ff716c",
+              "surface-container-highest": "#1e253b",
+              "primary-container": "#00cffc",
+              "surface-variant": "#1e253b",
+              "error-container": "#9f0519",
+              "tertiary-dim": "#e51a22",
+              "secondary-dim": "#2be800",
+              "on-secondary-fixed-variant": "#0d6200",
+              "surface-bright": "#242b43",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "tertiary": "#ff7166",
+              "on-primary-fixed-variant": "#004a5c",
+              "primary": "#69daff",
+              "on-background": "#e1e4fa",
+              "primary-fixed-dim": "#00c0ea",
+              "inverse-surface": "#faf8ff",
+              "outline": "#707588",
+              "surface-container": "#13192b",
+              "on-tertiary-container": "#000000",
+              "error-dim": "#d7383b",
+              "on-tertiary-fixed": "#3a0002"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #090e1c;
+            color: #e1e4fa;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-nav {
+            background: rgba(24, 31, 51, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .stadium-glow {
+            box-shadow: 0 0 40px rgba(105, 218, 255, 0.08);
+        }
+        .match-card-glow:focus-within {
+            box-shadow: 0 0 15px rgba(105, 218, 255, 0.15);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="flex flex-col min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-[#090e1c] shadow-[0_40px_40px_rgba(105,218,255,0.08)]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#69daff] text-2xl" data-icon="sports_kabaddi">sports_kabaddi</span>
+<h1 class="text-2xl font-black italic tracking-tighter text-[#69daff]">BANTER ARENA</h1>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-[#69daff]/20 overflow-hidden scale-95 active:scale-90 transition-transform">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="close-up portrait of a competitive e-sports player with neon blue lighting reflecting on their face" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgYB2XRN7GZc-1Neu0htBrVONNHRSwp5xAtelB4LuQRLr9I2Luh_ooXzv_Jhw-SKNDThBmr2xFOjP3AtflGG0u-eTk7ZsBMHrdjypjxRm7VbEK9L9PrDUj_cB0RjaIWGjUZz8cuGdR_0JTl4vDrdOkV3hbrvGwlKzvGE8v9MCyK-TuKxr4bPtF0xp0fiC7FLNPjFwgTX8TusmKj9mskOCs6ZoyvfVhhSPVOqdbFVefxFbB5g6cRA6kK-aGFwnypSHF3nnNzrVepTgK"/>
+</div>
+</header>
+<main class="mt-20 px-4 space-y-6">
+<!-- Header Section & Total Goals -->
+<section class="space-y-4">
+<div class="flex flex-col gap-1">
+<span class="text-xs font-bold uppercase tracking-[0.2em] text-[#2ff801]">Matchday 24</span>
+<h2 class="text-3xl font-extrabold tracking-tight text-[#e1e4fa]">Predictions</h2>
+</div>
+<!-- Bento Highlight: Total Goals Prediction -->
+<div class="bg-surface-container-low p-5 rounded-full border-l-4 border-secondary shadow-lg flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Tie-Breaker Prediction</span>
+<span class="text-lg font-bold text-on-surface">Total Goals Scored</span>
+</div>
+<div class="w-20">
+<input class="w-full bg-surface-container-high border-none rounded-xl text-center font-black text-2xl text-secondary focus:ring-2 focus:ring-secondary/50 placeholder:text-on-surface-variant/20 py-2" placeholder="00" type="number"/>
+</div>
+</div>
+</section>
+<!-- Vertical List of Match Cards -->
+<section class="space-y-4">
+<!-- Arsenal vs Tottenham -->
+<div class="bg-surface-container-high rounded-full p-6 match-card-glow transition-all duration-300">
+<div class="flex items-center justify-between gap-4">
+<!-- Team A -->
+<div class="flex flex-col items-center flex-1 space-y-2">
+<div class="w-12 h-12 rounded-full bg-surface-bright flex items-center justify-center p-2">
+<img alt="Arsenal" class="w-8" data-alt="stylized geometric sports crest representing a professional football club with red and white colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLfwtYI0fgTnhc_hkxrNLw09KNjvda2_pFht6jcMpawKnpX0xNGU9uLEtb1Nwedo3cS4CoLDR-e30qImVbF113HMD8oYiuIiOIes1tlhs_TM7xEqEuM2cF9QCXeMIZY2GyxDzI2m82ydlfhSMv1MrJHzs-sgOAj_xiikHXjA4stQO8jJcLJqrddNeMeUMe-j5zRvpR75gFyNoKaYk-pl2hA1SZXG9-VXsv9hoIiY9BR3lnAS1mllv65JS0clvlMyGbjPWe86szD6iG"/>
+</div>
+<span class="text-xs font-bold text-center leading-tight">Arsenal</span>
+<input class="w-14 h-14 bg-surface-dim border-none rounded-xl text-center font-black text-2xl text-primary focus:ring-2 focus:ring-primary/50" type="number" value="0"/>
+</div>
+<!-- VS Divider -->
+<div class="flex flex-col items-center">
+<span class="text-[10px] font-black italic text-on-surface-variant/40">VS</span>
+<div class="h-12 w-px bg-outline-variant/20 my-1"></div>
+<span class="material-symbols-outlined text-tertiary text-lg" data-icon="schedule">schedule</span>
+<span class="text-[8px] font-bold text-on-surface-variant mt-1">14:00</span>
+</div>
+<!-- Team B -->
+<div class="flex flex-col items-center flex-1 space-y-2">
+<div class="w-12 h-12 rounded-full bg-surface-bright flex items-center justify-center p-2">
+<img alt="Tottenham" class="w-8" data-alt="stylized geometric sports crest representing a professional football club with navy and white colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3vPjAJ7TnHkB6RdSXQIjCH9cX4U2ASMRWLq_UcKpsUQpv-mqAZzla4y8fHyEFTEx_3McKbJnYTsRkhQVjk_wMQEAE1dFvPldS5e7HtAgjSR3gUzUgKuwh7qHKdUVom0prC6y6q1U35DD6Ba35FKAE6ZcbRYwshR93YeebwhRHJvIqJbmv44L_DQCLHPzfJzgD9zYmGn6XT_04NxY561hd29vHXAhqQJXEEq1TNIrTIoeraK8GyjF5hj07kXlJcBG11ddXxj2Se6nd"/>
+</div>
+<span class="text-xs font-bold text-center leading-tight">Tottenham</span>
+<input class="w-14 h-14 bg-surface-dim border-none rounded-xl text-center font-black text-2xl text-primary focus:ring-2 focus:ring-primary/50" type="number" value="0"/>
+</div>
+</div>
+</div>
+<!-- Man City vs Brentford -->
+<div class="bg-surface-container-high rounded-full p-6 match-card-glow transition-all duration-300">
+<div class="flex items-center justify-between gap-4">
+<!-- Team A -->
+<div class="flex flex-col items-center flex-1 space-y-2">
+<div class="w-12 h-12 rounded-full bg-surface-bright flex items-center justify-center p-2">
+<img alt="Man City" class="w-8" data-alt="stylized geometric sports crest representing a professional football club with sky blue and white colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3FE_pcM-_1U_lLOe7e4MMRRCW9aE6me98nd72z9doSd03NP67M1CzLgyp3sed-uU-_s6Va_LgTySN1wXIP8J7jg4Ev9ITERXJCatz-u2xSWCaWeso1g27Ako0PVljKp7zX16Tdygy6fICVxJW-W6KSnUWNcbXzV5K8O5-wSse7xy3jeVBshq9JS34yIyC-yRlIf0f8qrK4JehVLvHbKZ9mCgAdAnkonRhqRQf1FSvc-wb-iZJMCFSchrXVfoHE3_X5ravCCMdFMeE"/>
+</div>
+<span class="text-xs font-bold text-center leading-tight">Man City</span>
+<input class="w-14 h-14 bg-surface-dim border-none rounded-xl text-center font-black text-2xl text-primary focus:ring-2 focus:ring-primary/50" type="number" value="0"/>
+</div>
+<!-- VS Divider -->
+<div class="flex flex-col items-center">
+<span class="text-[10px] font-black italic text-on-surface-variant/40">VS</span>
+<div class="h-12 w-px bg-outline-variant/20 my-1"></div>
+<span class="material-symbols-outlined text-tertiary text-lg" data-icon="schedule">schedule</span>
+<span class="text-[8px] font-bold text-on-surface-variant mt-1">16:30</span>
+</div>
+<!-- Team B -->
+<div class="flex flex-col items-center flex-1 space-y-2">
+<div class="w-12 h-12 rounded-full bg-surface-bright flex items-center justify-center p-2">
+<img alt="Brentford" class="w-8" data-alt="stylized geometric sports crest representing a professional football club with red and black stripes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1EBPwzqqdm72IeMSvD54gd68SRIvKKswTtQSOMEyXA1ewM7izn0RTdIkwjWSzOklp1srle4qdtFXrBFQSo1PK98s_lSVJJ9CP9lQj6EgDLm1tDWSFi5f8ni1Mf3NNFjX5C1PZihqg-Rvb8ewTlSo7lLDUlh2WHilR472o-CFobyMm0DmeLHX4EYFzF_O7d6OSIm1nwS0ZcZzJ6cE2BKc0QroBsqu0VDf9quZCFgYLjXAVa17K55e6To-efGS6h_GYaxjQp6C08EJE"/>
+</div>
+<span class="text-xs font-bold text-center leading-tight">Brentford</span>
+<input class="w-14 h-14 bg-surface-dim border-none rounded-xl text-center font-black text-2xl text-primary focus:ring-2 focus:ring-primary/50" type="number" value="0"/>
+</div>
+</div>
+</div>
+<!-- Liverpool vs Chelsea -->
+<div class="bg-surface-container-high rounded-full p-6 match-card-glow transition-all duration-300">
+<div class="flex items-center justify-between gap-4">
+<!-- Team A -->
+<div class="flex flex-col items-center flex-1 space-y-2">
+<div class="w-12 h-12 rounded-full bg-surface-bright flex items-center justify-center p-2">
+<img alt="Liverpool" class="w-8" data-alt="stylized geometric sports crest representing a professional football club with deep red and gold accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCk1xsJ0yCvTEOlc4ORO3ZGOHbWa7cOyOlm6ACBE1QBiff_NfqOLTGz-meBJnT3AEFDnfiTBoUS5o7cpj0e3rlW5gYLzm1FM10LlS2AgO8J2sPU51jqKhHF-QGVpvLizDjZuPxAcUP4jpp5vj7zG5uN0Gh_V3eLmFlQza92Ba4W07jIT28-tV-C1yUOIeMBRXAS6AMmh6T4eTN3ckbFrtvoM-UbOyfzU1uGB02CzzAJWl1TIEdbzLL_z_Zwh-hssqQGHZImrBEslJr0"/>
+</div>
+<span class="text-xs font-bold text-center leading-tight">Liverpool</span>
+<input class="w-14 h-14 bg-surface-dim border-none rounded-xl text-center font-black text-2xl text-primary focus:ring-2 focus:ring-primary/50" type="number" value="0"/>
+</div>
+<!-- VS Divider -->
+<div class="flex flex-col items-center">
+<span class="text-[10px] font-black italic text-on-surface-variant/40">VS</span>
+<div class="h-12 w-px bg-outline-variant/20 my-1"></div>
+<span class="material-symbols-outlined text-tertiary text-lg" data-icon="schedule">schedule</span>
+<span class="text-[8px] font-bold text-on-surface-variant mt-1">19:00</span>
+</div>
+<!-- Team B -->
+<div class="flex flex-col items-center flex-1 space-y-2">
+<div class="w-12 h-12 rounded-full bg-surface-bright flex items-center justify-center p-2">
+<img alt="Chelsea" class="w-8" data-alt="stylized geometric sports crest representing a professional football club with royal blue and white colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrZyZZQCY3Gk05Wyi267DOJicr9EGOIfguoKFXVBsOVWbOotcT8Oe3yc2z6wMqNIMybOKLmgfiqIadn9FOjLFTGWbtHYF3QnXW7Qkt9XbgXArgWA5NOfosA6AGacX33dYJWtKkd2BKwnSvsJ-fYD1PcBJECFoketOHgpJJukaewgDxcGem4kUJphQjRi6auFuY5kJlI3rVL_QGSRQfxPD-6MTuZuKTj0GkUUUo0dlFcVTLfz7oR-c06AmscTMfOZVCFiqnILOYK3js"/>
+</div>
+<span class="text-xs font-bold text-center leading-tight">Chelsea</span>
+<input class="w-14 h-14 bg-surface-dim border-none rounded-xl text-center font-black text-2xl text-primary focus:ring-2 focus:ring-primary/50" type="number" value="0"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Asymmetric Hint/Social Rail -->
+<div class="p-6 bg-[#2ff801]/5 rounded-3xl border border-[#2ff801]/10">
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-secondary" data-icon="tips_and_updates">tips_and_updates</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+<span class="text-secondary font-bold">Stadium Tip:</span> Derbies like Arsenal vs Tottenham usually have 3+ goals. Check the <span class="underline decoration-secondary/30">Arena</span> chat to see what others are saying.
+                </p>
+</div>
+</div>
+</main>
+<!-- Floating Action Button: Save All Predictions -->
+<div class="fixed bottom-24 left-0 w-full px-4 z-40">
+<button class="w-full h-16 bg-gradient-to-r from-[#69daff] to-[#00cffc] text-white rounded-full font-black text-lg shadow-[0_10px_30px_rgba(105,218,255,0.4)] flex items-center justify-center gap-3 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="done_all">done_all</span>
+            SAVE ALL PREDICTIONS
+        </button>
+</div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-[#181f33]/60 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.4)] rounded-t-[0.75rem]">
+<div class="flex flex-col items-center justify-center text-[#e1e4fa]/50 px-5 py-2 hover:text-[#69daff] transition-all active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="stadium">stadium</span>
+<span class="text-[10px] font-bold uppercase tracking-[0.05em]">Arena</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#e1e4fa]/50 px-5 py-2 hover:text-[#69daff] transition-all active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+<span class="text-[10px] font-bold uppercase tracking-[0.05em]">Leagues</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-gradient-to-br from-[#69daff] to-[#00cffc] text-white rounded-[0.75rem] px-5 py-2 shadow-[0_0_15px_rgba(105,218,255,0.4)] active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="edit_square" style="font-variation-settings: 'FILL' 1;">edit_square</span>
+<span class="text-[10px] font-bold uppercase tracking-[0.05em]">Predict</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#e1e4fa]/50 px-5 py-2 hover:text-[#69daff] transition-all active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="settings_applications">settings_applications</span>
+<span class="text-[10px] font-bold uppercase tracking-[0.05em]">Admin</span>
+</div>
+</nav>
+</body></html>

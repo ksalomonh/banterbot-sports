@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Banter Arena - EURO 2024 Tournament</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-dim": "#00c0ea",
+              "on-tertiary": "#4a0003",
+              "inverse-on-surface": "#505466",
+              "surface-tint": "#69daff",
+              "on-surface": "#e1e4fa",
+              "tertiary-container": "#f5282b",
+              "tertiary-fixed": "#ff9287",
+              "on-secondary-container": "#e7ffd9",
+              "on-secondary-fixed": "#064200",
+              "on-primary-container": "#004050",
+              "primary-fixed": "#00cffc",
+              "surface-container-low": "#0d1323",
+              "surface-container-high": "#181f33",
+              "inverse-primary": "#006880",
+              "secondary": "#2ff801",
+              "on-error-container": "#ffa8a3",
+              "outline-variant": "#434759",
+              "secondary-fixed-dim": "#2be800",
+              "on-primary-fixed": "#002a35",
+              "surface-dim": "#090e1c",
+              "on-primary": "#004a5d",
+              "on-error": "#490006",
+              "secondary-fixed": "#2ff801",
+              "secondary-container": "#106e00",
+              "tertiary-fixed-dim": "#ff7b70",
+              "surface": "#090e1c",
+              "background": "#090e1c",
+              "surface-container-lowest": "#000000",
+              "on-secondary": "#0b5800",
+              "on-surface-variant": "#a6aabf",
+              "error": "#ff716c",
+              "surface-container-highest": "#1e253b",
+              "primary-container": "#00cffc",
+              "surface-variant": "#1e253b",
+              "error-container": "#9f0519",
+              "tertiary-dim": "#e51a22",
+              "secondary-dim": "#2be800",
+              "on-secondary-fixed-variant": "#0d6200",
+              "surface-bright": "#242b43",
+              "on-tertiary-fixed-variant": "#7a0008",
+              "tertiary": "#ff7166",
+              "on-primary-fixed-variant": "#004a5c",
+              "primary": "#69daff",
+              "on-background": "#e1e4fa",
+              "primary-fixed-dim": "#00c0ea",
+              "inverse-surface": "#faf8ff",
+              "outline": "#707588",
+              "surface-container": "#13192b",
+              "on-tertiary-container": "#000000",
+              "error-dim": "#d7383b",
+              "on-tertiary-fixed": "#3a0002"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-[#090e1c] shadow-[0_40px_40px_rgba(105,218,255,0.08)]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#69daff]" data-icon="sports_kabaddi">sports_kabaddi</span>
+<h1 class="text-2xl font-black italic tracking-tighter text-[#69daff]">BANTER ARENA</h1>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden ring-2 ring-primary/20">
+<img alt="User" data-alt="close-up portrait of a professional gamer with neon blue lighting reflecting on their face and high-tech headset" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-diIv5_otcYwP2p7Md4Et98Q-je376N0MugczWZnHGY_HsptmZc6qq6_94ktyMfiygHrWAvoicAE2ux5eX0qTV7b_h_mfADzqkp5fbaV_BYNMHcK_bkgmr-edqbqGfOyDmxJe0xKeQ3tYs0xK72M80zhzMAd03blOjMjoYXe4cZvuqtohAVyecvVxxTg-y8AEhPGGf9nqWjjxOxrpt8CX44GpCwmPggGRwtNunkHqtm-TsnVHKwYSt3Aej5vcQ22ijoxsTWvhkQOn"/>
+</div>
+</header>
+<main class="pt-20 pb-24 px-4 space-y-8">
+<!-- Tournament Hero Card (Asymmetrical Layout) -->
+<section class="relative overflow-hidden rounded-full bg-surface-container-low p-6 flex flex-col gap-4">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-3xl -mr-16 -mt-16"></div>
+<div class="flex justify-between items-start relative z-10">
+<div class="space-y-1">
+<span class="text-[0.7rem] font-bold uppercase tracking-[0.1em] text-secondary flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_#2ff801]"></span>
+                        Live Tournament
+                    </span>
+<h2 class="text-3xl font-black tracking-tight leading-none uppercase">EURO 2024</h2>
+</div>
+<div class="bg-surface-container-high px-3 py-1 rounded-full text-right">
+<p class="text-[0.6rem] uppercase font-bold text-on-surface-variant">Rank</p>
+<p class="text-lg font-black text-primary">#14</p>
+</div>
+</div>
+<div class="flex items-center gap-6 mt-2">
+<div>
+<p class="text-[0.65rem] uppercase font-bold text-on-surface-variant tracking-wider">Prize Pool</p>
+<p class="text-2xl font-black text-on-surface">$500</p>
+</div>
+<div class="h-10 w-px bg-outline-variant/20"></div>
+<div>
+<p class="text-[0.65rem] uppercase font-bold text-on-surface-variant tracking-wider">Predictions</p>
+<p class="text-lg font-bold text-on-surface">24/32</p>
+</div>
+</div>
+<button class="w-full py-4 rounded-full bg-gradient-to-br from-primary to-primary-container text-on-primary-container font-black uppercase tracking-widest text-sm shadow-[0_8px_20px_rgba(105,218,255,0.25)] active:scale-95 transition-transform">
+                Edit Predictions
+            </button>
+</section>
+<!-- Timeline Section (Horizontal Scrollable) -->
+<section class="space-y-4">
+<h3 class="text-[0.75rem] font-bold uppercase tracking-[0.2em] text-on-surface-variant px-1">Tournament Timeline</h3>
+<div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2 px-1">
+<!-- Active Matchday -->
+<div class="flex-shrink-0 w-32 bg-surface-container-highest p-4 rounded-full ring-2 ring-primary shadow-[0_0_15px_rgba(105,218,255,0.15)]">
+<p class="text-[0.6rem] font-black text-primary uppercase">Current</p>
+<p class="text-lg font-extrabold">Jornada 1</p>
+<p class="text-[0.6rem] text-on-surface-variant mt-1">12 Matches</p>
+</div>
+<!-- Upcoming -->
+<div class="flex-shrink-0 w-32 bg-surface-container-high p-4 rounded-full border border-outline-variant/10">
+<p class="text-[0.6rem] font-black text-on-surface-variant uppercase">Upcoming</p>
+<p class="text-lg font-extrabold opacity-60">Jornada 2</p>
+<p class="text-[0.6rem] text-on-surface-variant mt-1">Jun 19 - 22</p>
+</div>
+<!-- Upcoming -->
+<div class="flex-shrink-0 w-32 bg-surface-container-high p-4 rounded-full border border-outline-variant/10">
+<p class="text-[0.6rem] font-black text-on-surface-variant uppercase">Upcoming</p>
+<p class="text-lg font-extrabold opacity-60">Jornada 3</p>
+<p class="text-[0.6rem] text-on-surface-variant mt-1">Jun 23 - 26</p>
+</div>
+</div>
+</section>
+<!-- Bento Grid for Stats and Prizes -->
+<section class="grid grid-cols-2 gap-4">
+<!-- Prize Pool Breakdown -->
+<div class="col-span-2 bg-surface-container-low rounded-full p-5 space-y-4">
+<div class="flex justify-between items-center">
+<h3 class="text-sm font-black uppercase tracking-wider">Prize Breakdown</h3>
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="redeem">redeem</span>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/10">
+<span class="text-xs font-bold text-on-surface-variant">1st Place</span>
+<span class="text-sm font-black text-secondary">$250.00</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/10">
+<span class="text-xs font-bold text-on-surface-variant">2nd Place</span>
+<span class="text-sm font-black text-on-surface">$125.00</span>
+</div>
+<div class="flex justify-between items-center py-2">
+<span class="text-xs font-bold text-on-surface-variant">3rd Place</span>
+<span class="text-sm font-black text-on-surface">$75.00</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Global Standings Leaderboard -->
+<section class="space-y-4">
+<div class="flex justify-between items-end px-1">
+<h3 class="text-xl font-black tracking-tight uppercase">Leaderboard</h3>
+<span class="text-[0.65rem] font-bold text-primary uppercase tracking-widest">Global Standings</span>
+</div>
+<div class="bg-surface-container-low rounded-full overflow-hidden">
+<!-- User Item (Highlighted) -->
+<div class="flex items-center gap-4 p-4 bg-surface-bright/50 border-l-4 border-primary">
+<span class="text-xs font-black text-primary w-4">14</span>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-primary/20">
+<img alt="Profile" data-alt="vibrant digital avatar of a futuristic sports fan with holographic glasses and neon face paint" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOXilzBgyT9ChrRF11sNTaqyDm0lulizR8eTSxuYMfnqeTZptsRS1N8_H2UvzwsKvpJOGw-s_sN_9GxQH-09_YSE0fGwERalWxjhEJQtKlKXLDcM6z715pnV9eEfmh9Dcd07Taf0tmTuL0oIYU-BjH6Qz7DyIZdkYJjaNTBNc3i_K2X-y2etUwIlAUIRJ2JAbCw3kohdTPpyqvbjg7Lx6DNXetYlgO74wzfRs6QTY2YEudkessSJPVI-ebnViziYqDQ8rZQ9tjB_Vw"/>
+</div>
+<div class="flex-1">
+<p class="text-sm font-black uppercase">You (Predictor Pro)</p>
+<p class="text-[0.6rem] font-bold text-on-surface-variant uppercase">840 PTS</p>
+</div>
+<span class="material-symbols-outlined text-secondary text-lg" data-icon="trending_up">trending_up</span>
+</div>
+<!-- Leaderboard Item 1 -->
+<div class="flex items-center gap-4 p-4 hover:bg-surface-container-high transition-colors">
+<span class="text-xs font-black text-on-surface-variant w-4">1</span>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest">
+<img alt="Rank 1" data-alt="professional esports player avatar with dramatic backlighting and cybernetic details" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmLmUf2S0FDhxEoXK167FhaZS1af4IWLkjdsiETXLXQ6RdZpnj1KHXMuDlOklvgzjS3N1o9Ic5J4G6GUbuWqVgXIGSkudKgS8kmVmfhcgQSTriG7T2KjZ3yUirm_wMU5Dd0gYVetLBhj0OOyVpEuI9JR8tBRyps5FSdyfLLLiHEgvmFX6KJ-sIOilnpMoPpvcJ-Q4cjDZlw6AalO2oeF1rQnPgLVBWWce7FnG3isVrvEMj6xmDLfaf63flc_L0EXIw5eLWGCHWZpNU"/>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold uppercase">John_D_Elite</p>
+<p class="text-[0.6rem] font-bold text-on-surface-variant uppercase">1,240 PTS</p>
+</div>
+<span class="text-[0.6rem] font-black text-on-surface-variant">+$250</span>
+</div>
+<!-- Leaderboard Item 2 -->
+<div class="flex items-center gap-4 p-4 hover:bg-surface-container-high transition-colors">
+<span class="text-xs font-black text-on-surface-variant w-4">2</span>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest">
+<img alt="Rank 2" data-alt="abstract geometric avatar of a competitive gamer using shades of electric blue and neon green" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpm6xngpkV9zNrQV0jno2XlL-VuuGi1dJGPmgM8vp7ftOxd9ItgRQyaEzmHegsiqsXmqm2YaF8s5V7Q409Yv-hAJs8Gaxk7J_SXTl1CO6E810vl3RiOQLDUl2AiPoNWQPOI1_m53cPubuWaQZ9958kvgFr8ftoKAPITFTX0cLhxzDei5cLq_wmodOgLpTyOTxXRsVvusyg2cbSQTgs-9Snp9_0qg4FWeP1WIjGnLm5gxX8bJjrOKutESJ_hAyy3otIhiHsC7HZlw9H"/>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold uppercase">SoccerKing99</p>
+<p class="text-[0.6rem] font-bold text-on-surface-variant uppercase">1,195 PTS</p>
+</div>
+<span class="text-[0.6rem] font-black text-on-surface-variant">+$125</span>
+</div>
+<!-- Leaderboard Item 3 -->
+<div class="flex items-center gap-4 p-4 hover:bg-surface-container-high transition-colors">
+<span class="text-xs font-black text-on-surface-variant w-4">3</span>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest">
+<img alt="Rank 3" data-alt="minimalist stylized portrait of a digital athlete with sharp shadows and neon highlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvQ9DRV_cqeYIEz3XowktmMTYHrJEXc2px5hk_a64MW1eC0ig3EgncktPMw2MPas4-JMyDqPCKJiy2wEJv_Cd7x59N7UVYBgjD_R8ydoFg8Z6mzGwKd6hBE-AqDas22ACrBzKkEWecE8zif3m62okBkHsObyYFSV8dIF2J1T6PLR3wxSp6TNh5Vm4YzX1vYdBWrIvn7PywJ65St6av72G0mfAsqTt-cY4_iwjzC23CGX0V93t6vuKFlsgYSo_s6M0y7dsoQQStC2H5"/>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold uppercase">ArenaMaster</p>
+<p class="text-[0.6rem] font-bold text-on-surface-variant uppercase">1,150 PTS</p>
+</div>
+<span class="text-[0.6rem] font-black text-on-surface-variant">+$75</span>
+</div>
+</div>
+<button class="w-full py-3 text-[0.7rem] font-black uppercase tracking-widest text-primary hover:bg-primary/5 rounded-full transition-colors">
+                View All Standings
+            </button>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-[#181f33]/60 backdrop-blur-xl rounded-t-[0.75rem] shadow-[0_-4px_20px_rgba(0,0,0,0.4)]">
+<!-- Arena (Active) -->
+<a class="flex flex-col items-center justify-center bg-gradient-to-br from-[#69daff] to-[#00cffc] text-white rounded-[0.75rem] px-5 py-2 shadow-[0_0_15px_rgba(105,218,255,0.4)] active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="stadium">stadium</span>
+<span class="text-[10px] font-bold uppercase tracking-[0.05em]">Arena</span>
+</a>
+<!-- Leagues -->
+<a class="flex flex-col items-center justify-center text-[#e1e4fa]/50 px-5 py-2 hover:text-[#69daff] transition-all active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+<span class="text-[10px] font-bold uppercase tracking-[0.05em]">Leagues</span>
+</a>
+<!-- Predict -->
+<a class="flex flex-col items-center justify-center text-[#e1e4fa]/50 px-5 py-2 hover:text-[#69daff] transition-all active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="edit_square">edit_square</span>
+<span class="text-[10px] font-bold uppercase tracking-[0.05em]">Predict</span>
+</a>
+<!-- Admin -->
+<a class="flex flex-col items-center justify-center text-[#e1e4fa]/50 px-5 py-2 hover:text-[#69daff] transition-all active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings_applications">settings_applications</span>
+<span class="text-[10px] font-bold uppercase tracking-[0.05em]">Admin</span>
+</a>
+</nav>
+</body></html>
