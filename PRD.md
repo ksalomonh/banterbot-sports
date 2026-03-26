@@ -308,7 +308,7 @@ El Arena Chat es el componente de interacción social en tiempo real. **Distinto
 | 10 | Paso "TEAMS" en wizard review | **ERROR DE MOCKUP**. El sidebar de `create_review_publish_web` muestra "3. TEAMS". El paso correcto es "4. MATCHES". Nota en el mockup. |
 | 11 | Join Tournament con registro inline | **IN SCOPE**. Usuario sin cuenta puede registrarse directamente desde la pantalla de invitación. Al registrarse, queda automáticamente ligado al torneo. No hay Google/Discord OAuth — formulario propio. |
 | 12 | Max Players por torneo | **IN SCOPE**. Campo opcional en el Basics step del wizard. Sin límite = torneo abierto. |
-| 13 | Componentes esports en mockups (brackets, eliminate.) | **PENDIENTE DE DECISIÓN** — ver sección "Opciones de Gamificación con Playoffs" al final del PRD. |
+| 13 | Componentes esports en mockups (brackets, eliminate.) | **OUT OF SCOPE**. Solo quiniela tradicional en MVP. Los mockups de `playoff_management` son decorativos / referencia visual. No se implementa ningún sistema de brackets ni duelos. |
 
 ---
 
@@ -371,27 +371,6 @@ El Arena Chat es el componente de interacción social en tiempo real. **Distinto
 > Los mockups pendientes #2-#10 del ciclo anterior ya tienen cobertura con los nuevos mockups entregados.
 
 ---
-
-## Opciones de Gamificación con Playoffs (Decisión Pendiente #13)
-
-Los mockups de `playoff_management_web/mobile` y `create_review_mobile` incluyen componentes de bracket/eliminación provenientes de un diseño de esports. Estos componentes son visualmente potentes y reutilizables. Dos opciones para adaptarlos al formato de quiniela:
-
-### Opción A — "Duelos por Jornada"
-- Cada jornada el sistema empareja a los jugadores de a dos (por proximidad en el ranking).
-- Si ganás el duelo (más puntos que tu rival en esa jornada) recibís un bonus de puntos.
-- El leaderboard acumulado sigue siendo el que define al ganador final del torneo.
-- **Ventaja**: sin cambiar las reglas base. Capa de emoción adicional. Fácil de implementar.
-- **Impacto en la UI**: el organizer console muestra los emparejamientos de cada jornada.
-
-### Opción B — "Fase Final de Playoffs"
-- Las primeras N jornadas son la Fase de Grupos: todos predicen normalmente, se acumulan puntos.
-- Los X mejores clasificados avanzan a un bracket de playoffs (octavos, cuartos, semis, final).
-- En cada ronda de playoff, tu predicción compite directamente contra la de tu rival asignado: el que más puntos acumule en esa jornada avanza.
-- El campeón del bracket recibe un premio adicional (o el organizador puede configurarlo como el único premio).
-- **Ventaja**: reutiliza el `playoff_management` mockup casi tal cual. Altísima emoción en las últimas jornadas. Formato Champions League.
-- **Impacto en la UI**: el organizer console maneja la asignación del bracket. SignalR actualiza el bracket en vivo.
-
-> **Decisión requerida**: ¿Opción A, Opción B, ninguna (solo quiniela tradicional), o ambas como modos configurables por el organizador?
 
 ---
 
