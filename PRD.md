@@ -118,14 +118,14 @@ El canal principal de interacción de los **jugadores** con el sistema es Telegr
 - Historial de torneos (activos e historial de torneos completados)
 
 ### Out of Scope (MVP)
-- Integración de pagos reales (el dinero se gestiona fuera de la app)
+- Integración de pagos reales (el dinero se gestiona fuera de la app). El perfil no tendrá sección "Wallet".
 - App móvil nativa (web responsiva + Telegram)
 - Chat directo entre jugadores (el Banter Rail es solo BanterBot, no mensajería peer-to-peer)
-- Autenticación social (Google, Facebook, Discord) — ver sección "Decisiones Pendientes"
+- Autenticación social (Google, Facebook, Discord) — solo ASP.NET Core Identity
 - Otros canales de mensajería (WhatsApp, Discord) — post-MVP
 - Predicciones grupales o en equipo
 - Sistema de logros/trofeos (Achievements/Trophies) — post-MVP
-- Ranking global cross-torneo (Career Rank) — post-MVP
+- Ranking global cross-torneo (Career Rank) — post-MVP. El dashboard MVP muestra únicamente la posición del jugador dentro de cada torneo activo.
 
 ---
 
@@ -225,13 +225,22 @@ La creación de un torneo es un flujo lineal de **5 pasos** con un sidebar de pr
 
 | Paso | Nombre | Contenido |
 |------|--------|-----------|
-| 1 | **Basics** | Nombre del torneo, cantidad de jornadas, monto de inscripción (USD), descripción, imagen de portada |
+| 1 | **Basics** | Nombre del torneo, **cantidad de jornadas** (stepper `-`/`+`), monto de inscripción (USD), descripción, imagen de portada |
 | 2 | **Scoring** | Puntos por resultado correcto (W/D/L), puntos bonus por marcador exacto, puntos por goles totales de jornada |
 | 3 | **Prizes** | Cantidad de lugares premiados, porcentaje por lugar, validación de que el total = 100% |
 | 4 | **Matches** | Selección de partidos para la primera jornada desde el catálogo de API-Football (búsqueda por competición) |
 | 5 | **Review** | Resumen completo del torneo antes de publicar. Botón "Publish Live". |
 
-> **Nota**: El campo "cantidad de jornadas" del Paso 1 no está visible en el mockup `create_tournament_basics` actual — pendiente de actualización del mockup.
+### Campo "Cantidad de Jornadas" — Especificación de UX
+
+El campo se implementa como un **stepper touch-friendly** (`-` / número / `+`), optimizado para mobile:
+- Rango válido: 1 – 32 jornadas
+- Valor por defecto: 8
+- El campo ocupa una fila completa entre "Entry Fee" y "Description"
+- En desktop: los botones `-`/`+` están a los costados del número
+- En mobile: los botones tienen mínimo 44px de área táctil
+
+> **Mockup pendiente**: los mockups `create_tournament_basics` (desktop y mobile) deben actualizarse para incluir este campo con el stepper.
 
 ---
 
@@ -247,29 +256,14 @@ El Banter Rail es un componente exclusivo de la identidad visual de BanterBot Sp
 
 ---
 
-## Decisiones de Diseño Pendientes
+## Decisiones de Diseño — Resueltas
 
-Las siguientes discrepancias entre el PRD y los mockups requieren decisión explícita antes de implementar:
-
-### 1. Discord como opción de autenticación social
-- **Mockups**: Login y Register muestran Discord como "Synchronize With" / "Fast Track Entry"
-- **PRD actual**: Autenticación social (Google, Facebook) en Out of Scope. Discord no mencionado explícitamente.
-- **Opciones**: (a) Agregar Discord social login a Out of Scope, o (b) incluirlo en scope MVP como única opción de auth social dado el perfil de usuario (gamers).
-
-### 2. Wallet en el perfil del usuario
-- **Mockup**: `user_profile_bot_settings` muestra un ítem "Wallet" en el sidebar de navegación
-- **PRD actual**: Integración de pagos explícitamente Out of Scope
-- **Resolución sugerida**: El ítem "Wallet" en el mockup debe eliminarse o reemplazarse por "Prize History" (historial de premios ganados, sin procesamiento de pagos).
-
-### 3. Global Career Ranking cross-torneo
-- **Mockup**: Dashboard muestra "Career Rank #432" implicando un ranking global entre todos los torneos
-- **PRD actual**: No mencionado
-- **Resolución sugerida**: Marcar como post-MVP. El dashboard MVP muestra solo posición dentro de cada torneo activo, no un ranking global.
-
-### 4. Jornada count en Create Tournament - Step 1
-- **Mockup `create_tournament_basics`**: Solo muestra Name, Entry Fee y Description. Falta el campo "cantidad de jornadas".
-- **PRD actual**: El organizador define la cantidad de jornadas al crear el torneo.
-- **Resolución sugerida**: Agregar el campo al mockup de Basics (actualización de mockup pendiente).
+| # | Decisión | Resolución |
+|---|----------|------------|
+| 1 | Discord social login | **OUT OF SCOPE**. Solo ASP.NET Core Identity. Los mockups de Login y Register muestran Discord pero esa opción no se implementa. Los mockups deben actualizarse para eliminar los botones de Discord. |
+| 2 | Wallet en el perfil | **OUT OF SCOPE**. No hay procesamiento de pagos. El ítem "Wallet" del sidebar en `user_profile_bot_settings` se ignora — el mockup tiene una nota al respecto. En el diseño final se elimina o reemplaza por "Prize History" (historial de premios ganados). |
+| 3 | Global Career Ranking | **POST-MVP**. El dashboard MVP muestra únicamente la posición del jugador dentro de cada torneo activo. El "Career Rank #432" visible en el mockup del dashboard no se implementa en MVP. |
+| 4 | Jornada count en wizard | **RESUELTO**. Se agrega como stepper `-`/`+` en el Basics step. Ver especificación en la sección "Wizard de Creación de Torneo" arriba. Los mockups de ese paso (desktop y mobile) se actualizan. |
 
 ---
 
@@ -303,6 +297,8 @@ Las siguientes pantallas están especificadas en el PRD pero no tienen mockup:
 | 6 | **Cierre de torneo / Distribución final de premios** | Pantalla de fin de torneo: posiciones finales, cálculo del prize pool distribuido por lugar, indicador de empates resueltos. |
 | 7 | **Historial de torneos terminados** | Sección del dashboard o pantalla separada con torneos completados: nombre, fecha, posición final del jugador, premio ganado. |
 | 8 | **Forgot Password** | Flujo de recuperación de contraseña (referenciado con link en el mockup de Login). |
+| 9 | **Create Tournament Basics — actualización** | Agregar campo "Jornadas" con stepper `-`/`+` entre Entry Fee y Description. Aplica a desktop y mobile. |
+| 10 | **Login / Register — actualización** | Eliminar los botones de Discord (out of scope). Aplica a desktop y mobile. |
 
 ---
 
