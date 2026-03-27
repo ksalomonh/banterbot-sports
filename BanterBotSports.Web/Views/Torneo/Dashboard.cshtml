@@ -7,83 +7,338 @@
     var ranking = ViewBag.Ranking as IReadOnlyList<RankingParticipante> ?? Array.Empty<RankingParticipante>();
     var jornadas = ViewBag.Jornadas as IReadOnlyList<Jornada> ?? Array.Empty<Jornada>();
     var esOrganizador = (bool)(ViewBag.EsOrganizador ?? false);
+    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+    // Prize pool: MontoInscripcion * Participantes
+    var participantesCount = Model.Participantes?.Count ?? 0;
+    var pozo = Model.MontoInscripcion * participantesCount;
+
+    // Current user rank
+    var miPosicion = ranking.FirstOrDefault(r => {
+        var p = Model.Participantes?.FirstOrDefault(pa => pa.Id == r.ParticipanteId);
+        return p?.UserId == userId;
+    });
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>@Model.Nombre</h2>
-    <div>
-        <span class="badge bg-primary fs-6">@Model.Estado</span>
-        @if (esOrganizador)
-        {
-            <a asp-action="Invitar" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary ms-2">
-                Generar Invitación
-            </a>
-        }
-    </div>
-</div>
+@* Mobile-first: stacked hero + timeline + leaderboard + prizes. md+: timeline+leaderboard in main, sidebar for prizes/scoring *@
 
-<div class="row g-3">
-    <!-- Ranking Table -->
-    <div class="col-md-5">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span class="fw-bold">Ranking</span>
-                <span class="badge bg-secondary" id="ranking-updated-badge" style="display:none">Actualizado</span>
-            </div>
-            <div class="card-body p-0">
-                <table class="table table-sm table-hover mb-0" id="ranking-table">
-                    <thead class="table-light">
-                        <tr>
-                            <th>#</th>
-                            <th>Participante</th>
-                            <th class="text-end">Pts</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ranking-body">
-                        @foreach (var entry in ranking)
-                        {
-                            <tr>
-                                <td>@entry.Posicion</td>
-                                <td>@entry.NombreDisplay</td>
-                                <td class="text-end">@entry.PuntosTotal</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+<!-- Tournament Hero Header -->
+<header class="relative overflow-hidden rounded-3xl bg-[#0d1323] p-6 md:p-10 mb-8 shadow-[0_0_40px_rgba(105,218,255,0.05)]">
+    <div class="absolute inset-0 opacity-10 pointer-events-none">
+        <div class="w-full h-full bg-gradient-to-r from-[#090e1c] via-[#090e1c]/80 to-transparent"></div>
     </div>
-
-    <!-- Jornadas List -->
-    <div class="col-md-7">
-        <div class="card">
-            <div class="card-header fw-bold">Jornadas</div>
-            <div class="list-group list-group-flush">
-                @foreach (var jornada in jornadas)
+    <!-- Ambient glow blob -->
+    <div class="absolute top-0 right-0 w-64 h-64 bg-[#69daff]/10 blur-[100px] -mr-16 -mt-16 pointer-events-none"></div>
+    <div class="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+            <div class="flex items-center gap-3 mb-2">
+                @{
+                    var estadoBadgeClass = Model.Estado switch {
+                        EstadoTorneo.Activo =>
+                            "bg-[#2ff801]/10 text-[#2ff801] border border-[#2ff801]/30 animate-pulse",
+                        EstadoTorneo.Pendiente => "bg-[#a6aabf]/10 text-[#a6aabf]",
+                        _ => "bg-[#242b43] text-[#a6aabf]"
+                    };
+                    var isLive = Model.Estado == EstadoTorneo.Activo;
+                }
+                <span class="text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest @estadoBadgeClass">
+                    @(isLive ? "En Curso" : Model.Estado.ToString())
+                </span>
+                @if (isLive)
                 {
-                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>Jornada @jornada.Numero</strong>
-                            <span class="badge bg-secondary ms-2">@jornada.Estado</span>
-                        </div>
-                        <div>
-                            <a asp-controller="Jornada" asp-action="Detalle" asp-route-id="@jornada.Id"
-                               class="btn btn-sm btn-outline-primary">
-                                Ver
-                            </a>
-                            @if (jornada.Estado == EstadoJornada.Abierta)
-                            {
-                                <a asp-controller="Prediccion" asp-action="Form" asp-route-jornadaId="@jornada.Id"
-                                   class="btn btn-sm btn-success ms-1">
-                                    Predecir
-                                </a>
-                            }
-                        </div>
+                    <span class="flex items-center gap-1 text-[10px] font-bold text-[#a6aabf] uppercase tracking-widest">
+                        <span class="w-2 h-2 rounded-full bg-[#2ff801] shadow-[0_0_8px_#2ff801]"></span>
+                        Live Tournament
+                    </span>
+                }
+            </div>
+            <h1 class="text-4xl md:text-6xl font-black tracking-tighter text-[#e1e4fa] leading-none mb-4 uppercase italic">
+                @Model.Nombre
+            </h1>
+            <div class="flex flex-wrap gap-6 mt-2">
+                @if (pozo > 0)
+                {
+                    <div class="flex flex-col">
+                        <span class="text-[10px] text-[#a6aabf] uppercase tracking-widest font-bold">Pozo Total</span>
+                        <span class="text-2xl font-black text-[#2ff801]">$@pozo.ToString("N2")</span>
+                    </div>
+                    <div class="w-px h-10 bg-[#434759]/30 hidden md:block"></div>
+                }
+                @if (miPosicion is not null)
+                {
+                    <div class="flex flex-col">
+                        <span class="text-[10px] text-[#a6aabf] uppercase tracking-widest font-bold">Tu Posición</span>
+                        <span class="text-2xl font-black text-[#69daff]">#@miPosicion.Posicion <span class="text-sm font-bold text-[#a6aabf]">/ @ranking.Count</span></span>
                     </div>
                 }
             </div>
         </div>
+        <div class="flex flex-wrap gap-3">
+            @if (esOrganizador)
+            {
+                <a asp-action="Invitar" asp-route-id="@Model.Id"
+                   class="px-6 py-3 bg-[#242b43] text-[#e1e4fa] font-bold rounded-xl text-sm uppercase tracking-tight hover:bg-[#1e253b] transition-colors">
+                    Invitar Jugadores
+                </a>
+            }
+            <a asp-action="Leaderboard" asp-route-id="@Model.Id"
+               class="px-6 py-3 bg-gradient-to-r from-[#69daff] to-[#00cffc] text-[#004050] font-black rounded-xl text-sm uppercase tracking-tight shadow-[0_0_20px_rgba(105,218,255,0.3)] hover:scale-105 active:scale-95 transition-all">
+                Leaderboard Completo
+            </a>
+        </div>
     </div>
+</header>
+
+<!-- 12-col grid on lg; stacked on mobile -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <!-- Main: Timeline + Leaderboard -->
+    <div class="lg:col-span-8 space-y-8">
+
+        <!-- Jornada Timeline Strip (horizontal scroll) — mobile pill tiles, md+ wider -->
+        <section>
+            <div class="flex items-center justify-between mb-5">
+                <h2 class="text-lg font-bold uppercase italic tracking-tight">Timeline de Jornadas</h2>
+                @if (jornadas.Any(j => j.Estado == EstadoJornada.Abierta))
+                {
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#2ff801]"></span>
+                        <span class="text-[10px] font-bold text-[#a6aabf] uppercase tracking-widest">Jornada Activa</span>
+                    </div>
+                }
+            </div>
+            <div class="flex overflow-x-auto pb-3 gap-3" style="-ms-overflow-style:none;scrollbar-width:none;">
+                @foreach (var jornada in jornadas)
+                {
+                    var isOpen = jornada.Estado == EstadoJornada.Abierta;
+                    var isClosed = jornada.Estado == EstadoJornada.Cerrada;
+                    var isFinished = jornada.Estado == EstadoJornada.Finalizada;
+
+                    var tileClass = isOpen
+                        ? "flex-none bg-[#181f33] px-5 py-4 rounded-2xl border-2 border-[#2ff801] shadow-[0_0_15px_rgba(47,248,1,0.2)] flex flex-col items-center gap-1 cursor-pointer min-w-[8rem]"
+                        : isFinished
+                        ? "flex-none bg-[#181f33] px-5 py-4 rounded-2xl border border-[#434759]/20 flex flex-col items-center gap-1 cursor-pointer min-w-[8rem] grayscale opacity-60"
+                        : "flex-none bg-[#181f33] px-5 py-4 rounded-2xl border border-[#434759]/20 flex flex-col items-center gap-1 cursor-pointer min-w-[8rem] hover:bg-[#242b43] transition-colors";
+
+                    var labelColor = isOpen ? "text-[#2ff801]" : "text-[#a6aabf]";
+                    var stateText = isOpen ? "Abierta" : isClosed ? "Cerrada" : isFinished ? "Finalizada" : "Pendiente";
+
+                    <a asp-controller="Jornada" asp-action="Detalle" asp-route-id="@jornada.Id" class="@tileClass">
+                        <span class="text-[10px] font-bold @labelColor uppercase tracking-widest">Jornada @jornada.Numero</span>
+                        <span class="text-xs font-black uppercase text-[#e1e4fa]">@stateText</span>
+                        @if (isOpen)
+                        {
+                            <a asp-controller="Prediccion" asp-action="Form" asp-route-jornadaId="@jornada.Id"
+                               class="mt-2 px-3 py-1 bg-gradient-to-r from-[#69daff] to-[#00cffc] text-[#004050] rounded-lg text-[10px] font-black uppercase">
+                                Predecir
+                            </a>
+                        }
+                    </a>
+                }
+            </div>
+        </section>
+
+        <!-- Leaderboard Preview -->
+        <section class="bg-[#0d1323] rounded-3xl overflow-hidden">
+            <div class="p-6 flex justify-between items-center">
+                <h3 class="text-lg font-bold uppercase italic tracking-tight">Clasificación</h3>
+                <a asp-action="Leaderboard" asp-route-id="@Model.Id"
+                   class="text-[10px] font-black uppercase text-[#a6aabf] hover:text-[#69daff] transition-colors tracking-[0.2em]">
+                    Ver Completo
+                </a>
+            </div>
+
+            @if (!ranking.Any())
+            {
+                <div class="p-6 text-center text-[#a6aabf] text-sm">
+                    Aún no hay puntuaciones registradas.
+                </div>
+            }
+            else
+            {
+                <!-- Desktop md+: table layout -->
+                <div class="hidden md:block overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-[10px] text-[#a6aabf] uppercase tracking-[0.2em] font-black bg-[#181f33]/30">
+                                <th class="px-6 py-4">Rank</th>
+                                <th class="px-4 py-4">Jugador</th>
+                                <th class="px-4 py-4 text-right">Puntos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var entry in ranking.Take(5))
+                            {
+                                var p = Model.Participantes?.FirstOrDefault(pa => pa.Id == entry.ParticipanteId);
+                                var isMe = p?.UserId == userId;
+                                var rowClass = isMe
+                                    ? "bg-[#69daff]/10 border-l-4 border-[#69daff]"
+                                    : "hover:bg-[#242b43]/20 transition-colors";
+                                <tr class="@rowClass">
+                                    <td class="px-6 py-5">
+                                        @if (entry.Posicion == 1)
+                                        {
+                                            <div class="flex items-center gap-2">
+                                                <span class="material-symbols-outlined text-yellow-400 text-lg" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+                                                <span class="font-black text-xl">1</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="font-black text-xl italic @(isMe ? "text-[#69daff]" : "text-[#a6aabf]")">@entry.Posicion.ToString("D2")</span>
+                                        }
+                                    </td>
+                                    <td class="px-4 py-5">
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-bold @(isMe ? "text-[#69daff]" : "")">
+                                                @entry.NombreDisplay
+                                            </span>
+                                            @if (isMe)
+                                            {
+                                                <span class="bg-[#69daff]/20 text-[#69daff] text-[8px] font-black px-1.5 py-0.5 rounded uppercase">Vos</span>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-5 text-right font-black text-lg @(isMe ? "text-[#69daff]" : "")">
+                                        @entry.PuntosTotal
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile: stacked ranking cards -->
+                <div class="md:hidden">
+                    @foreach (var entry in ranking.Take(5))
+                    {
+                        var p = Model.Participantes?.FirstOrDefault(pa => pa.Id == entry.ParticipanteId);
+                        var isMe = p?.UserId == userId;
+                        var rowBg = isMe ? "bg-[#69daff]/10 border-l-4 border-[#69daff]" : "";
+                        <div class="flex items-center gap-4 p-4 @rowBg hover:bg-[#181f33] transition-colors">
+                            <span class="text-sm font-black @(isMe ? "text-[#69daff]" : "text-[#a6aabf]") w-6 text-center italic">@entry.Posicion</span>
+                            <div class="flex-1">
+                                <p class="text-sm font-bold @(isMe ? "text-[#69daff]" : "")">
+                                    @entry.NombreDisplay @(isMe ? "(Vos)" : "")
+                                </p>
+                            </div>
+                            <span class="font-black text-[#69daff]">@entry.PuntosTotal pts</span>
+                        </div>
+                    }
+                </div>
+
+                <!-- View full leaderboard link -->
+                <div class="p-4 flex justify-center">
+                    <a asp-action="Leaderboard" asp-route-id="@Model.Id"
+                       class="text-[10px] font-black uppercase text-[#a6aabf] hover:text-[#69daff] transition-colors tracking-[0.2em]">
+                        Ver Clasificación Completa
+                    </a>
+                </div>
+            }
+        </section>
+    </div>
+
+    <!-- Sidebar: Prizes + Scoring — stacked below on mobile, sidebar on lg -->
+    <aside class="lg:col-span-4 space-y-6">
+
+        <!-- Prize Distribution -->
+        @if (Model.ConfiguracionPremios != null && Model.ConfiguracionPremios.Any())
+        {
+            <section class="bg-[#181f33] rounded-3xl p-6">
+                <h3 class="text-base font-bold uppercase italic mb-5 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[#a6aabf] text-lg">redeem</span>
+                    Distribución de Premios
+                </h3>
+                <div class="space-y-3">
+                    @foreach (var premio in Model.ConfiguracionPremios.OrderBy(p => p.Posicion))
+                    {
+                        var montoEstimado = pozo * (decimal)premio.Porcentaje / 100;
+                        var (bgColor, textColor) = premio.Posicion switch {
+                            1 => ("bg-yellow-400/5", "text-yellow-400"),
+                            2 => ("bg-slate-400/5", "text-slate-400"),
+                            3 => ("bg-orange-700/5", "text-orange-500"),
+                            _ => ("bg-[#0d1323]", "text-[#69daff]")
+                        };
+                        <div class="flex items-center justify-between p-4 @bgColor rounded-2xl">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs @textColor bg-[#090e1c]">
+                                    @premio.Posicion°
+                                </span>
+                                <span class="font-bold text-sm">Puesto @premio.Posicion</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="block font-black text-lg @textColor">@premio.Porcentaje%</span>
+                                @if (montoEstimado > 0)
+                                {
+                                    <span class="text-[10px] text-[#a6aabf] uppercase font-bold">$@montoEstimado.ToString("N2")</span>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </section>
+        }
+
+        <!-- Scoring Rules -->
+        <section class="bg-[#0d1323] rounded-3xl p-6">
+            <h3 class="text-base font-bold uppercase italic mb-5">Sistema de Puntos</h3>
+            <ul class="space-y-4">
+                <li class="flex items-start gap-4">
+                    <div class="w-8 h-8 rounded-lg bg-[#69daff]/20 flex-none flex items-center justify-center">
+                        <span class="text-[#69daff] font-black text-xs">@Model.PtosResultado</span>
+                    </div>
+                    <div>
+                        <span class="block font-bold text-sm">Resultado Correcto (G/E/P)</span>
+                        <p class="text-[10px] text-[#a6aabf] uppercase tracking-wider">Predecir quien gana o empate</p>
+                    </div>
+                </li>
+                <li class="flex items-start gap-4">
+                    <div class="w-8 h-8 rounded-lg bg-[#2ff801]/20 flex-none flex items-center justify-center">
+                        <span class="text-[#2ff801] font-black text-xs">@Model.PtosMarcador</span>
+                    </div>
+                    <div>
+                        <span class="block font-bold text-sm">Marcador Exacto</span>
+                        <p class="text-[10px] text-[#a6aabf] uppercase tracking-wider">Predecir el resultado exacto</p>
+                    </div>
+                </li>
+                <li class="flex items-start gap-4">
+                    <div class="w-8 h-8 rounded-lg bg-[#242b43] flex-none flex items-center justify-center">
+                        <span class="text-[#a6aabf] font-black text-xs">@Model.PtosGolesJornada</span>
+                    </div>
+                    <div>
+                        <span class="block font-bold text-sm">Goles Jornada</span>
+                        <p class="text-[10px] text-[#a6aabf] uppercase tracking-wider">Por cada gol de la jornada</p>
+                    </div>
+                </li>
+            </ul>
+        </section>
+
+        <!-- Organizer info -->
+        @{
+            // Try to resolve organizer display name from ranking (RankingParticipante has NombreDisplay)
+            var orgEntry = ranking.FirstOrDefault(r => {
+                var p = Model.Participantes?.FirstOrDefault(pa => pa.Id == r.ParticipanteId);
+                return p?.UserId == Model.OrganizadorId;
+            });
+            var orgNombre = orgEntry?.NombreDisplay ?? "Organizador";
+        }
+        <section class="p-5 bg-gradient-to-br from-[#181f33] to-[#0d1323] rounded-3xl">
+            <span class="text-[8px] font-black uppercase text-[#a6aabf] mb-3 block tracking-widest">Organizado por</span>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-[#69daff]/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[#69daff]">manage_accounts</span>
+                </div>
+                <div>
+                    <span class="block font-black text-[#e1e4fa] uppercase tracking-tight text-sm">
+                        @orgNombre
+                    </span>
+                    @if (esOrganizador)
+                    {
+                        <span class="text-[10px] text-[#2ff801] font-bold">Sos el organizador ✓</span>
+                    }
+                </div>
+            </div>
+        </section>
+    </aside>
 </div>
 
 @section Scripts {
@@ -96,17 +351,12 @@
         .build();
 
     connection.on("RankingActualizado", (newRanking) => {
-        const tbody = document.getElementById("ranking-body");
-        tbody.innerHTML = "";
-        newRanking.forEach(entry => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `<td>${entry.posicion}</td><td>${entry.nombreDisplay}</td><td class="text-end">${entry.puntosTotal}</td>`;
-            tbody.appendChild(tr);
-        });
-
-        const badge = document.getElementById("ranking-updated-badge");
-        badge.style.display = "inline";
-        setTimeout(() => badge.style.display = "none", 3000);
+        // A full leaderboard reload triggers a page refresh nudge via toast
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-24 right-6 z-50 px-4 py-3 bg-[#2ff801] text-[#003300] rounded-xl text-sm font-bold shadow-lg';
+        toast.textContent = 'Ranking actualizado. Recargá para ver los cambios.';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
     });
 
     connection.start().catch(err => console.error("SignalR connection error:", err));

@@ -1,42 +1,225 @@
 @model IEnumerable<BanterBotSports.Entities.Torneo>
+@using BanterBotSports.Entities.Enums
 @{
     ViewData["Title"] = "Mis Torneos";
+    var nombre = User.Identity?.Name ?? "Jugador";
+    var activos = Model.Where(t => t.Estado == EstadoTorneo.Activo).ToList();
+    var total = Model.Count();
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Mis Torneos</h2>
-    <a asp-action="Nuevo" class="btn btn-primary">+ Nuevo Torneo</a>
-</div>
+@* Mobile-first: single-column hero + cards + join CTA. md: 2-col cards. xl: 3-col with deadlines sidebar *@
 
-@if (!Model.Any())
-{
-    <div class="alert alert-info">
-        No estás inscripto en ningún torneo todavía.
-        <a asp-action="Nuevo">Creá uno</a> o pedile al organizador un link de invitación.
+<!-- Welcome Hero Section -->
+<section class="relative overflow-hidden rounded-3xl bg-[#0d1323] p-6 md:p-10 mb-8 shadow-[0_40px_80px_rgba(105,218,255,0.05)]">
+    <!-- Ambient glow -->
+    <div class="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
+        <div class="w-full h-full bg-gradient-to-l from-[#69daff]/30 to-transparent"></div>
     </div>
-}
-else
-{
-    <div class="row row-cols-1 row-cols-md-3 g-3">
-        @foreach (var torneo in Model)
+    <!-- Ambient blob -->
+    <div class="absolute top-[-10%] right-[-5%] w-64 h-64 bg-[#69daff]/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+    <div class="relative z-10 grid md:grid-cols-2 gap-6 items-center">
+        <div>
+            <!-- Live indicator -->
+            <div class="flex items-center gap-2 mb-3">
+                <span class="w-2 h-2 rounded-full bg-[#2ff801] shadow-[0_0_10px_#2ff801]"></span>
+                <span class="text-[10px] font-bold text-[#2ff801] uppercase tracking-widest">Live Stadium Status</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-black tracking-tighter leading-none mb-3 uppercase italic">
+                Hola, <span class="text-[#69daff]">@nombre!</span>
+            </h1>
+            <p class="text-[#a6aabf] text-base md:text-lg max-w-md mb-6">
+                El estadio te espera. Gestioná tus torneos y predecí los resultados.
+            </p>
+            <!-- Quick stats bento -->
+            <div class="flex flex-wrap gap-3">
+                <div class="px-5 py-3 bg-[#242b43] rounded-2xl flex flex-col">
+                    <span class="text-[10px] font-bold text-[#a6aabf] uppercase tracking-widest mb-1">Torneos</span>
+                    <span class="text-2xl font-black text-[#e1e4fa]">@total</span>
+                </div>
+                <div class="px-5 py-3 bg-[#242b43] rounded-2xl flex flex-col">
+                    <span class="text-[10px] font-bold text-[#a6aabf] uppercase tracking-widest mb-1">Activos</span>
+                    <span class="text-2xl font-black text-[#2ff801]">@activos.Count</span>
+                </div>
+            </div>
+        </div>
+        <!-- Desktop: decorative stadium block -->
+        <div class="hidden md:flex justify-end">
+            <div class="w-full max-w-xs aspect-video rounded-2xl bg-[#181f33] flex items-center justify-center overflow-hidden relative">
+                <span class="material-symbols-outlined text-[#69daff]/20" style="font-size: 10rem;">stadium</span>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#090e1c]/80 to-transparent"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main content: 1-col mobile, xl: 3-col with sidebar -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+    <!-- Tournaments grid: col-span-2 on xl -->
+    <div class="xl:col-span-2">
+        <div class="flex justify-between items-end mb-6">
+            <h2 class="text-xl md:text-2xl font-bold uppercase italic tracking-tight">Mis Torneos</h2>
+            <a asp-action="Nuevo"
+               class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-[#004050] bg-gradient-to-r from-[#69daff] to-[#00cffc] shadow-[0_0_20px_rgba(105,218,255,0.25)] hover:shadow-[0_0_30px_rgba(105,218,255,0.4)] active:scale-95 transition-all">
+                <span class="material-symbols-outlined text-sm">add</span>
+                Nuevo Torneo
+            </a>
+        </div>
+
+        @if (!Model.Any())
         {
-            <div class="col">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">@torneo.Nombre</h5>
-                        <p class="card-text">
-                            <span class="badge bg-secondary">@torneo.Estado</span>
-                            <br />
-                            <small class="text-muted">@torneo.NumJornadas jornadas</small>
-                        </p>
-                    </div>
-                    <div class="card-footer">
-                        <a asp-action="Dashboard" asp-route-id="@torneo.Id" class="btn btn-sm btn-outline-primary">
+            <!-- Empty state -->
+            <div class="flex flex-col items-center justify-center bg-[#0d1323] rounded-3xl p-12 text-center">
+                <div class="w-20 h-20 rounded-full bg-[#69daff]/10 flex items-center justify-center mb-6">
+                    <span class="material-symbols-outlined text-[#69daff] text-4xl">stadium</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Sin torneos todavía</h3>
+                <p class="text-[#a6aabf] text-sm max-w-xs mb-6">
+                    No estás inscripto en ningún torneo. Creá uno o pedile al organizador un link de invitación.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
+                    <a asp-action="Nuevo"
+                       class="flex-1 px-6 py-3 bg-gradient-to-r from-[#69daff] to-[#00cffc] text-[#004050] font-black rounded-xl text-sm uppercase tracking-widest active:scale-95 transition-all text-center">
+                        Crear Torneo
+                    </a>
+                    <!-- Join tournament CTA — from join_tournament_mobile mockup -->
+                    <button type="button" id="join-btn"
+                            class="flex-1 px-6 py-3 bg-[#242b43] text-[#69daff] font-bold rounded-xl text-sm uppercase tracking-widest hover:bg-[#181f33] active:scale-95 transition-all text-center">
+                        Unirse
+                    </button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Tournament cards grid: 1 col mobile, 2 col md+ -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                @foreach (var torneo in Model)
+                {
+                    var badgeClass = torneo.Estado switch {
+                        EstadoTorneo.Activo => "bg-[#2ff801]/10 text-[#2ff801]",
+                        EstadoTorneo.Pendiente => "bg-[#a6aabf]/10 text-[#a6aabf]",
+                        EstadoTorneo.Finalizado => "bg-[#242b43] text-[#a6aabf]",
+                        _ => "bg-[#242b43] text-[#a6aabf]"
+                    };
+                    var isLive = torneo.Estado == EstadoTorneo.Activo;
+                    <div class="group relative overflow-hidden bg-[#181f33] rounded-3xl p-6 hover:bg-[#242b43] transition-all duration-300
+                                @(isLive ? "shadow-[0_0_20px_rgba(47,248,1,0.08)]" : "")">
+                        <div class="flex justify-between items-start mb-5">
+                            <div class="w-12 h-12 rounded-xl bg-[#1e253b] flex items-center justify-center">
+                                <span class="material-symbols-outlined text-[#69daff]">trophy</span>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest @badgeClass">
+                                @(isLive ? "LIVE" : torneo.Estado.ToString())
+                            </span>
+                        </div>
+                        <h3 class="text-lg font-bold mb-1 truncate uppercase italic">@torneo.Nombre</h3>
+                        <p class="text-[#a6aabf] text-sm mb-5">@torneo.NumJornadas jornadas</p>
+                        <a asp-action="Dashboard" asp-route-id="@torneo.Id"
+                           class="block w-full py-3 text-center bg-[#1e253b] group-hover:bg-gradient-to-r group-hover:from-[#69daff] group-hover:to-[#00cffc] group-hover:text-[#004050] transition-all rounded-xl font-bold text-sm flex items-center justify-center gap-2">
                             Ver Dashboard
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
                         </a>
                     </div>
+                }
+                <!-- Join new CTA card — from join_tournament_mobile mockup -->
+                <div class="group relative overflow-hidden rounded-3xl p-6 flex flex-col items-center justify-center text-center
+                            bg-[#0d1323] hover:bg-[#181f33] transition-all cursor-pointer"
+                     id="join-card">
+                    <!-- Ambient glow blobs -->
+                    <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[40%] bg-[#69daff]/5 blur-[80px] rounded-full pointer-events-none"></div>
+                    <div class="w-16 h-16 rounded-full bg-[#69daff]/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-[#69daff] text-3xl">add_circle</span>
+                    </div>
+                    <h3 class="text-base font-bold mb-1">Unirse a un Torneo</h3>
+                    <p class="text-xs text-[#a6aabf] mt-1 mb-4">Usá un link de invitación para entrar a la arena.</p>
+                    <span class="px-6 py-2 rounded-xl bg-gradient-to-r from-[#69daff] to-[#00cffc] text-[#004050] font-black text-xs uppercase tracking-widest shadow-[0_0_15px_rgba(105,218,255,0.2)] active:scale-95 transition-all">
+                        Usar Invitación
+                    </span>
                 </div>
             </div>
         }
     </div>
-}
+
+    <!-- Sidebar: Deadlines + Quick links (stacked on mobile, sidebar on xl) -->
+    <div class="space-y-6">
+        <!-- Upcoming deadlines -->
+        <section class="bg-[#0d1323] rounded-3xl p-6">
+            <h2 class="text-base font-bold mb-5 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#ff7166] text-lg">timer</span>
+                Próximos Cierres
+            </h2>
+            @{
+                var jornadasAbiertas = ViewBag.JornadasAbiertas as IEnumerable<dynamic>;
+            }
+            @if (jornadasAbiertas != null && jornadasAbiertas.Any())
+            {
+                <div class="space-y-3">
+                    @foreach (var j in jornadasAbiertas)
+                    {
+                        <div class="p-4 bg-[#090e1c] rounded-2xl">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[10px] font-black text-[#ff7166] uppercase tracking-widest flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-xs">timer</span> URGENTE
+                                </span>
+                            </div>
+                            <h4 class="font-bold text-sm">@j.TorneoNombre - Jornada @j.Numero</h4>
+                            <p class="text-xs text-[#a6aabf]">Cerrá tus predicciones antes del primer partido</p>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-sm text-[#a6aabf]">No hay jornadas abiertas en este momento.</p>
+            }
+        </section>
+
+        <!-- Quick links -->
+        <section class="bg-[#0d1323] rounded-3xl p-6">
+            <h2 class="text-base font-bold mb-5">Accesos Rápidos</h2>
+            <div class="space-y-3">
+                <a asp-action="Nuevo"
+                   class="flex items-center gap-4 p-4 bg-[#181f33] rounded-2xl hover:bg-[#242b43] transition-colors group">
+                    <div class="w-10 h-10 rounded-xl bg-[#69daff]/20 flex items-center justify-center group-hover:bg-[#69daff] transition-colors">
+                        <span class="material-symbols-outlined text-[#69daff] group-hover:text-[#004050]">add_box</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm">Crear Torneo</h4>
+                        <p class="text-[10px] text-[#a6aabf]">Comenzá tu propia liga</p>
+                    </div>
+                </a>
+                <a asp-action="Index"
+                   class="flex items-center gap-4 p-4 bg-[#181f33] rounded-2xl hover:bg-[#242b43] transition-colors group">
+                    <div class="w-10 h-10 rounded-xl bg-[#2ff801]/20 flex items-center justify-center group-hover:bg-[#2ff801] transition-colors">
+                        <span class="material-symbols-outlined text-[#2ff801] group-hover:text-[#003300]">leaderboard</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm">Mis Rankings</h4>
+                        <p class="text-[10px] text-[#a6aabf]">Chequeá tu posición</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Banter Rail placeholder (mobile inline, desktop via _Layout) -->
+        <section class="bg-[#0d1323]/70 rounded-3xl p-6 xl:hidden">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-[#69daff]/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[#69daff] text-sm">psychology</span>
+                </div>
+                <div>
+                    <h3 class="text-[#69daff] font-bold text-sm">Banter Rail</h3>
+                    <p class="text-[10px] text-[#a6aabf] uppercase tracking-widest font-bold">The Neon Colosseum</p>
+                </div>
+            </div>
+            <div class="p-4 bg-[#242b43] rounded-xl border-l-4 border-[#2ff801]">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="material-symbols-outlined text-[#2ff801] text-sm">forum</span>
+                    <span class="text-[10px] font-bold text-[#2ff801] tracking-widest uppercase">Live Banter</span>
+                </div>
+                <p class="text-sm text-[#e1e4fa] leading-relaxed">Conectate al chat para banter en tiempo real.</p>
+            </div>
+        </section>
+    </div>
+</div>

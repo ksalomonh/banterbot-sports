@@ -3,139 +3,530 @@
     ViewData["Title"] = "Nuevo Torneo";
 }
 
-<h2>Crear Torneo</h2>
+@* 4-step wizard: mobile-first full-screen cards, md: left nav + right content panel.
+   Steps: 1=Basics, 2=Scoring, 3=Prizes, 4=Review & Submit.
+   Single POST form — all steps toggled by JS, server-side validation preserved. *@
 
-<div class="row">
-    <div class="col-md-7">
-        <form asp-action="Nuevo" method="post" id="nuevo-torneo-form">
-            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+<form asp-action="Nuevo" method="post" id="nuevo-torneo-form">
+    @Html.AntiForgeryToken()
 
-            <div class="mb-3">
-                <label asp-for="Nombre" class="form-label">Nombre del torneo</label>
-                <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
+    <!-- Global validation summary (shown on POST validation error) -->
+    <div asp-validation-summary="ModelOnly" class="mb-6 p-4 bg-[#ff7166]/10 border border-[#ff7166]/30 rounded-2xl text-[#ff7166] text-sm hidden [&:not(:empty)]:block"></div>
+
+    <!-- Wizard shell: stacked on mobile, side-by-side on md+ -->
+    <div class="flex flex-col md:flex-row min-h-[70vh] gap-0">
+
+        <!-- ── Left: Step Navigation (hidden on mobile, md: fixed sidebar) ── -->
+        <aside class="hidden md:flex flex-col w-64 shrink-0 bg-[#0d1323] rounded-3xl p-6 mr-8 self-start sticky top-24">
+            <div class="mb-8">
+                <p class="text-[#69daff] font-black uppercase tracking-widest text-xs">Nuevo Torneo</p>
+                <p class="text-[#a6aabf] text-[10px] font-bold uppercase tracking-widest mt-1">Modo Borrador</p>
             </div>
-
-            <div class="mb-3">
-                <label asp-for="NumJornadas" class="form-label">Número de jornadas</label>
-                <input asp-for="NumJornadas" class="form-control" type="number" min="1" max="100" />
-                <span asp-validation-for="NumJornadas" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="MontoInscripcion" class="form-label">Monto de inscripción ($)</label>
-                <input asp-for="MontoInscripcion" class="form-control" type="number" step="0.01" min="0" />
-                <span asp-validation-for="MontoInscripcion" class="text-danger"></span>
-            </div>
-
-            <hr />
-            <h5>Puntuación</h5>
-
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <label asp-for="PtosResultado" class="form-label">Pts. Resultado</label>
-                    <input asp-for="PtosResultado" class="form-control" type="number" min="0" max="100" />
-                    <span asp-validation-for="PtosResultado" class="text-danger"></span>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label asp-for="PtosMarcador" class="form-label">Pts. Marcador Exacto</label>
-                    <input asp-for="PtosMarcador" class="form-control" type="number" min="0" max="100" />
-                    <span asp-validation-for="PtosMarcador" class="text-danger"></span>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label asp-for="PtosGolesJornada" class="form-label">Pts. Goles Jornada</label>
-                    <input asp-for="PtosGolesJornada" class="form-control" type="number" min="0" max="100" />
-                    <span asp-validation-for="PtosGolesJornada" class="text-danger"></span>
-                </div>
-            </div>
-
-            <hr />
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 class="mb-0">Distribución de Premios</h5>
-                <button type="button" class="btn btn-sm btn-outline-secondary" id="agregar-posicion">
-                    + Agregar posición
+            <nav class="flex flex-col gap-2 flex-1">
+                <!-- Step 1: Basics -->
+                <button type="button" data-step-nav="0"
+                        class="step-nav-item flex items-center gap-3 bg-[#181f33] text-[#69daff] rounded-xl px-4 py-3 shadow-[0_0_15px_rgba(105,218,255,0.1)] border-l-4 border-[#69daff] font-bold uppercase tracking-[0.05em] text-[0.75rem] text-left transition-all">
+                    <span class="material-symbols-outlined step-icon" style="font-variation-settings: 'FILL' 1;">settings</span>
+                    <span>Básicos</span>
                 </button>
+                <!-- Step 2: Scoring -->
+                <button type="button" data-step-nav="1"
+                        class="step-nav-item flex items-center gap-3 text-[#a6aabf]/50 px-4 py-3 hover:bg-[#181f33]/30 hover:text-[#69daff] rounded-xl transition-all font-bold uppercase tracking-[0.05em] text-[0.75rem] text-left">
+                    <span class="material-symbols-outlined step-icon">scoreboard</span>
+                    <span>Puntuación</span>
+                </button>
+                <!-- Step 3: Prizes -->
+                <button type="button" data-step-nav="2"
+                        class="step-nav-item flex items-center gap-3 text-[#a6aabf]/50 px-4 py-3 hover:bg-[#181f33]/30 hover:text-[#69daff] rounded-xl transition-all font-bold uppercase tracking-[0.05em] text-[0.75rem] text-left">
+                    <span class="material-symbols-outlined step-icon">payments</span>
+                    <span>Premios</span>
+                </button>
+                <!-- Step 4: Review -->
+                <button type="button" data-step-nav="3"
+                        class="step-nav-item flex items-center gap-3 text-[#a6aabf]/50 px-4 py-3 hover:bg-[#181f33]/30 hover:text-[#69daff] rounded-xl transition-all font-bold uppercase tracking-[0.05em] text-[0.75rem] text-left">
+                    <span class="material-symbols-outlined step-icon">visibility</span>
+                    <span>Revisar</span>
+                </button>
+            </nav>
+            <!-- Cancel -->
+            <div class="mt-auto pt-6">
+                <a asp-action="Index"
+                   class="w-full block text-center py-3 border border-[#434759]/30 text-[#a6aabf] font-bold rounded-xl hover:bg-[#242b43] transition-all text-[0.7rem] uppercase tracking-widest">
+                    Cancelar
+                </a>
             </div>
-            <p class="text-muted small mb-2">
-                Configurá el porcentaje del pozo premiado para cada posición. La suma debe ser 100%.
-            </p>
+        </aside>
 
-            <div id="premios-container">
-                @for (int i = 0; i < Model.ConfiguracionPremios.Count; i++)
-                {
-                    <div class="row g-2 mb-2 premio-row">
-                        <div class="col-5">
-                            <input name="ConfiguracionPremios[@i].Posicion"
-                                   type="number" min="1" max="100"
-                                   value="@Model.ConfiguracionPremios[i].Posicion"
-                                   class="form-control form-control-sm"
-                                   placeholder="Posición" required />
-                        </div>
-                        <div class="col-5">
-                            <div class="input-group input-group-sm">
-                                <input name="ConfiguracionPremios[@i].Porcentaje"
-                                       type="number" step="0.01" min="0" max="100"
-                                       value="@Model.ConfiguracionPremios[i].Porcentaje"
-                                       class="form-control porcentaje-input"
-                                       placeholder="%" required />
-                                <span class="input-group-text">%</span>
+        <!-- ── Right: Step Content ── -->
+        <div class="flex-1 min-w-0">
+
+            <!-- ════════════════════════════════════════════════
+                 STEP 1: BASICS
+                 From: create_tournament_basics/code.html +
+                       mobile_mockups/create_basics_mobile/code.html
+                 ════════════════════════════════════════════════ -->
+            <div data-step="0" class="space-y-6">
+                <!-- Mobile step header -->
+                <div class="md:hidden flex items-center gap-3 mb-6 p-4 bg-[#0d1323] rounded-2xl">
+                    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-[#69daff]/20 text-[#69daff] font-black text-sm">1</div>
+                    <div>
+                        <p class="font-bold text-sm">Paso 1 de 4</p>
+                        <p class="text-[10px] text-[#a6aabf] uppercase tracking-widest">Básicos del Torneo</p>
+                    </div>
+                </div>
+
+                <!-- Desktop header -->
+                <div class="hidden md:block mb-8">
+                    <h1 class="text-4xl md:text-5xl font-black tracking-tighter text-[#e1e4fa] mb-2">Crear Nuevo Torneo</h1>
+                    <p class="text-xl text-[#69daff] font-medium tracking-tight">Paso 1: Lo Esencial</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                    <!-- Left: Core fields -->
+                    <div class="md:col-span-8 space-y-6">
+                        <section class="bg-[#0d1323] p-6 md:p-8 rounded-3xl">
+                            <div class="space-y-6">
+                                <!-- Tournament name -->
+                                <div>
+                                    <label asp-for="Nombre" class="block text-xs font-black uppercase tracking-[0.1em] text-[#a6aabf] mb-3">Nombre del Torneo</label>
+                                    <input asp-for="Nombre"
+                                           class="w-full bg-[#1e253b] rounded-xl px-6 py-4 text-[#e1e4fa] focus:ring-2 focus:ring-[#69daff]/20 placeholder:text-[#a6aabf]/30 transition-all border-0 outline-none"
+                                           placeholder="ej. Midnight Champions League 2024" required />
+                                    <span asp-validation-for="Nombre" class="text-[#ff7166] text-xs mt-1 block"></span>
+                                </div>
+                                <!-- Jornadas + Monto grid -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <div>
+                                        <label asp-for="NumJornadas" class="block text-xs font-black uppercase tracking-[0.1em] text-[#a6aabf] mb-3">Número de Jornadas</label>
+                                        <input asp-for="NumJornadas"
+                                               type="number" min="1" max="100"
+                                               class="w-full bg-[#1e253b] rounded-xl px-6 py-4 text-[#e1e4fa] focus:ring-2 focus:ring-[#69daff]/20 transition-all border-0 outline-none"
+                                               required />
+                                        <span asp-validation-for="NumJornadas" class="text-[#ff7166] text-xs mt-1 block"></span>
+                                    </div>
+                                    <div>
+                                        <label asp-for="MontoInscripcion" class="block text-xs font-black uppercase tracking-[0.1em] text-[#a6aabf] mb-3">Monto de Inscripción ($)</label>
+                                        <div class="relative">
+                                            <span class="absolute left-5 top-1/2 -translate-y-1/2 text-[#69daff] font-bold">$</span>
+                                            <input asp-for="MontoInscripcion"
+                                                   type="number" step="0.01" min="0"
+                                                   class="w-full bg-[#1e253b] rounded-xl pl-10 pr-6 py-4 text-[#e1e4fa] focus:ring-2 focus:ring-[#69daff]/20 transition-all border-0 outline-none"
+                                                   placeholder="0.00" />
+                                        </div>
+                                        <span asp-validation-for="MontoInscripcion" class="text-[#ff7166] text-xs mt-1 block"></span>
+                                    </div>
+                                </div>
                             </div>
+                        </section>
+                    </div>
+                    <!-- Right: Info + Next CTA -->
+                    <div class="md:col-span-4 space-y-4">
+                        <div class="bg-[#1e253b]/50 p-5 rounded-2xl flex items-start gap-3">
+                            <span class="material-symbols-outlined text-[#2ff801] text-lg mt-0.5">info</span>
+                            <p class="text-[0.7rem] text-[#a6aabf] leading-relaxed">Completá la información básica de tu torneo. Podrás configurar la puntuación y los premios en los siguientes pasos.</p>
                         </div>
-                        <div class="col-2">
-                            <button type="button" class="btn btn-sm btn-outline-danger remove-posicion">✕</button>
+                        <div class="space-y-3 pt-2">
+                            <button type="button" data-next
+                                    class="w-full bg-gradient-to-r from-[#69daff] to-[#00cffc] text-[#004050] py-4 rounded-xl font-black uppercase tracking-widest text-sm shadow-[0_10px_30px_rgba(0,207,252,0.2)] hover:shadow-[0_15px_40px_rgba(0,207,252,0.3)] active:scale-95 transition-all">
+                                Siguiente Paso
+                            </button>
                         </div>
                     </div>
-                }
+                </div>
             </div>
 
-            <div class="text-muted small mb-3">
-                Total asignado: <span id="total-porcentaje">0</span>%
-                <span id="total-warning" class="text-danger ms-2" style="display:none">⚠ Debe sumar 100%</span>
+            <!-- ════════════════════════════════════════════════
+                 STEP 2: SCORING
+                 From: create_tournament_scoring/code.html +
+                       mobile_mockups/create_scoring_mobile/code.html
+                 ════════════════════════════════════════════════ -->
+            <div data-step="1" class="hidden space-y-6">
+                <!-- Mobile step header -->
+                <div class="md:hidden flex items-center gap-3 mb-6 p-4 bg-[#0d1323] rounded-2xl">
+                    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-[#69daff]/20 text-[#69daff] font-black text-sm">2</div>
+                    <div>
+                        <p class="font-bold text-sm">Paso 2 de 4</p>
+                        <p class="text-[10px] text-[#a6aabf] uppercase tracking-widest">Puntuación</p>
+                    </div>
+                </div>
+
+                <!-- Desktop header -->
+                <div class="hidden md:block mb-8">
+                    <h1 class="text-4xl md:text-5xl font-black tracking-tighter text-[#e1e4fa] mb-2 italic uppercase">Configuración de <span class="text-[#69daff]">Puntuación</span></h1>
+                    <p class="text-xl text-[#a6aabf]">Definí los puntos por cada predicción acertada.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                    <!-- Scoring input cards -->
+                    <div class="md:col-span-7 space-y-4">
+                        <!-- Correct Result -->
+                        <div class="bg-[#0d1323] rounded-3xl p-6 md:p-8 relative overflow-hidden group hover:bg-[#181f33] transition-all">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-[#69daff]/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+                            <div class="flex items-start justify-between mb-5">
+                                <div class="flex-1 mr-4">
+                                    <h3 class="text-lg font-bold text-[#e1e4fa] mb-1 uppercase tracking-tight">Resultado Correcto (G/E/P)</h3>
+                                    <p class="text-[#a6aabf] text-sm">Puntos por predecir ganador o empate correctamente.</p>
+                                </div>
+                                <div class="bg-[#69daff]/10 p-3 rounded-xl shrink-0">
+                                    <span class="material-symbols-outlined text-[#69daff]">sports_score</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <label asp-for="PtosResultado" class="sr-only">Pts. Resultado</label>
+                                <input asp-for="PtosResultado"
+                                       type="number" min="0" max="100"
+                                       class="w-24 bg-[#1e253b] rounded-xl px-4 py-3 text-2xl font-black text-[#69daff] focus:ring-2 focus:ring-[#69daff]/20 transition-all border-0 outline-none text-center"
+                                       required />
+                                <span class="text-[#a6aabf] font-bold uppercase tracking-widest text-xs">Pts. por partido</span>
+                            </div>
+                            <span asp-validation-for="PtosResultado" class="text-[#ff7166] text-xs mt-2 block"></span>
+                        </div>
+                        <!-- Exact Score -->
+                        <div class="bg-[#0d1323] rounded-3xl p-6 md:p-8 relative overflow-hidden group hover:bg-[#181f33] transition-all">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-[#2ff801]/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+                            <div class="flex items-start justify-between mb-5">
+                                <div class="flex-1 mr-4">
+                                    <h3 class="text-lg font-bold text-[#e1e4fa] mb-1 uppercase tracking-tight">Marcador Exacto</h3>
+                                    <p class="text-[#a6aabf] text-sm">Bonus por predecir el resultado exacto (goles exactos).</p>
+                                </div>
+                                <div class="bg-[#2ff801]/10 p-3 rounded-xl shrink-0">
+                                    <span class="material-symbols-outlined text-[#2ff801]">stars</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <label asp-for="PtosMarcador" class="sr-only">Pts. Marcador</label>
+                                <input asp-for="PtosMarcador"
+                                       type="number" min="0" max="100"
+                                       class="w-24 bg-[#1e253b] rounded-xl px-4 py-3 text-2xl font-black text-[#2ff801] focus:ring-2 focus:ring-[#2ff801]/20 transition-all border-0 outline-none text-center"
+                                       required />
+                                <span class="text-[#a6aabf] font-bold uppercase tracking-widest text-xs">Pts. bonus</span>
+                            </div>
+                            <span asp-validation-for="PtosMarcador" class="text-[#ff7166] text-xs mt-2 block"></span>
+                        </div>
+                        <!-- Jornada Goals -->
+                        <div class="bg-[#0d1323] rounded-3xl p-6 md:p-8 relative overflow-hidden group hover:bg-[#181f33] transition-all">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-[#ff7166]/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+                            <div class="flex items-start justify-between mb-5">
+                                <div class="flex-1 mr-4">
+                                    <h3 class="text-lg font-bold text-[#e1e4fa] mb-1 uppercase tracking-tight">Goles Jornada</h3>
+                                    <p class="text-[#a6aabf] text-sm">Puntos por predecir el total de goles de la jornada.</p>
+                                </div>
+                                <div class="bg-[#ff7166]/10 p-3 rounded-xl shrink-0">
+                                    <span class="material-symbols-outlined text-[#ff7166]">sports_soccer</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <label asp-for="PtosGolesJornada" class="sr-only">Pts. Goles Jornada</label>
+                                <input asp-for="PtosGolesJornada"
+                                       type="number" min="0" max="100"
+                                       class="w-24 bg-[#1e253b] rounded-xl px-4 py-3 text-2xl font-black text-[#ff7166] focus:ring-2 focus:ring-[#ff7166]/20 transition-all border-0 outline-none text-center"
+                                       required />
+                                <span class="text-[#a6aabf] font-bold uppercase tracking-widest text-xs">Pts. jackpot</span>
+                            </div>
+                            <span asp-validation-for="PtosGolesJornada" class="text-[#ff7166] text-xs mt-2 block"></span>
+                        </div>
+                    </div>
+                    <!-- Info sidebar + navigation -->
+                    <div class="md:col-span-5 space-y-4">
+                        <div class="bg-[#1e253b]/60 rounded-3xl p-6 md:p-8">
+                            <h4 class="text-[#2ff801] font-black uppercase tracking-widest text-xs mb-5 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">info</span>
+                                Pro Tip: Dinámica de Predicciones
+                            </h4>
+                            <div class="space-y-6">
+                                <div class="pl-4 border-l-2 border-[#69daff]/30">
+                                    <p class="text-[#e1e4fa] font-bold text-sm mb-1 uppercase">Maximizá el Engagement</p>
+                                    <p class="text-[#a6aabf] text-xs leading-relaxed">Un bonus alto por Marcador Exacto incentiva tomar riesgos en lugar de solo elegir favoritos.</p>
+                                </div>
+                                <div class="pl-4 border-l-2 border-[#2ff801]/30">
+                                    <p class="text-[#e1e4fa] font-bold text-sm mb-1 uppercase">El Desempate</p>
+                                    <p class="text-[#a6aabf] text-xs leading-relaxed">Los Goles Jornada son el desempate principal. Requieren conocimiento profundo de la liga.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <button type="button" data-next
+                                    class="w-full bg-gradient-to-r from-[#69daff] to-[#00cffc] text-[#004050] py-4 rounded-xl font-black uppercase tracking-widest text-sm shadow-[0_10px_30px_rgba(0,207,252,0.2)] hover:shadow-[0_15px_40px_rgba(0,207,252,0.3)] active:scale-95 transition-all">
+                                Siguiente: Premios
+                            </button>
+                            <button type="button" data-prev
+                                    class="w-full py-4 rounded-xl border border-[#434759]/30 text-[#a6aabf] font-bold uppercase tracking-widest text-xs hover:bg-[#242b43] transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-sm">arrow_back</span> Volver
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="mt-3">
-                <button type="submit" class="btn btn-primary">Crear Torneo</button>
-                <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
+            <!-- ════════════════════════════════════════════════
+                 STEP 3: PRIZES
+                 From: create_tournament_prizes/code.html +
+                       mobile_mockups/create_prizes_mobile/code.html
+                 ════════════════════════════════════════════════ -->
+            <div data-step="2" class="hidden space-y-6">
+                <!-- Mobile step header -->
+                <div class="md:hidden flex items-center gap-3 mb-6 p-4 bg-[#0d1323] rounded-2xl">
+                    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-[#69daff]/20 text-[#69daff] font-black text-sm">3</div>
+                    <div>
+                        <p class="font-bold text-sm">Paso 3 de 4</p>
+                        <p class="text-[10px] text-[#a6aabf] uppercase tracking-widest">Distribución de Premios</p>
+                    </div>
+                </div>
+
+                <!-- Desktop header -->
+                <div class="hidden md:block mb-8">
+                    <h1 class="text-4xl md:text-5xl font-black tracking-tighter text-[#e1e4fa] mb-2">Distribución de Premios</h1>
+                    <p class="text-xl text-[#a6aabf] font-medium">Definí cómo se reparte el pozo entre los ganadores.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                    <div class="md:col-span-7 space-y-6">
+                        <!-- Add position button + container -->
+                        <section class="bg-[#0d1323] rounded-3xl p-6 md:p-8">
+                            <div class="flex items-center justify-between mb-5">
+                                <h2 class="text-base font-bold uppercase italic">Posiciones Premiadas</h2>
+                                <button type="button" id="agregar-posicion"
+                                        class="flex items-center gap-2 px-4 py-2 bg-[#242b43] rounded-xl text-[#69daff] font-bold text-xs hover:bg-[#1e253b] transition-colors">
+                                    <span class="material-symbols-outlined text-sm">add</span>
+                                    Agregar posición
+                                </button>
+                            </div>
+                            <p class="text-[#a6aabf] text-xs mb-5">
+                                Configurá el porcentaje del pozo premiado para cada posición. La suma debe ser 100%.
+                            </p>
+                            <div id="premios-container" class="space-y-3">
+                                @for (int i = 0; i < Model.ConfiguracionPremios.Count; i++)
+                                {
+                                    <div class="flex items-center gap-3 premio-row">
+                                        <div class="flex-1">
+                                            <label class="block text-[10px] font-black text-[#a6aabf] uppercase tracking-widest mb-1">Posición</label>
+                                            <input name="ConfiguracionPremios[@i].Posicion"
+                                                   type="number" min="1" max="100"
+                                                   value="@Model.ConfiguracionPremios[i].Posicion"
+                                                   class="w-full bg-[#1e253b] rounded-xl px-4 py-3 text-[#e1e4fa] font-bold text-center border-0 outline-none focus:ring-2 focus:ring-[#69daff]/20 transition-all"
+                                                   placeholder="Pos." required />
+                                        </div>
+                                        <div class="flex-1">
+                                            <label class="block text-[10px] font-black text-[#a6aabf] uppercase tracking-widest mb-1">Porcentaje</label>
+                                            <div class="relative">
+                                                <input name="ConfiguracionPremios[@i].Porcentaje"
+                                                       type="number" step="0.01" min="0" max="100"
+                                                       value="@Model.ConfiguracionPremios[i].Porcentaje"
+                                                       class="w-full bg-[#1e253b] rounded-xl px-4 pr-8 py-3 text-[#e1e4fa] font-bold text-center porcentaje-input border-0 outline-none focus:ring-2 focus:ring-[#69daff]/20 transition-all"
+                                                       placeholder="%" required />
+                                                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[#a6aabf] font-bold text-sm">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="pt-6">
+                                            <button type="button" class="remove-posicion w-8 h-8 flex items-center justify-center rounded-xl bg-[#ff7166]/10 text-[#ff7166] hover:bg-[#ff7166]/20 transition-colors text-lg font-bold">✕</button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <!-- Total indicator -->
+                            <div class="mt-5 pt-5 border-t border-[#434759]/10 flex justify-between items-center">
+                                <span class="text-[#a6aabf] text-xs font-bold uppercase tracking-widest">Total asignado:</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-lg font-black" id="total-porcentaje">0</span>
+                                    <span class="text-[#a6aabf] font-bold">%</span>
+                                    <span id="total-warning" class="text-[#ff7166] text-xs font-bold hidden">⚠ Debe sumar 100%</span>
+                                    <span id="total-ok" class="text-[#2ff801] text-xs font-bold hidden flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-xs">verified</span> 100% asignado
+                                    </span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Navigation -->
+                        <div class="flex gap-3">
+                            <button type="button" data-prev
+                                    class="flex-1 py-4 rounded-xl border border-[#434759]/30 text-[#a6aabf] font-bold uppercase tracking-widest text-xs hover:bg-[#242b43] transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-sm">arrow_back</span> Volver
+                            </button>
+                            <button type="button" data-next
+                                    class="flex-[2] bg-gradient-to-r from-[#69daff] to-[#00cffc] text-[#004050] py-4 rounded-xl font-black uppercase tracking-widest text-sm shadow-[0_10px_30px_rgba(0,207,252,0.2)] hover:shadow-[0_15px_40px_rgba(0,207,252,0.3)] active:scale-95 transition-all">
+                                Siguiente: Revisar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right info panel -->
+                    <div class="md:col-span-5 space-y-4">
+                        <div class="bg-[#1e253b]/60 rounded-3xl p-6">
+                            <h4 class="text-[#69daff] font-black uppercase tracking-widest text-xs mb-4 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">payments</span>
+                                Banter de Premios
+                            </h4>
+                            <div class="space-y-4">
+                                <div class="bg-[#242b43]/80 p-3 rounded-xl">
+                                    <p class="text-[0.7rem] text-[#a6aabf] font-bold uppercase tracking-widest mb-1">Jonny_Betz</p>
+                                    <p class="text-xs text-[#e1e4fa] leading-relaxed">"Un 70% para el primer puesto genera competencia seria."</p>
+                                </div>
+                                <div class="bg-[#69daff]/10 p-3 rounded-xl">
+                                    <p class="text-[0.7rem] text-[#69daff] font-bold uppercase tracking-widest mb-1">Sistema (Vos)</p>
+                                    <p class="text-xs text-[#e1e4fa] leading-relaxed">El 3er puesto debería cubrir al menos 5x la inscripción.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </form>
-    </div>
-</div>
+
+            <!-- ════════════════════════════════════════════════
+                 STEP 4: REVIEW & SUBMIT
+                 From: create_tournament_match_selection/code.html +
+                       mobile_mockups/create_matches_mobile/code.html
+                 ════════════════════════════════════════════════ -->
+            <div data-step="3" class="hidden space-y-6">
+                <!-- Mobile step header -->
+                <div class="md:hidden flex items-center gap-3 mb-6 p-4 bg-[#0d1323] rounded-2xl">
+                    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-[#2ff801]/20 text-[#2ff801] font-black text-sm">4</div>
+                    <div>
+                        <p class="font-bold text-sm">Paso 4 de 4</p>
+                        <p class="text-[10px] text-[#a6aabf] uppercase tracking-widest">Revisión Final</p>
+                    </div>
+                </div>
+
+                <!-- Desktop header -->
+                <div class="hidden md:block mb-8">
+                    <h1 class="text-4xl md:text-5xl font-black tracking-tighter text-[#e1e4fa] mb-2 uppercase italic">Revisión <span class="text-[#2ff801]">Final</span></h1>
+                    <p class="text-xl text-[#a6aabf] font-medium">Confirmá todos los detalles antes de publicar tu torneo.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                    <div class="md:col-span-8 space-y-4">
+                        <!-- Review summary cards — tonal layering, No-Line rule -->
+                        <!-- Basics summary -->
+                        <div class="bg-[#0d1323] rounded-3xl p-6">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-8 h-8 rounded-lg bg-[#2ff801]/20 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-[#2ff801] text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                </div>
+                                <h3 class="font-bold uppercase tracking-tight text-sm">Datos Básicos</h3>
+                            </div>
+                            <dl class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <dt class="text-[10px] font-bold text-[#a6aabf] uppercase tracking-widest mb-1">Nombre</dt>
+                                    <dd class="font-bold text-sm" id="review-nombre">—</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-[10px] font-bold text-[#a6aabf] uppercase tracking-widest mb-1">Jornadas</dt>
+                                    <dd class="font-bold text-sm" id="review-jornadas">—</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-[10px] font-bold text-[#a6aabf] uppercase tracking-widest mb-1">Inscripción</dt>
+                                    <dd class="font-bold text-sm" id="review-monto">—</dd>
+                                </div>
+                            </dl>
+                        </div>
+                        <!-- Scoring summary -->
+                        <div class="bg-[#181f33] rounded-3xl p-6">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-8 h-8 rounded-lg bg-[#69daff]/20 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-[#69daff]">scoreboard</span>
+                                </div>
+                                <h3 class="font-bold uppercase tracking-tight text-sm">Sistema de Puntuación</h3>
+                            </div>
+                            <dl class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <dt class="text-[10px] font-bold text-[#a6aabf] uppercase tracking-widest mb-1">Resultado</dt>
+                                    <dd class="font-black text-lg text-[#69daff]" id="review-ptos-resultado">—</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-[10px] font-bold text-[#a6aabf] uppercase tracking-widest mb-1">Marcador</dt>
+                                    <dd class="font-black text-lg text-[#2ff801]" id="review-ptos-marcador">—</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-[10px] font-bold text-[#a6aabf] uppercase tracking-widest mb-1">Goles</dt>
+                                    <dd class="font-black text-lg text-[#ff7166]" id="review-ptos-goles">—</dd>
+                                </div>
+                            </dl>
+                        </div>
+                        <!-- CTA actions -->
+                        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                            <button type="button" data-prev
+                                    class="flex-1 py-4 rounded-xl border border-[#434759]/30 text-[#a6aabf] font-bold uppercase tracking-widest text-xs hover:bg-[#242b43] transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-sm">arrow_back</span> Volver
+                            </button>
+                            <button type="submit"
+                                    class="flex-[2] py-4 bg-gradient-to-r from-[#69daff] to-[#00cffc] text-[#004050] rounded-xl font-black uppercase tracking-widest text-sm shadow-[0_10px_30px_rgba(0,207,252,0.3)] hover:shadow-[0_15px_40px_rgba(0,207,252,0.5)] active:scale-95 transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-sm">rocket_launch</span>
+                                Publicar Torneo
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Desktop: info sidebar -->
+                    <div class="hidden md:block md:col-span-4">
+                        <div class="bg-[#1e253b]/60 rounded-3xl p-6">
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="w-2 h-2 rounded-full bg-[#2ff801] animate-pulse"></span>
+                                <h4 class="text-[#2ff801] font-black uppercase tracking-widest text-xs">Listo para Publicar</h4>
+                            </div>
+                            <p class="text-[#a6aabf] text-xs leading-relaxed mb-4">Revisá que todos los datos sean correctos. Una vez publicado el torneo, los jugadores podrán unirse usando el link de invitación.</p>
+                            <div class="bg-[#090e1c] rounded-2xl p-4">
+                                <p class="text-[10px] font-bold text-[#a6aabf] uppercase tracking-widest mb-2">Próximos pasos:</p>
+                                <ul class="space-y-2 text-xs text-[#e1e4fa]">
+                                    <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[#2ff801] text-sm">check</span> Compartir link de invitación</li>
+                                    <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[#69daff] text-sm">check</span> Configurar jornadas</li>
+                                    <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[#69daff] text-sm">check</span> Asignar partidos a cada jornada</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /step content -->
+    </div><!-- /wizard shell -->
+</form>
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
     <script>
+        // ── Prizes management (for step 3) ──────────────────────────────────
         let premioIndex = @Model.ConfiguracionPremios.Count;
         const container = document.getElementById("premios-container");
         const totalSpan = document.getElementById("total-porcentaje");
         const warningSpan = document.getElementById("total-warning");
+        const okSpan = document.getElementById("total-ok");
 
         function calcTotal() {
             const inputs = container.querySelectorAll(".porcentaje-input");
             let total = 0;
             inputs.forEach(i => total += parseFloat(i.value) || 0);
             totalSpan.textContent = total.toFixed(2);
-            warningSpan.style.display = Math.abs(total - 100) > 0.01 ? "inline" : "none";
+            const isOk = Math.abs(total - 100) <= 0.01;
+            warningSpan.classList.toggle('hidden', isOk || total === 0);
+            okSpan.classList.toggle('hidden', !isOk);
+            totalSpan.className = isOk ? 'text-lg font-black text-[#2ff801]'
+                : total === 0 ? 'text-lg font-black text-[#a6aabf]'
+                : 'text-lg font-black text-[#ff7166]';
         }
 
         document.getElementById("agregar-posicion").addEventListener("click", () => {
             const row = document.createElement("div");
-            row.className = "row g-2 mb-2 premio-row";
+            row.className = "flex items-center gap-3 premio-row";
             row.innerHTML = `
-                <div class="col-5">
+                <div class="flex-1">
+                    <label class="block text-[10px] font-black text-[#a6aabf] uppercase tracking-widest mb-1">Posición</label>
                     <input name="ConfiguracionPremios[${premioIndex}].Posicion"
                            type="number" min="1" max="100"
-                           class="form-control form-control-sm" placeholder="Posición" required />
+                           class="w-full bg-[#1e253b] rounded-xl px-4 py-3 text-[#e1e4fa] font-bold text-center border-0 outline-none focus:ring-2 focus:ring-[#69daff]/20 transition-all"
+                           placeholder="Pos." required />
                 </div>
-                <div class="col-5">
-                    <div class="input-group input-group-sm">
+                <div class="flex-1">
+                    <label class="block text-[10px] font-black text-[#a6aabf] uppercase tracking-widest mb-1">Porcentaje</label>
+                    <div class="relative">
                         <input name="ConfiguracionPremios[${premioIndex}].Porcentaje"
                                type="number" step="0.01" min="0" max="100"
-                               class="form-control porcentaje-input" placeholder="%" required />
-                        <span class="input-group-text">%</span>
+                               class="w-full bg-[#1e253b] rounded-xl px-4 pr-8 py-3 text-[#e1e4fa] font-bold text-center porcentaje-input border-0 outline-none focus:ring-2 focus:ring-[#69daff]/20 transition-all"
+                               placeholder="%" required />
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[#a6aabf] font-bold text-sm">%</span>
                     </div>
                 </div>
-                <div class="col-2">
-                    <button type="button" class="btn btn-sm btn-outline-danger remove-posicion">✕</button>
+                <div class="pt-6">
+                    <button type="button" class="remove-posicion w-8 h-8 flex items-center justify-center rounded-xl bg-[#ff7166]/10 text-[#ff7166] hover:bg-[#ff7166]/20 transition-colors text-lg font-bold">✕</button>
                 </div>`;
             container.appendChild(row);
             premioIndex++;
@@ -154,5 +545,85 @@
         });
 
         calcTotal();
+
+        // ── Wizard step navigation ────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            const steps = document.querySelectorAll('[data-step]');
+            const navItems = document.querySelectorAll('[data-step-nav]');
+            let current = 0;
+
+            // Review panel elements
+            const reviewNombre = document.getElementById('review-nombre');
+            const reviewJornadas = document.getElementById('review-jornadas');
+            const reviewMonto = document.getElementById('review-monto');
+            const reviewPtosResultado = document.getElementById('review-ptos-resultado');
+            const reviewPtosMarcador = document.getElementById('review-ptos-marcador');
+            const reviewPtosGoles = document.getElementById('review-ptos-goles');
+
+            function updateReview() {
+                if (reviewNombre) reviewNombre.textContent = document.querySelector('[name="Nombre"]')?.value || '—';
+                if (reviewJornadas) reviewJornadas.textContent = document.querySelector('[name="NumJornadas"]')?.value || '—';
+                if (reviewMonto) {
+                    const m = document.querySelector('[name="MontoInscripcion"]')?.value;
+                    reviewMonto.textContent = m ? `$${parseFloat(m).toFixed(2)}` : '—';
+                }
+                if (reviewPtosResultado) reviewPtosResultado.textContent = document.querySelector('[name="PtosResultado"]')?.value || '—';
+                if (reviewPtosMarcador) reviewPtosMarcador.textContent = document.querySelector('[name="PtosMarcador"]')?.value || '—';
+                if (reviewPtosGoles) reviewPtosGoles.textContent = document.querySelector('[name="PtosGolesJornada"]')?.value || '—';
+            }
+
+            function show(index) {
+                steps.forEach((s, i) => s.classList.toggle('hidden', i !== index));
+                navItems.forEach((n, i) => {
+                    const isActive = i === index;
+                    const isDone = i < index;
+                    // Reset classes
+                    n.className = n.className
+                        .replace(/\bbg-\[#181f33\]\b/g, '')
+                        .replace(/\btext-\[#69daff\]\b/g, '')
+                        .replace(/\bborder-l-4\b/g, '')
+                        .replace(/\bborder-\[#69daff\]\b/g, '')
+                        .replace(/\btext-\[#a6aabf\]\/50\b/g, '')
+                        .trim();
+                    if (isActive) {
+                        n.classList.add('bg-[#181f33]', 'text-[#69daff]', 'border-l-4', 'border-[#69daff]');
+                        n.classList.remove('text-[#a6aabf]/50');
+                    } else {
+                        n.classList.remove('bg-[#181f33]', 'text-[#69daff]', 'border-l-4', 'border-[#69daff]');
+                        n.classList.add('text-[#a6aabf]/50');
+                    }
+                    const icon = n.querySelector('.step-icon');
+                    if (icon && isDone) {
+                        icon.textContent = 'check_circle';
+                        icon.style.fontVariationSettings = "'FILL' 1";
+                        icon.classList.add('text-[#2ff801]');
+                    } else if (icon) {
+                        icon.style.fontVariationSettings = "'FILL' 0";
+                        icon.classList.remove('text-[#2ff801]');
+                    }
+                });
+                current = index;
+                if (index === 3) updateReview();
+            }
+
+            document.querySelectorAll('[data-next]').forEach(btn =>
+                btn.addEventListener('click', () => {
+                    const section = steps[current];
+                    const inputs = section.querySelectorAll('[required]');
+                    if ([...inputs].every(i => i.reportValidity())) show(current + 1);
+                }));
+
+            document.querySelectorAll('[data-prev]').forEach(btn =>
+                btn.addEventListener('click', () => show(current - 1)));
+
+            // Step nav clicks (desktop sidebar)
+            navItems.forEach((n, i) =>
+                n.addEventListener('click', () => {
+                    // Only allow going backward or to current
+                    if (i <= current) show(i);
+                }));
+
+            show(0);
+        });
     </script>
 }
