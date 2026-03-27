@@ -1,0 +1,19 @@
+@model (string? LogoUrl, string TeamName, string SizeClass)
+@{
+    var hasLogo = !string.IsNullOrEmpty(Model.LogoUrl);
+    var iconSize = Model.SizeClass.Contains("w-12") ? "" : Model.SizeClass.Contains("w-16") ? "text-2xl" : "text-3xl";
+}
+<div class="@Model.SizeClass rounded-full bg-surface-container-low flex items-center justify-center overflow-hidden">
+    @if (hasLogo)
+    {
+        <img src="@Model.LogoUrl"
+             alt="@Model.TeamName"
+             class="w-full h-full object-contain"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+        <span class="material-symbols-outlined text-on-surface-variant @iconSize" style="display:none;">shield</span>
+    }
+    else
+    {
+        <span class="material-symbols-outlined text-on-surface-variant @iconSize">shield</span>
+    }
+</div>
