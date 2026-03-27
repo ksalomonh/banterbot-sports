@@ -2,6 +2,7 @@ using BanterBotSports.BL.Models;
 using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.Entities.ViewModels;
 using BanterBotSports.Web.Infrastructure;
+using BanterBotSports.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
@@ -120,6 +121,25 @@ public class TorneoController : Controller
 
         ViewBag.InviteUrl = inviteUrl;
         return View(torneo);
+    }
+
+    // GET /torneo/{id}/leaderboard
+    [HttpGet("/torneo/{id:int}/leaderboard")]
+    public async Task<IActionResult> Leaderboard(int id)
+    {
+        var torneo = await _torneoService.GetByIdWithDetailsAsync(id);
+        if (torneo is null)
+            return NotFound();
+
+        var userId = _userManager.GetUserId(User)!;
+        var esParticipante = torneo.Participantes.Any(p => p.UserId == userId);
+        if (!esParticipante)
+            return Forbid();
+
+        var ranking = await _torneoService.BuildRankingAsync(torneo);
+        var vm = new LeaderboardViewModel(torneo.Nombre, torneo.Id, ranking);
+
+        return View(vm);
     }
 
     // POST /torneo/{id}/unirse?token=X

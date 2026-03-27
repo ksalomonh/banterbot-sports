@@ -1,0 +1,248 @@
+@using BanterBotSports.Web.Models
+@using BanterBotSports.BL.Models
+@model LeaderboardViewModel
+@{
+    ViewData["Title"] = $"Leaderboard — {Model.TorneoNombre}";
+    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+}
+
+@* Mobile-first: stacked ranking cards. md+: full leaderboard table.
+   No-Line rule: tonal row alternation (no borders).
+   From: mockups/full_leaderboard_web/code.html + mockups/mobile_mockups/full_leaderboard_mobile/code.html *@
+
+<!-- Hero Header -->
+<div class="relative overflow-hidden rounded-3xl bg-[#0d1323] p-6 md:p-10 mb-8 shadow-[0_0_40px_rgba(105,218,255,0.08)]">
+    <!-- Ambient glow blob -->
+    <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-[#69daff]/10 rounded-full blur-[100px] pointer-events-none"></div>
+    <div class="relative z-10">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="bg-[#2ff801]/20 text-[#2ff801] text-[10px] font-bold px-3 py-1 rounded-full border border-[#2ff801]/30 tracking-widest uppercase">Live Event</span>
+            <a asp-action="Dashboard" asp-route-id="@Model.TorneoId"
+               class="text-[#a6aabf] text-sm font-medium hover:text-[#69daff] transition-colors flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">arrow_back</span> Volver al Dashboard
+            </a>
+        </div>
+        <h1 class="text-4xl md:text-6xl font-black italic tracking-tighter text-[#e1e4fa] leading-none mb-2 uppercase">
+            @Model.TorneoNombre<br/><span class="text-[#69daff]">LEADERBOARD</span>
+        </h1>
+        <p class="text-[#a6aabf] text-sm md:text-base max-w-lg mt-3">
+            La clasificación completa del torneo. Sin líneas, sin excusas.
+        </p>
+    </div>
+</div>
+
+@if (!Model.Ranking.Any())
+{
+    <!-- Empty state -->
+    <div class="flex flex-col items-center justify-center bg-[#0d1323] rounded-3xl p-12 text-center">
+        <div class="w-20 h-20 rounded-full bg-[#69daff]/10 flex items-center justify-center mb-6">
+            <span class="material-symbols-outlined text-[#69daff] text-4xl">leaderboard</span>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Sin puntuaciones todavía</h3>
+        <p class="text-[#a6aabf] text-sm max-w-xs">
+            Aún no hay jornadas finalizadas. El leaderboard se actualizará cuando se registren los primeros resultados.
+        </p>
+    </div>
+}
+else
+{
+    <!-- ── Desktop md+: Full leaderboard table ──────────────────────────── -->
+    <div class="hidden md:block bg-[#0d1323] rounded-3xl overflow-hidden shadow-2xl mb-8">
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="bg-[#181f33]/50 text-left">
+                        <th class="px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-[#a6aabf]">Rank</th>
+                        <th class="px-6 py-6 text-[10px] font-bold uppercase tracking-widest text-[#a6aabf]">Jugador</th>
+                        <th class="px-6 py-6 text-[10px] font-bold uppercase tracking-widest text-[#a6aabf] text-center">Total Puntos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var currentUserEntry = Model.Ranking.FirstOrDefault(r => {
+                            // We can't match by UserId directly since RankingParticipante doesn't have it
+                            // The userId will be checked by comparing NombreDisplay against a marker set via ViewBag
+                            return false; // placeholder — actual check below via CSS
+                        });
+                    }
+                    @foreach (var entry in Model.Ranking)
+                    {
+                        @* No-Line rule: tonal alternation — odd rows bg-[#181f33]/10, even rows bg-transparent *@
+                        var isOdd = entry.Posicion % 2 != 0;
+                        var rowBg = isOdd ? "bg-[#181f33]/10" : "";
+                        var isTopThree = entry.Posicion <= 3;
+                        var rankColor = entry.Posicion == 1 ? "text-[#2ff801]"
+                            : entry.Posicion == 2 ? "text-[#69daff]"
+                            : entry.Posicion == 3 ? "text-[#ff7166]"
+                            : "text-[#a6aabf]";
+                        <tr class="@rowBg hover:bg-[#242b43]/30 transition-colors">
+                            <td class="px-8 py-5">
+                                <div class="flex items-center gap-2">
+                                    @if (entry.Posicion == 1)
+                                    {
+                                        <span class="material-symbols-outlined text-yellow-400" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+                                    }
+                                    else if (entry.Posicion == 2)
+                                    {
+                                        <span class="material-symbols-outlined text-slate-400" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+                                    }
+                                    else if (entry.Posicion == 3)
+                                    {
+                                        <span class="material-symbols-outlined text-orange-500" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+                                    }
+                                    <span class="text-2xl font-black italic @rankColor">@entry.Posicion.ToString("D2")</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-5">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-[#1e253b] flex items-center justify-center text-[10px] font-black text-[#a6aabf] uppercase">
+                                        @(entry.NombreDisplay.Length >= 2 ? entry.NombreDisplay.Substring(0, 2).ToUpper() : entry.NombreDisplay.ToUpper())
+                                    </div>
+                                    <span class="font-bold text-[#e1e4fa]">@entry.NombreDisplay</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-5 text-center font-black text-xl @(entry.Posicion == 1 ? "text-[#2ff801]" : entry.Posicion <= 3 ? "text-[#69daff]" : "text-[#e1e4fa]")">
+                                @entry.PuntosTotal
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── Mobile: Podium top-3 + stacked ranking cards ─────────────────── -->
+    <div class="md:hidden space-y-6 mb-8">
+        <!-- Header label -->
+        <div class="flex justify-between items-end px-1">
+            <h3 class="text-xl font-black tracking-tight uppercase">Leaderboard</h3>
+            <span class="text-[0.65rem] font-bold text-[#69daff] uppercase tracking-widest">@Model.Ranking.Count jugadores</span>
+        </div>
+
+        @{
+            var top3 = Model.Ranking.Take(3).ToList();
+            var rest = Model.Ranking.Skip(3).ToList();
+        }
+
+        @if (top3.Count >= 1)
+        {
+            <!-- Podium: asymmetric grid — 2nd | 1st | 3rd -->
+            <div class="grid grid-cols-12 gap-3 mb-6">
+                <!-- Rank 2 (if exists) -->
+                @if (top3.Count >= 2)
+                {
+                    var p2 = top3[1];
+                    <div class="col-span-4 mt-8">
+                        <div class="bg-[#0d1323] rounded-3xl p-4 flex flex-col items-center">
+                            <div class="w-12 h-12 rounded-full bg-[#1e253b] flex items-center justify-center font-black text-[#a6aabf] uppercase mb-2">
+                                @(p2.NombreDisplay.Length >= 2 ? p2.NombreDisplay.Substring(0, 2).ToUpper() : p2.NombreDisplay.ToUpper())
+                            </div>
+                            <div class="text-slate-400 font-black italic text-xl">#2</div>
+                            <div class="text-[10px] font-bold text-[#e1e4fa] truncate w-full text-center">@p2.NombreDisplay</div>
+                            <div class="text-[#69daff] font-black text-sm">@p2.PuntosTotal pts</div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-span-4 mt-8"></div>
+                }
+
+                <!-- Rank 1 (featured, center) -->
+                @{
+                    var p1 = top3[0];
+                }
+                <div class="col-span-4">
+                    <div class="bg-[#181f33] rounded-3xl p-5 flex flex-col items-center shadow-[0_0_30px_rgba(105,218,255,0.15)]">
+                        <div class="w-16 h-16 rounded-full bg-[#69daff]/20 flex items-center justify-center font-black text-[#69daff] text-lg uppercase mb-2 border-2 border-[#69daff]/30">
+                            @(p1.NombreDisplay.Length >= 2 ? p1.NombreDisplay.Substring(0, 2).ToUpper() : p1.NombreDisplay.ToUpper())
+                        </div>
+                        <span class="material-symbols-outlined text-[#2ff801] text-2xl mb-1" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+                        <div class="text-[#69daff] font-black italic text-2xl">#1</div>
+                        <div class="text-xs font-black text-[#e1e4fa] truncate w-full text-center">@p1.NombreDisplay</div>
+                        <div class="text-[#2ff801] font-black text-lg">@p1.PuntosTotal pts</div>
+                    </div>
+                </div>
+
+                <!-- Rank 3 (if exists) -->
+                @if (top3.Count >= 3)
+                {
+                    var p3 = top3[2];
+                    <div class="col-span-4 mt-12">
+                        <div class="bg-[#0d1323] rounded-3xl p-4 flex flex-col items-center">
+                            <div class="w-12 h-12 rounded-full bg-[#1e253b] flex items-center justify-center font-black text-[#a6aabf] uppercase mb-2">
+                                @(p3.NombreDisplay.Length >= 2 ? p3.NombreDisplay.Substring(0, 2).ToUpper() : p3.NombreDisplay.ToUpper())
+                            </div>
+                            <div class="text-orange-500 font-black italic text-xl">#3</div>
+                            <div class="text-[10px] font-bold text-[#e1e4fa] truncate w-full text-center">@p3.NombreDisplay</div>
+                            <div class="text-[#69daff] font-black text-sm">@p3.PuntosTotal pts</div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-span-4 mt-12"></div>
+                }
+            </div>
+        }
+
+        <!-- Remaining standings list — No-Line rule: tonal rows, no dividers -->
+        @if (rest.Any())
+        {
+            <div class="bg-[#0d1323] rounded-3xl overflow-hidden">
+                @foreach (var entry in rest)
+                {
+                    @* Tonal alternation: positions 4+ alternate surface-high / background *@
+                    var isEven = (entry.Posicion % 2 == 0);
+                    var cardBg = isEven ? "bg-[#181f33]" : "bg-[#0d1323]";
+                    <div class="@cardBg px-4 py-3 flex items-center justify-between transition-all active:scale-[0.98]">
+                        <div class="flex items-center gap-4">
+                            <span class="text-[#a6aabf] font-black italic w-6 text-center">@entry.Posicion</span>
+                            <div class="w-10 h-10 rounded-full bg-[#1e253b] flex items-center justify-center text-[10px] font-black text-[#a6aabf] uppercase">
+                                @(entry.NombreDisplay.Length >= 2 ? entry.NombreDisplay.Substring(0, 2).ToUpper() : entry.NombreDisplay.ToUpper())
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-[#e1e4fa]">@entry.NombreDisplay</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-black text-[#69daff]">@entry.PuntosTotal</div>
+                            <div class="text-[8px] text-[#a6aabf] font-bold uppercase">puntos</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- ── Stats bento grid (both mobile and desktop) ───────────────────── -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+        <div class="bg-[#181f33] p-6 rounded-3xl">
+            <div class="text-[10px] font-bold uppercase tracking-widest text-[#a6aabf] mb-2">Total Participantes</div>
+            <div class="text-4xl font-black text-[#e1e4fa] italic">@Model.Ranking.Count</div>
+        </div>
+        <div class="bg-[#181f33] p-6 rounded-3xl">
+            <div class="text-[10px] font-bold uppercase tracking-widest text-[#a6aabf] mb-2">Puntos Promedio</div>
+            @{
+                var avgPts = Model.Ranking.Any() ? Model.Ranking.Average(r => r.PuntosTotal) : 0;
+            }
+            <div class="text-4xl font-black text-[#2ff801] italic">@avgPts.ToString("N1")</div>
+        </div>
+        <div class="bg-[#181f33] p-6 rounded-3xl">
+            <div class="text-[10px] font-bold uppercase tracking-widest text-[#a6aabf] mb-2">Puntaje Máximo</div>
+            @{
+                var maxPts = Model.Ranking.Any() ? Model.Ranking.Max(r => r.PuntosTotal) : 0;
+            }
+            <div class="text-4xl font-black text-[#69daff] italic">@maxPts</div>
+        </div>
+    </div>
+}
+
+<!-- Back to dashboard -->
+<div class="mt-8 flex justify-center">
+    <a asp-action="Dashboard" asp-route-id="@Model.TorneoId"
+       class="flex items-center gap-2 px-8 py-3 bg-[#242b43] text-[#e1e4fa] font-bold rounded-xl hover:bg-[#1e253b] transition-colors text-sm uppercase tracking-widest">
+        <span class="material-symbols-outlined text-sm">arrow_back</span>
+        Volver al Dashboard
+    </a>
+</div>

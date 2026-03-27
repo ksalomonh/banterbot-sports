@@ -1,8 +1,10 @@
+using BanterBotSports.BL.Models;
 using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL;
 using BanterBotSports.Entities;
 using BanterBotSports.Entities.ViewModels;
 using BanterBotSports.Web.Controllers;
+using BanterBotSports.Web.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
@@ -165,5 +167,100 @@ public class TorneoControllerTests
         // Act & Assert: the controller must catch the exception and NOT re-throw
         var act = async () => await sut.Nuevo(model);
         await act.Should().NotThrowAsync("controller must swallow service exceptions gracefully");
+    }
+
+    // ---------------------------------------------------------------------------
+    // Leaderboard Tests
+    // ---------------------------------------------------------------------------
+
+    [Fact]
+    public async Task Leaderboard_Get_ReturnsViewWithLeaderboardViewModel()
+    {
+        // Arrange: torneo with one participant matching the test user
+        const string testUserId = "test-user-id";
+        var participante = new Participante { Id = 1, UserId = testUserId };
+        var torneo = new Torneo
+        {
+            Id = 42,
+            Nombre = "Test Liga",
+            OrganizadorId = testUserId,
+            Participantes = new List<Participante> { participante }
+        };
+
+        IReadOnlyList<RankingParticipante> ranking = new List<RankingParticipante>
+        {
+            new RankingParticipante(ParticipanteId: 1, NombreDisplay: "TestUser", PuntosTotal: 100, Posicion: 1)
+        };
+
+        var torneoSvcMock = new Mock<ITorneoService>();
+        torneoSvcMock
+            .Setup(s => s.GetByIdWithDetailsAsync(42))
+            .ReturnsAsync(torneo);
+        torneoSvcMock
+            .Setup(s => s.BuildRankingAsync(torneo))
+            .ReturnsAsync(ranking);
+
+        var sut = BuildSut(torneoServiceMock: torneoSvcMock);
+
+        // Act
+        var result = await sut.Leaderboard(42);
+
+        // Assert: returns ViewResult with LeaderboardViewModel
+        result.Should().BeOfType<ViewResult>("Leaderboard GET must return a view");
+        var viewResult = (ViewResult)result;
+        viewResult.Model.Should().BeOfType<LeaderboardViewModel>("model must be LeaderboardViewModel");
+
+        var vm = (LeaderboardViewModel)viewResult.Model!;
+        vm.TorneoId.Should().Be(42);
+        vm.TorneoNombre.Should().Be("Test Liga");
+        vm.Ranking.Should().HaveCount(1);
+        vm.Ranking[0].NombreDisplay.Should().Be("TestUser");
+    }
+
+    [Fact]
+    public async Task Leaderboard_Get_TorneoNotFound_Returns404()
+    {
+        // Arrange: service returns null
+        var torneoSvcMock = new Mock<ITorneoService>();
+        torneoSvcMock
+            .Setup(s => s.GetByIdWithDetailsAsync(It.IsAny<int>()))
+            .ReturnsAsync((Torneo?)null);
+
+        var sut = BuildSut(torneoServiceMock: torneoSvcMock);
+
+        // Act
+        var result = await sut.Leaderboard(999);
+
+        // Assert: must return NotFound
+        result.Should().BeOfType<NotFoundResult>("non-existent torneo must return 404");
+    }
+
+    [Fact]
+    public async Task Leaderboard_Get_UserNotParticipant_ReturnsForbid()
+    {
+        // Arrange: torneo exists but test user is NOT a participant
+        var torneo = new Torneo
+        {
+            Id = 10,
+            Nombre = "Private Torneo",
+            OrganizadorId = "other-user",
+            Participantes = new List<Participante>
+            {
+                new Participante { Id = 99, UserId = "other-user", NombreDisplay = "OtherUser" }
+            }
+        };
+
+        var torneoSvcMock = new Mock<ITorneoService>();
+        torneoSvcMock
+            .Setup(s => s.GetByIdWithDetailsAsync(10))
+            .ReturnsAsync(torneo);
+
+        var sut = BuildSut(torneoServiceMock: torneoSvcMock);
+
+        // Act
+        var result = await sut.Leaderboard(10);
+
+        // Assert: must return Forbid (not the view, not a redirect)
+        result.Should().BeOfType<ForbidResult>("non-participant must be forbidden from viewing leaderboard");
     }
 }
