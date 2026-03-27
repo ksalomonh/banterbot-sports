@@ -16,6 +16,7 @@ public class BanterDispatchService : IBanterDispatchService
     private readonly ITelegramBotService _telegramBotService;
     private readonly ITorneoRepository _torneoRepository;
     private readonly IPartidoRepository _partidoRepository;
+    private readonly IParticipanteRepository _participanteRepository;
     private readonly IUsuarioTelegramRepository _usuarioTelegramRepository;
     private readonly ILogger<BanterDispatchService> _logger;
 
@@ -26,6 +27,7 @@ public class BanterDispatchService : IBanterDispatchService
         ITelegramBotService telegramBotService,
         ITorneoRepository torneoRepository,
         IPartidoRepository partidoRepository,
+        IParticipanteRepository participanteRepository,
         IUsuarioTelegramRepository usuarioTelegramRepository,
         ILogger<BanterDispatchService> logger)
     {
@@ -33,6 +35,7 @@ public class BanterDispatchService : IBanterDispatchService
         ArgumentNullException.ThrowIfNull(telegramBotService);
         ArgumentNullException.ThrowIfNull(torneoRepository);
         ArgumentNullException.ThrowIfNull(partidoRepository);
+        ArgumentNullException.ThrowIfNull(participanteRepository);
         ArgumentNullException.ThrowIfNull(usuarioTelegramRepository);
         ArgumentNullException.ThrowIfNull(logger);
 
@@ -40,6 +43,7 @@ public class BanterDispatchService : IBanterDispatchService
         _telegramBotService = telegramBotService;
         _torneoRepository = torneoRepository;
         _partidoRepository = partidoRepository;
+        _participanteRepository = participanteRepository;
         _usuarioTelegramRepository = usuarioTelegramRepository;
         _logger = logger;
     }
@@ -75,8 +79,11 @@ public class BanterDispatchService : IBanterDispatchService
             .Select((kv, index) => (ParticipanteId: kv.Key, Puntos: kv.Value, Posicion: index + 1))
             .ToList();
 
-        // Load all Telegram users for this torneo in a single batch query
+        // Batch-load display names for all participants in a single query
         var userIds = torneo.Participantes.Select(p => p.UserId).ToList();
+        var displayNames = await _participanteRepository.GetDisplayNamesByIdsAsync(userIds);
+
+        // Load all Telegram users for this torneo in a single batch query
         var telegramUsers = await _usuarioTelegramRepository.GetTelegramIdsByUserIdsAsync(userIds);
 
         foreach (var participante in torneo.Participantes)
@@ -101,8 +108,11 @@ public class BanterDispatchService : IBanterDispatchService
                         )))
                     .ToList();
 
+                // Use resolved display name — never send raw UserId to banter generation
+                var nombreDisplay = displayNames.GetValueOrDefault(participante.UserId, participante.UserId);
+
                 var stats = new ParticipanteStats(
-                    NombreParticipante: participante.UserId,
+                    NombreParticipante: nombreDisplay,
                     NombreTorneo: torneo.Nombre,
                     NumeroJornada: jornada.Numero,
                     PosicionRanking: posicion,
@@ -112,7 +122,7 @@ public class BanterDispatchService : IBanterDispatchService
 
                 var banter = await _banterEngine.GenerateBanterAsync(stats, torneo);
 
-                // Validate AI output before displaying
+                // Validate AI output before displaying (max 280 chars)
                 if (string.IsNullOrWhiteSpace(banter) || banter.Length > MaxBanterLength)
                 {
                     _logger.LogWarning(

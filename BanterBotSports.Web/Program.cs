@@ -60,13 +60,23 @@ builder.Services.AddScoped<ITelegramVinculacionService, TelegramVinculacionServi
 
 // ─── Named HttpClients ───────────────────────────────────────────────────────
 builder.Services.AddHttpClient("ApiFootball");
+builder.Services.AddHttpClient("Anthropic");
 builder.Services.AddHttpClient("Whisper");
 builder.Services.AddHttpClient("TelegramBot");
 
 // ─── Integration Services ────────────────────────────────────────────────────
 builder.Services.AddScoped<IApiFootballClient, ApiFootballClient>();
 builder.Services.AddScoped<IWhisperService, WhisperService>();
-builder.Services.AddSingleton<ITelegramBotService, TelegramBotService>();
+var telegramToken = builder.Configuration["Telegram:BotToken"];
+if (string.IsNullOrWhiteSpace(telegramToken))
+{
+    builder.Services.AddSingleton<ITelegramBotService, NullTelegramBotService>();
+}
+else
+{
+    builder.Services.AddSingleton<ITelegramBotService, TelegramBotService>();
+}
+builder.Services.AddSingleton<JornadaAbiertaNotifier>();
 
 // ─── BanterAI Services (Scoped) ──────────────────────────────────────────────
 builder.Services.AddScoped<IPrediccionExtractionService, PrediccionExtractionService>();
@@ -96,9 +106,12 @@ using (var scope = app.Services.CreateScope())
 }
 
 // ─── Middleware pipeline ─────────────────────────────────────────────────────
+// UseExceptionHandler is always active so DB/internal errors never expose stack
+// traces to the browser — not even in Development when run outside a debugger.
+app.UseExceptionHandler("/Home/Error");
+
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
