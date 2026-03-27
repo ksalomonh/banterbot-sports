@@ -30,7 +30,10 @@ public record ResumenParticipanteRow(
     int PuntosJornada,
     IReadOnlyList<PrediccionConResultado> Predicciones);
 
-/// <summary>A single match prediction plus its official result, with pre-computed accuracy classification.</summary>
+/// <summary>
+/// A single match prediction plus its official result.
+/// <see cref="Resultado"/> is computed and injected by the BL service layer — no classification logic lives here.
+/// </summary>
 public record PrediccionConResultado(
     int PartidoId,
     string Equipo1,
@@ -39,34 +42,7 @@ public record PrediccionConResultado(
     int? GolesEquipo2Oficial,
     int? GolesPredichos1,
     int? GolesPredichos2,
-    int? PuntosObtenidos)
-{
-    /// <summary>
-    /// Pre-computed accuracy classification — avoids business logic in the view layer.
-    /// Computed from the raw goals data at construction time in the service layer.
-    /// </summary>
-    public ResultadoPrediccion Resultado => ComputeResultado();
-
-    private ResultadoPrediccion ComputeResultado()
-    {
-        // No prediction submitted
-        if (GolesPredichos1 is null || GolesPredichos2 is null)
-            return ResultadoPrediccion.SinPrediccion;
-
-        // Results not yet official
-        if (GolesEquipo1Oficial is null || GolesEquipo2Oficial is null)
-            return ResultadoPrediccion.SinPrediccion;
-
-        // Exact score match
-        if (GolesEquipo1Oficial == GolesPredichos1 && GolesEquipo2Oficial == GolesPredichos2)
-            return ResultadoPrediccion.Exacto;
-
-        // Outcome match (home win / away win / draw)
-        var oficialOutcome = Math.Sign(GolesEquipo1Oficial.Value - GolesEquipo2Oficial.Value);
-        var predichoOutcome = Math.Sign(GolesPredichos1.Value - GolesPredichos2.Value);
-        if (oficialOutcome == predichoOutcome)
-            return ResultadoPrediccion.ResultadoCorrecto;
-
-        return ResultadoPrediccion.Fallido;
-    }
-}
+    int? PuntosObtenidos,
+    ResultadoPrediccion Resultado,
+    string? LogoUrlLocal = null,
+    string? LogoUrlVisitante = null);
