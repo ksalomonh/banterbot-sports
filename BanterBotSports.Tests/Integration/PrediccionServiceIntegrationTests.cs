@@ -354,24 +354,26 @@ public class PrediccionServiceIntegrationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task CalcularPuntosGolesJornadaAsync_NoPrediccionJornada_NoPuntosAwarded()
+    public async Task CalcularPuntosGolesJornadaAsync_NoPrediccionJornada_ZeroPointRowPersisted()
     {
         // Arrange: participant has no PrediccionJornada record at all
-        var (_, jornada, partido, _) = await SeedBasicScenarioAsync();
+        var (_, jornada, partido, participante) = await SeedBasicScenarioAsync();
 
         partido.GolesEquipo1Oficial = 1;
         partido.GolesEquipo2Oficial = 0;
         _context.Partidos.Update(partido);
         await _context.SaveChangesAsync();
 
-        // Act — should not throw; simply no records to update
+        // Act — should not throw; a zero-point row must be created for the enrolled participant
         await _prediccionService.CalcularPuntosGolesJornadaAsync(jornada.Id);
 
-        // Assert: no PrediccionJornada rows exist → nothing was awarded
-        var count = await _context.PrediccionesJornada
-            .CountAsync(pj => pj.JornadaId == jornada.Id);
+        // Assert: a PrediccionJornada row was created with PuntosObtenidos = 0
+        var row = await _context.PrediccionesJornada
+            .FirstOrDefaultAsync(pj => pj.JornadaId == jornada.Id && pj.ParticipanteId == participante.Id);
 
-        count.Should().Be(0, "no PrediccionJornada rows → nothing to score");
+        row.Should().NotBeNull("a zero-point row must be persisted for participants with no predictions");
+        row!.PuntosObtenidos.Should().Be(0, "participant made no predictions → 0 points");
+        row.GolesPronosticados.Should().Be(0, "participant made no predictions → 0 predicted goals");
     }
 
     [Fact]

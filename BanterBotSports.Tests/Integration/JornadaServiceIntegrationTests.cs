@@ -61,6 +61,19 @@ public class JornadaServiceIntegrationTests : IAsyncLifetime
     // Helpers
     // ---------------------------------------------------------------------------
 
+    /// <summary>
+    /// Truncates a DateTimeOffset to microsecond precision.
+    /// PostgreSQL timestamptz stores up to microseconds (1 µs = 10 ticks).
+    /// .NET DateTimeOffset uses 100 ns ticks, so without truncation the DB round-trip
+    /// produces a value that differs in the last digit(s).
+    /// </summary>
+    private static DateTimeOffset TruncateToMicroseconds(DateTimeOffset dto)
+    {
+        const long TicksPerMicrosecond = TimeSpan.TicksPerMillisecond / 1000;
+        var truncatedTicks = dto.Ticks - (dto.Ticks % TicksPerMicrosecond);
+        return new DateTimeOffset(truncatedTicks, dto.Offset);
+    }
+
     private async Task<(Torneo torneo, Jornada jornada)> SeedTorneoConJornadaPendienteAsync()
     {
         var torneo = new Torneo
@@ -100,8 +113,10 @@ public class JornadaServiceIntegrationTests : IAsyncLifetime
         // Arrange
         var (_, jornada) = await SeedTorneoConJornadaPendienteAsync();
 
-        var kickOff1 = DateTimeOffset.UtcNow.AddDays(2);
-        var kickOff2 = DateTimeOffset.UtcNow.AddDays(1);  // earliest
+        // Truncate to microseconds: PostgreSQL timestamptz has microsecond precision;
+        // .NET DateTimeOffset has 100ns ticks. Without truncation the round-trip comparison fails.
+        var kickOff1 = TruncateToMicroseconds(DateTimeOffset.UtcNow.AddDays(2));
+        var kickOff2 = TruncateToMicroseconds(DateTimeOffset.UtcNow.AddDays(1));  // earliest
 
         _context.Partidos.AddRange(
             new Partido
@@ -178,7 +193,8 @@ public class JornadaServiceIntegrationTests : IAsyncLifetime
         // Arrange: exactly one partido
         var (_, jornada) = await SeedTorneoConJornadaPendienteAsync();
 
-        var singleKickOff = DateTimeOffset.UtcNow.AddHours(48);
+        // Truncate to microseconds so the round-trip comparison against PostgreSQL is exact.
+        var singleKickOff = TruncateToMicroseconds(DateTimeOffset.UtcNow.AddHours(48));
         _context.Partidos.Add(new Partido
         {
             JornadaId = jornada.Id,

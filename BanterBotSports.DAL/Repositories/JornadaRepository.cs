@@ -21,6 +21,7 @@ public class JornadaRepository : IJornadaRepository
     public async Task<Jornada?> GetByIdWithDetailsAsync(int id)
         => await _context.Jornadas
             .Include(j => j.Torneo)
+                .ThenInclude(t => t.Participantes)
             .Include(j => j.Partidos)
             .Include(j => j.PrediccionesJornada)
             .FirstOrDefaultAsync(j => j.Id == id);

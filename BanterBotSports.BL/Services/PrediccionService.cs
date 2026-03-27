@@ -101,11 +101,29 @@ public class PrediccionService : IPrediccionService
 
         int ptosGolesJornada = jornada.Torneo.PtosGolesJornada;
 
-        foreach (var prediccionJornada in prediccionesJornada)
+        // Build a lookup of existing PrediccionJornada rows by participanteId
+        var existingByParticipante = prediccionesJornada.ToDictionary(pj => pj.ParticipanteId);
+
+        // Update existing rows and create zero-point rows for participants with no record
+        foreach (var participante in jornada.Torneo.Participantes)
         {
-            bool acierto = prediccionJornada.GolesPronosticados == totalGolesOficiales;
-            prediccionJornada.PuntosObtenidos = acierto ? ptosGolesJornada : 0;
-            await _prediccionRepository.UpdatePrediccionJornadaAsync(prediccionJornada);
+            if (existingByParticipante.TryGetValue(participante.Id, out var prediccionJornada))
+            {
+                bool acierto = prediccionJornada.GolesPronosticados == totalGolesOficiales;
+                prediccionJornada.PuntosObtenidos = acierto ? ptosGolesJornada : 0;
+                await _prediccionRepository.UpdatePrediccionJornadaAsync(prediccionJornada);
+            }
+            else
+            {
+                // Participant had no predictions at all — persist a zero-point row
+                await _prediccionRepository.AddPrediccionJornadaAsync(new PrediccionJornada
+                {
+                    JornadaId = jornadaId,
+                    ParticipanteId = participante.Id,
+                    GolesPronosticados = 0,
+                    PuntosObtenidos = 0
+                });
+            }
         }
 
         await _unitOfWork.SaveAsync();

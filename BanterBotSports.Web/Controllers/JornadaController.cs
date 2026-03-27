@@ -15,6 +15,7 @@ public class JornadaController : Controller
     private readonly IJornadaService _jornadaService;
     private readonly IPartidoService _partidoService;
     private readonly ITorneoService _torneoService;
+    private readonly IPrediccionService _prediccionService;
     private readonly IApiFootballClient _apiFootballClient;
     private readonly UserManager<DAL.AppUser> _userManager;
     private readonly ILogger<JornadaController> _logger;
@@ -23,6 +24,7 @@ public class JornadaController : Controller
         IJornadaService jornadaService,
         IPartidoService partidoService,
         ITorneoService torneoService,
+        IPrediccionService prediccionService,
         IApiFootballClient apiFootballClient,
         UserManager<DAL.AppUser> userManager,
         ILogger<JornadaController> logger,
@@ -32,6 +34,7 @@ public class JornadaController : Controller
         ArgumentNullException.ThrowIfNull(jornadaService);
         ArgumentNullException.ThrowIfNull(partidoService);
         ArgumentNullException.ThrowIfNull(torneoService);
+        ArgumentNullException.ThrowIfNull(prediccionService);
         ArgumentNullException.ThrowIfNull(apiFootballClient);
         ArgumentNullException.ThrowIfNull(userManager);
         ArgumentNullException.ThrowIfNull(logger);
@@ -41,6 +44,7 @@ public class JornadaController : Controller
         _jornadaService = jornadaService;
         _partidoService = partidoService;
         _torneoService = torneoService;
+        _prediccionService = prediccionService;
         _apiFootballClient = apiFootballClient;
         _userManager = userManager;
         _logger = logger;
@@ -144,6 +148,11 @@ public class JornadaController : Controller
         try
         {
             await _jornadaService.CerrarJornadaAsync(id);
+
+            // Aggregate each participant's total predicted goals from their match predictions.
+            // Must run after the jornada closes (predictions are now locked).
+            await _prediccionService.ActualizarGolesJornadaAsync(id);
+
             TempData["Success"] = "Jornada cerrada.";
         }
         catch (InvalidOperationException ex)
@@ -166,6 +175,11 @@ public class JornadaController : Controller
         try
         {
             await _jornadaService.FinalizarJornadaAsync(id);
+
+            // Compute and persist jornada-level goal points for every participant.
+            // Must run after official results are entered (GolesEquipo1Oficial / GolesEquipo2Oficial set).
+            await _prediccionService.CalcularPuntosGolesJornadaAsync(id);
+
             TempData["Success"] = "Jornada finalizada.";
         }
         catch (InvalidOperationException ex)
