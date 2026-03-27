@@ -114,6 +114,11 @@ public class AccountController : Controller
         return View(model);
     }
 
+    // GET /Account/ForgotPassword
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult ForgotPassword() => View();
+
     // GET /Account/AccessDenied
     [HttpGet]
     [AllowAnonymous]

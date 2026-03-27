@@ -1,43 +1,159 @@
 @model BanterBotSports.Entities.ViewModels.LoginViewModel
 @{
+    Layout = null;
     ViewData["Title"] = "Ingresar";
     var returnUrl = ViewData["ReturnUrl"] as string;
 }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BanterBot Sports</title>
+    @await Html.PartialAsync("_TailwindHead")
+</head>
+<body class="min-h-screen bg-background text-on-surface overflow-x-hidden">
 
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <h2 class="mb-4">Ingresar</h2>
-
-        <form asp-action="Login" asp-route-returnUrl="@returnUrl" method="post">
-            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
-
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label">Email</label>
-                <input asp-for="Email" class="form-control" autocomplete="email" />
-                <span asp-validation-for="Email" class="text-danger small"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Password" class="form-label">Contraseña</label>
-                <input asp-for="Password" class="form-control" autocomplete="current-password" />
-                <span asp-validation-for="Password" class="text-danger small"></span>
-            </div>
-
-            <div class="mb-3 form-check">
-                <input asp-for="RememberMe" class="form-check-input" />
-                <label asp-for="RememberMe" class="form-check-label">Recordarme</label>
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100">Ingresar</button>
-        </form>
-
-        <hr />
-        <p class="text-center mb-0">
-            ¿No tenés cuenta? <a asp-action="Register">Registrarse</a>
-        </p>
+    @* Ambient background glows *@
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div class="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full"></div>
+        <div class="absolute bottom-[-10%] left-[-5%] w-[30%] h-[30%] bg-secondary/5 blur-[120px] rounded-full"></div>
     </div>
-</div>
 
-@section Scripts {
+    <main class="relative z-10 w-full min-h-screen flex flex-col md:flex-row">
+
+        @* LEFT HERO (desktop only, md+) *@
+        <section class="relative hidden md:flex md:w-3/5 lg:w-2/3 items-end p-12 lg:p-24 overflow-hidden">
+            @* Stadium background *@
+            <div class="absolute inset-0 z-0 bg-gradient-to-br from-surface-container-high via-surface-container-low to-background">
+                <div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-transparent"></div>
+            </div>
+            @* Decorative glows *@
+            <div class="absolute top-1/4 left-1/3 w-96 h-96 bg-primary/10 blur-[120px] rounded-full pointer-events-none"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-secondary/5 blur-[100px] rounded-full pointer-events-none"></div>
+            @* Hero content *@
+            <div class="relative z-10 max-w-2xl">
+                <div class="mb-6 inline-flex items-center gap-2 bg-primary/10 px-4 py-1 rounded-full">
+                    <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+                    <span class="text-xs font-bold tracking-widest text-primary uppercase">Arena en vivo</span>
+                </div>
+                <h1 class="text-6xl lg:text-8xl font-black tracking-tighter text-on-surface mb-6 leading-[0.9] text-glow-primary">
+                    Bienvenido <br/>al <span class="text-primary italic">Colosseum</span>
+                </h1>
+                <p class="text-lg text-on-surface-variant max-w-md font-medium">
+                    Las apuestas son más altas y el banter más fuerte. Entrá al arena para reclamar tu lugar en el marcador global.
+                </p>
+            </div>
+        </section>
+
+        @* RIGHT FORM PANEL — full width on mobile, 2/5 on desktop *@
+        <section class="w-full md:w-2/5 lg:w-1/3 bg-surface-container-low flex flex-col justify-center px-8 py-12 lg:px-16 relative min-h-screen md:min-h-0">
+
+            @* Branding — absolute top on mobile, static on desktop *@
+            <div class="absolute top-8 left-8 md:static md:mb-12">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center neon-glow-primary">
+                        <span class="material-symbols-outlined text-background font-bold" style="font-variation-settings: 'FILL' 1;">sports_kabaddi</span>
+                    </div>
+                    <span class="text-2xl font-black tracking-tighter text-primary uppercase">BanterBot Sports</span>
+                </div>
+            </div>
+
+            @* Mobile hero text (shown only on mobile, base) *@
+            <section class="mt-24 mb-8 text-center md:hidden">
+                <h2 class="text-[3.5rem] leading-none font-black tracking-[-0.04em] text-on-surface uppercase mb-2">
+                    Bienvenido <br/><span class="text-primary">De Vuelta</span>
+                </h2>
+                <p class="text-on-surface-variant font-medium tracking-[0.05em] uppercase text-xs">
+                    Al Colosseum
+                </p>
+            </section>
+
+            @* Form card (glass on mobile, flat on desktop) *@
+            <div class="relative z-10 glass-panel md:bg-transparent md:backdrop-filter-none p-8 md:p-0 rounded-2xl md:rounded-none mt-0 md:mt-12">
+
+                <header class="mb-10 hidden md:block">
+                    <h2 class="text-3xl font-bold text-on-surface mb-2 tracking-tight">Ingresar al Arena</h2>
+                    <p class="text-on-surface-variant">¿Listo para tu próxima predicción ganadora?</p>
+                </header>
+
+                <form asp-action="Login" asp-route-returnUrl="@returnUrl" method="post" class="space-y-6">
+                    <div asp-validation-summary="ModelOnly"
+                         class="p-4 bg-error/10 rounded-xl border-l-4 border-error text-sm text-on-surface"
+                         role="alert"></div>
+
+                    @* Email field *@
+                    <div class="space-y-2">
+                        <label asp-for="Email"
+                               class="text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
+                            Email
+                        </label>
+                        <div class="relative group">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">alternate_email</span>
+                            <input asp-for="Email"
+                                   class="w-full bg-surface-container-highest border-none text-on-surface rounded-xl py-4 pl-12 pr-4 focus:ring-1 focus:ring-primary/40 transition-all placeholder:text-outline/50"
+                                   autocomplete="email"
+                                   placeholder="jugador@arena.com" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-xs text-error ml-1"></span>
+                    </div>
+
+                    @* Password field *@
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center px-1">
+                            <label asp-for="Password"
+                                   class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
+                                Contraseña
+                            </label>
+                            <a asp-controller="Account" asp-action="ForgotPassword"
+                               class="text-xs font-bold text-primary hover:text-primary-container transition-colors">
+                                ¿Olvidaste tu contraseña?
+                            </a>
+                        </div>
+                        <div class="relative group">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">lock</span>
+                            <input asp-for="Password"
+                                   class="w-full bg-surface-container-highest border-none text-on-surface rounded-xl py-4 pl-12 pr-4 focus:ring-1 focus:ring-primary/40 transition-all placeholder:text-outline/50"
+                                   autocomplete="current-password"
+                                   placeholder="••••••••" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-xs text-error ml-1"></span>
+                    </div>
+
+                    @* Remember me *@
+                    <div class="flex items-center gap-3 px-1">
+                        <input asp-for="RememberMe"
+                               class="w-5 h-5 rounded-lg bg-surface-container-highest border-none text-primary focus:ring-primary focus:ring-offset-background" />
+                        <label asp-for="RememberMe" class="text-sm text-on-surface-variant">Recordarme</label>
+                    </div>
+
+                    @* Gradient CTA *@
+                    <button type="submit"
+                            class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary-container font-black py-4 rounded-xl neon-glow-primary hover:shadow-[0_15px_40px_rgba(105,218,255,0.4)] hover:scale-[1.02] active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 uppercase tracking-tighter text-lg">
+                        Entrar al Arena
+                        <span class="material-symbols-outlined">rocket_launch</span>
+                    </button>
+                </form>
+
+                @* Register link *@
+                <div class="mt-10 pt-6 text-center">
+                    <p class="text-on-surface-variant text-sm font-medium">
+                        ¿Nuevo en el banter?
+                        <a asp-action="Register" class="text-secondary font-bold hover:underline ml-1">Registrarse</a>
+                    </p>
+                </div>
+
+            </div>
+
+            @* Small print *@
+            <div class="absolute bottom-8 left-8 right-8 flex justify-between items-center opacity-30 text-[10px] uppercase tracking-[0.2em] font-black hidden md:flex">
+                <span>© 2026 BanterBot Sports</span>
+                <span>Estado: Online</span>
+            </div>
+        </section>
+    </main>
+
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
-}
+</body>
+</html>

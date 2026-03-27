@@ -1,49 +1,203 @@
 @model BanterBotSports.Entities.ViewModels.RegisterViewModel
 @{
+    Layout = null;
     ViewData["Title"] = "Registrarse";
 }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BanterBot Sports</title>
+    @await Html.PartialAsync("_TailwindHead")
+    <style>
+        .stadium-glow { box-shadow: 0 0 60px -15px rgba(105, 218, 255, 0.2); }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col overflow-x-hidden">
 
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <h2 class="mb-4">Crear cuenta</h2>
-
-        <form asp-action="Register" method="post">
-            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
-
-            <div class="mb-3">
-                <label asp-for="NombreDisplay" class="form-label">Nombre</label>
-                <input asp-for="NombreDisplay" class="form-control" autocomplete="name" />
-                <span asp-validation-for="NombreDisplay" class="text-danger small"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label">Email</label>
-                <input asp-for="Email" class="form-control" autocomplete="email" />
-                <span asp-validation-for="Email" class="text-danger small"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Password" class="form-label">Contraseña</label>
-                <input asp-for="Password" class="form-control" autocomplete="new-password" />
-                <span asp-validation-for="Password" class="text-danger small"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="ConfirmPassword" class="form-label">Confirmar contraseña</label>
-                <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100">Crear cuenta</button>
-        </form>
-
-        <hr />
-        <p class="text-center mb-0">
-            ¿Ya tenés cuenta? <a asp-action="Login">Ingresar</a>
-        </p>
+    @* Ambient glows *@
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-secondary/5 rounded-full blur-[100px]"></div>
     </div>
-</div>
 
-@section Scripts {
+    @* Mobile header *@
+    <header class="relative z-10 bg-background flex items-center justify-between px-6 py-4 w-full md:hidden">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-2xl">sports_kabaddi</span>
+            <span class="font-black tracking-tighter uppercase text-2xl italic text-primary">BANTERBOT</span>
+        </div>
+    </header>
+
+    <main class="relative z-10 flex-grow flex items-stretch min-h-screen md:min-h-0">
+
+        @* LEFT VALUE PROP (desktop only, lg+) *@
+        <section class="hidden lg:flex w-7/12 relative overflow-hidden flex-col justify-center px-20 bg-gradient-to-br from-surface-container-low via-background to-background">
+            @* Decorative elements *@
+            <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]"></div>
+            <div class="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px]"></div>
+
+            <div class="relative z-10">
+                <div class="mb-6 inline-flex items-center px-3 py-1 rounded-full bg-surface-container-high">
+                    <span class="material-symbols-outlined text-secondary text-sm mr-2" style="font-variation-settings: 'FILL' 1;">stars</span>
+                    <span class="text-xs font-bold tracking-[0.1em] text-on-surface uppercase">Únete a la Élite</span>
+                </div>
+                <h1 class="text-[4rem] font-black leading-none tracking-tight mb-12 text-on-surface">
+                    Comenzá tu <span class="text-primary italic">Legado</span> Hoy
+                </h1>
+                <div class="space-y-10 max-w-xl">
+                    <div class="flex items-start gap-6 group">
+                        <div class="mt-1 w-14 h-14 rounded-xl bg-surface-container-highest flex items-center justify-center neon-glow-primary transition-transform group-hover:scale-110 duration-300">
+                            <span class="material-symbols-outlined text-primary text-3xl">trophy</span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-on-surface mb-2">Participá en Torneos</h3>
+                            <p class="text-on-surface-variant leading-relaxed">Entrá a arenas de alto impacto y competí contra los mejores predictores del mundo en tiempo real.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-6 group">
+                        <div class="mt-1 w-14 h-14 rounded-xl bg-surface-container-highest flex items-center justify-center neon-glow-secondary transition-transform group-hover:scale-110 duration-300">
+                            <span class="material-symbols-outlined text-secondary text-3xl">smart_toy</span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-on-surface mb-2">Banter con IA</h3>
+                            <p class="text-on-surface-variant leading-relaxed">Interactuá con BanterBot, tu asistente de IA. Análisis en tiempo real, humor, y predicciones con precisión neural.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-6 group">
+                        <div class="mt-1 w-14 h-14 rounded-xl bg-surface-container-highest flex items-center justify-center transition-transform group-hover:scale-110 duration-300">
+                            <span class="material-symbols-outlined text-tertiary text-3xl">payments</span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-on-surface mb-2">Ganá Premios Reales</h3>
+                            <p class="text-on-surface-variant leading-relaxed">Escalá el marcador para desbloquear grandes premios, beneficios exclusivos y gloria permanente en el Colosseum.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        @* RIGHT REGISTRATION FORM — full width on mobile, 5/12 on lg *@
+        <section class="w-full lg:w-5/12 bg-surface-container-low flex items-center justify-center p-8 lg:p-16 relative">
+
+            @* Decorative glow *@
+            <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[80px] pointer-events-none"></div>
+
+            <div class="w-full max-w-md relative z-10">
+
+                @* Logo (shown on non-lg) *@
+                <div class="lg:hidden mb-8 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center neon-glow-primary">
+                        <span class="material-symbols-outlined text-background" style="font-variation-settings: 'FILL' 1;">sports_kabaddi</span>
+                    </div>
+                    <span class="text-2xl font-black tracking-tighter text-primary uppercase">BanterBot Sports</span>
+                </div>
+
+                @* Mobile hero *@
+                <section class="mb-8 text-center lg:hidden">
+                    <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-64 h-64 bg-primary/10 rounded-full blur-[80px] -z-10"></div>
+                    <h1 class="font-headline text-[3rem] font-black leading-[0.9] tracking-tighter mb-3 italic">
+                        ENTRÁ AL <span class="text-secondary block">ARENA</span>
+                    </h1>
+                    <p class="text-on-surface-variant text-base font-medium leading-tight max-w-sm mx-auto">
+                        Dejá de mirar desde afuera. Banter con IA, predecí con ventaja, reclamá la gloria.
+                    </p>
+                </section>
+
+                @* Value prop bento (mobile only) *@
+                <div class="grid grid-cols-2 gap-4 mb-8 lg:hidden">
+                    <div class="bg-surface-container-high p-4 rounded-xl stadium-glow">
+                        <span class="material-symbols-outlined text-primary mb-2">redeem</span>
+                        <h3 class="font-bold text-sm uppercase tracking-wider mb-1">Ganá Premios</h3>
+                        <p class="text-xs text-on-surface-variant">Convertí el banter en recompensas reales.</p>
+                    </div>
+                    <div class="bg-surface-container-high p-4 rounded-xl stadium-glow">
+                        <span class="material-symbols-outlined text-secondary mb-2">smart_toy</span>
+                        <h3 class="font-bold text-sm uppercase tracking-wider mb-1">Banter con IA</h3>
+                        <p class="text-xs text-on-surface-variant">Desafiá a los bots en el pit de trash-talk.</p>
+                    </div>
+                </div>
+
+                <header class="mb-10 text-center lg:text-left">
+                    <h2 class="text-3xl font-bold text-on-surface mb-2">Crear cuenta</h2>
+                    <p class="text-on-surface-variant">Comenzá tu aventura en el Colosseum.</p>
+                </header>
+
+                <form asp-action="Register" method="post" class="space-y-6">
+                    <div asp-validation-summary="ModelOnly"
+                         class="p-4 bg-error/10 rounded-xl border-l-4 border-error text-sm text-on-surface"
+                         role="alert"></div>
+
+                    @* Nombre de display *@
+                    <div class="space-y-2">
+                        <label asp-for="NombreDisplay"
+                               class="text-xs font-bold uppercase tracking-widest text-on-surface-variant px-1">
+                            Nombre de jugador
+                        </label>
+                        <input asp-for="NombreDisplay"
+                               class="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline-variant/60 transition-all"
+                               autocomplete="name"
+                               placeholder="El Gladiador" />
+                        <span asp-validation-for="NombreDisplay" class="text-xs text-error ml-1"></span>
+                    </div>
+
+                    @* Email *@
+                    <div class="space-y-2">
+                        <label asp-for="Email"
+                               class="text-xs font-bold uppercase tracking-widest text-on-surface-variant px-1">
+                            Email
+                        </label>
+                        <input asp-for="Email"
+                               class="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline-variant/60 transition-all"
+                               autocomplete="email"
+                               placeholder="campeon@banterbot.ai" />
+                        <span asp-validation-for="Email" class="text-xs text-error ml-1"></span>
+                    </div>
+
+                    @* Password *@
+                    <div class="space-y-2">
+                        <label asp-for="Password"
+                               class="text-xs font-bold uppercase tracking-widest text-on-surface-variant px-1">
+                            Contraseña
+                        </label>
+                        <input asp-for="Password"
+                               class="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline-variant/60 transition-all"
+                               autocomplete="new-password"
+                               placeholder="••••••••" />
+                        <span asp-validation-for="Password" class="text-xs text-error ml-1"></span>
+                    </div>
+
+                    @* Confirm Password *@
+                    <div class="space-y-2">
+                        <label asp-for="ConfirmPassword"
+                               class="text-xs font-bold uppercase tracking-widest text-on-surface-variant px-1">
+                            Confirmar contraseña
+                        </label>
+                        <input asp-for="ConfirmPassword"
+                               class="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline-variant/60 transition-all"
+                               autocomplete="new-password"
+                               placeholder="••••••••" />
+                        <span asp-validation-for="ConfirmPassword" class="text-xs text-error ml-1"></span>
+                    </div>
+
+                    @* Gradient CTA *@
+                    <button type="submit"
+                            class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-black py-4 rounded-xl uppercase tracking-tighter text-lg shadow-[0_10px_30px_-10px_rgba(105,218,255,0.4)] hover:scale-[1.02] active:scale-95 transition-all duration-200">
+                        Reclamar mi Lugar
+                    </button>
+                </form>
+
+                <footer class="mt-10 text-center">
+                    <p class="text-on-surface-variant text-sm">
+                        ¿Ya tenés cuenta?
+                        <a asp-action="Login" class="text-primary font-bold hover:underline ml-1">Ingresar</a>
+                    </p>
+                </footer>
+            </div>
+        </section>
+    </main>
+
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
-}
+</body>
+</html>
