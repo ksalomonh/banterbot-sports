@@ -95,8 +95,12 @@ else
                             </td>
                             <td class="px-6 py-5">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-[#1e253b] flex items-center justify-center text-[10px] font-black text-[#a6aabf] uppercase">
-                                        @(entry.NombreDisplay.Length >= 2 ? entry.NombreDisplay.Substring(0, 2).ToUpper() : entry.NombreDisplay.ToUpper())
+                                    <div class="w-8 h-8 rounded-full bg-[#1e253b] overflow-hidden flex items-center justify-center text-[10px] font-black text-[#a6aabf] uppercase">
+                                        <img src="~/images/avatar-default.png"
+                                             class="w-full h-full object-cover"
+                                             alt="Avatar"
+                                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                        <span style="display:none">@(entry.NombreDisplay.Length >= 2 ? entry.NombreDisplay.Substring(0, 2).ToUpper() : entry.NombreDisplay.ToUpper())</span>
                                     </div>
                                     <span class="font-bold text-[#e1e4fa]">@entry.NombreDisplay</span>
                                 </div>
@@ -134,8 +138,12 @@ else
                     var p2 = top3[1];
                     <div class="col-span-4 mt-8">
                         <div class="bg-[#0d1323] rounded-3xl p-4 flex flex-col items-center">
-                            <div class="w-12 h-12 rounded-full bg-[#1e253b] flex items-center justify-center font-black text-[#a6aabf] uppercase mb-2">
-                                @(p2.NombreDisplay.Length >= 2 ? p2.NombreDisplay.Substring(0, 2).ToUpper() : p2.NombreDisplay.ToUpper())
+                            <div class="w-12 h-12 rounded-full bg-[#1e253b] overflow-hidden flex items-center justify-center font-black text-[#a6aabf] uppercase mb-2">
+                                <img src="~/images/avatar-default.png"
+                                     class="w-full h-full object-cover"
+                                     alt="Avatar"
+                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span style="display:none">@(p2.NombreDisplay.Length >= 2 ? p2.NombreDisplay.Substring(0, 2).ToUpper() : p2.NombreDisplay.ToUpper())</span>
                             </div>
                             <div class="text-slate-400 font-black italic text-xl">#2</div>
                             <div class="text-[10px] font-bold text-[#e1e4fa] truncate w-full text-center">@p2.NombreDisplay</div>
@@ -154,8 +162,12 @@ else
                 }
                 <div class="col-span-4">
                     <div class="bg-[#181f33] rounded-3xl p-5 flex flex-col items-center shadow-[0_0_30px_rgba(105,218,255,0.15)]">
-                        <div class="w-16 h-16 rounded-full bg-[#69daff]/20 flex items-center justify-center font-black text-[#69daff] text-lg uppercase mb-2 border-2 border-[#69daff]/30">
-                            @(p1.NombreDisplay.Length >= 2 ? p1.NombreDisplay.Substring(0, 2).ToUpper() : p1.NombreDisplay.ToUpper())
+                        <div class="w-16 h-16 rounded-full bg-[#69daff]/20 overflow-hidden flex items-center justify-center font-black text-[#69daff] text-lg uppercase mb-2 border-2 border-[#69daff]/30">
+                            <img src="~/images/avatar-default.png"
+                                 class="w-full h-full object-cover"
+                                 alt="Avatar"
+                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                            <span style="display:none">@(p1.NombreDisplay.Length >= 2 ? p1.NombreDisplay.Substring(0, 2).ToUpper() : p1.NombreDisplay.ToUpper())</span>
                         </div>
                         <span class="material-symbols-outlined text-[#2ff801] text-2xl mb-1" style="font-variation-settings: 'FILL' 1;">military_tech</span>
                         <div class="text-[#69daff] font-black italic text-2xl">#1</div>
@@ -170,8 +182,12 @@ else
                     var p3 = top3[2];
                     <div class="col-span-4 mt-12">
                         <div class="bg-[#0d1323] rounded-3xl p-4 flex flex-col items-center">
-                            <div class="w-12 h-12 rounded-full bg-[#1e253b] flex items-center justify-center font-black text-[#a6aabf] uppercase mb-2">
-                                @(p3.NombreDisplay.Length >= 2 ? p3.NombreDisplay.Substring(0, 2).ToUpper() : p3.NombreDisplay.ToUpper())
+                            <div class="w-12 h-12 rounded-full bg-[#1e253b] overflow-hidden flex items-center justify-center font-black text-[#a6aabf] uppercase mb-2">
+                                <img src="~/images/avatar-default.png"
+                                     class="w-full h-full object-cover"
+                                     alt="Avatar"
+                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span style="display:none">@(p3.NombreDisplay.Length >= 2 ? p3.NombreDisplay.Substring(0, 2).ToUpper() : p3.NombreDisplay.ToUpper())</span>
                             </div>
                             <div class="text-orange-500 font-black italic text-xl">#3</div>
                             <div class="text-[10px] font-bold text-[#e1e4fa] truncate w-full text-center">@p3.NombreDisplay</div>
@@ -198,8 +214,12 @@ else
                     <div class="@cardBg px-4 py-3 flex items-center justify-between transition-all active:scale-[0.98]">
                         <div class="flex items-center gap-4">
                             <span class="text-[#a6aabf] font-black italic w-6 text-center">@entry.Posicion</span>
-                            <div class="w-10 h-10 rounded-full bg-[#1e253b] flex items-center justify-center text-[10px] font-black text-[#a6aabf] uppercase">
-                                @(entry.NombreDisplay.Length >= 2 ? entry.NombreDisplay.Substring(0, 2).ToUpper() : entry.NombreDisplay.ToUpper())
+                            <div class="w-10 h-10 rounded-full bg-[#1e253b] overflow-hidden flex items-center justify-center text-[10px] font-black text-[#a6aabf] uppercase">
+                                <img src="~/images/avatar-default.png"
+                                     class="w-full h-full object-cover"
+                                     alt="Avatar"
+                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span style="display:none">@(entry.NombreDisplay.Length >= 2 ? entry.NombreDisplay.Substring(0, 2).ToUpper() : entry.NombreDisplay.ToUpper())</span>
                             </div>
                             <div>
                                 <div class="text-sm font-bold text-[#e1e4fa]">@entry.NombreDisplay</div>

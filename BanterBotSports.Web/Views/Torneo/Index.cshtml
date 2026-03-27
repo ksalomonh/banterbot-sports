@@ -46,7 +46,12 @@
         <!-- Desktop: decorative stadium block -->
         <div class="hidden md:flex justify-end">
             <div class="w-full max-w-xs aspect-video rounded-2xl bg-[#181f33] flex items-center justify-center overflow-hidden relative">
-                <span class="material-symbols-outlined text-[#69daff]/20" style="font-size: 10rem;">stadium</span>
+                <img src="~/images/tournament-banner-default.jpg"
+                     class="w-full h-full object-cover"
+                     loading="lazy"
+                     alt="Stadium"
+                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <span class="material-symbols-outlined text-[#69daff]/20" style="font-size: 10rem;display:none">stadium</span>
                 <div class="absolute inset-0 bg-gradient-to-t from-[#090e1c]/80 to-transparent"></div>
             </div>
         </div>
