@@ -122,17 +122,18 @@
                     var labelColor = isOpen ? "text-[#2ff801]" : "text-[#a6aabf]";
                     var stateText = isOpen ? "Abierta" : isClosed ? "Cerrada" : isFinished ? "Finalizada" : "Pendiente";
 
-                    <a asp-controller="Jornada" asp-action="Detalle" asp-route-id="@jornada.Id" class="@tileClass">
+                    <div class="@tileClass" onclick="window.location='@Url.Action("Detalle", "Jornada", new { id = jornada.Id })'" role="link" style="cursor:pointer">
                         <span class="text-[10px] font-bold @labelColor uppercase tracking-widest">Jornada @jornada.Numero</span>
                         <span class="text-xs font-black uppercase text-[#e1e4fa]">@stateText</span>
                         @if (isOpen)
                         {
                             <a asp-controller="Prediccion" asp-action="Form" asp-route-jornadaId="@jornada.Id"
+                               onclick="event.stopPropagation()"
                                class="mt-2 px-3 py-1 bg-gradient-to-r from-[#69daff] to-[#00cffc] text-[#004050] rounded-lg text-[10px] font-black uppercase">
                                 Predecir
                             </a>
                         }
-                    </a>
+                    </div>
                 }
             </div>
         </section>

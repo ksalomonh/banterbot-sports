@@ -1,5 +1,6 @@
 using BanterBotSports.DAL;
 using BanterBotSports.Entities.ViewModels;
+using BanterBotSports.Web.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -118,6 +119,18 @@ public class AccountController : Controller
     [HttpGet]
     [AllowAnonymous]
     public IActionResult ForgotPassword() => View();
+
+    // POST /Account/ForgotPassword
+    [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    public IActionResult ForgotPassword(string email)
+    {
+        // Email delivery is out of scope for this cycle.
+        // We show a confirmation regardless of whether the email exists (security best practice).
+        TempData[TempDataKeys.Success] = "Si existe una cuenta con ese email, recibirás instrucciones en breve.";
+        return RedirectToAction(nameof(ForgotPassword));
+    }
 
     // GET /Account/AccessDenied
     [HttpGet]

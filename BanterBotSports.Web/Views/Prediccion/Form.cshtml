@@ -135,7 +135,8 @@
             @foreach (var partido in Model.Partidos.OrderBy(p => p.KickOffUtc))
             {
                 var pred = existingPredictions.GetValueOrDefault(partido.Id);
-                <div class="relative bg-surface-container-high rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 card-finished">
+                var tieneResultado = partido.GolesEquipo1Oficial.HasValue;
+                <div class="relative bg-surface-container-high rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 @(tieneResultado ? "card-finished" : "card-locked")">
                     <div class="absolute top-4 left-6 flex items-center gap-2">
                         <span class="material-symbols-outlined text-sm text-on-surface/40">check_circle</span>
                         <span class="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface/40">Cerrado</span>
@@ -239,12 +240,12 @@
                             <div class="flex items-center gap-4">
                                 <input type="number"
                                        name="predicciones[@partido.Id][0]"
-                                       class="goles-input w-16 h-20 bg-surface-container-lowest text-4xl font-black text-center text-on-surface rounded-2xl border-2 border-transparent focus:border-primary/50 focus:ring-0 transition-all outline-none"
+                                       class="goles-input w-16 h-20 bg-surface-low text-4xl font-black text-center text-on-surface rounded-2xl border-2 border-transparent focus:border-primary/50 focus:ring-0 transition-all outline-none"
                                        value="@(pred?.GolesEquipo1 ?? 0)" maxlength="2" min="0" max="20" required />
                                 <span class="text-2xl font-black text-outline/30">:</span>
                                 <input type="number"
                                        name="predicciones[@partido.Id][1]"
-                                       class="goles-input w-16 h-20 bg-surface-container-lowest text-4xl font-black text-center text-on-surface rounded-2xl border-2 border-transparent focus:border-primary/50 focus:ring-0 transition-all outline-none"
+                                       class="goles-input w-16 h-20 bg-surface-low text-4xl font-black text-center text-on-surface rounded-2xl border-2 border-transparent focus:border-primary/50 focus:ring-0 transition-all outline-none"
                                        value="@(pred?.GolesEquipo2 ?? 0)" maxlength="2" min="0" max="20" required />
                             </div>
                             <!-- Team B -->

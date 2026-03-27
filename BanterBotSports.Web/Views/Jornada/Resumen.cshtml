@@ -30,7 +30,7 @@
     {
         ResultadoPrediccion.Exacto           => "bg-secondary text-on-secondary",
         ResultadoPrediccion.ResultadoCorrecto => "bg-primary/20 text-primary",
-        _                                     => "bg-surface-variant text-on-surface-variant"
+        _                                     => "bg-surface-high text-on-surface/60"
     };
 
     static string BadgeText(ResultadoPrediccion r) => r switch
@@ -72,7 +72,7 @@
             <span class="bg-secondary text-on-secondary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest neon-glow-secondary">
                 Jornada @Model.JornadaNumero Finalizada
             </span>
-            <h1 class="text-4xl md:text-6xl font-black italic tracking-tighter text-on-background uppercase">
+            <h1 class="text-4xl md:text-6xl font-black italic tracking-tighter text-on-surface uppercase">
                 Recap <span class="text-primary">Jornada</span>
             </h1>
         </div>
