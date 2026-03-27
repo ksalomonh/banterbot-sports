@@ -67,11 +67,13 @@ public class JornadaAbiertaNotifierIntegrationTests : IAsyncLifetime
 
         var jornadaRepo = new JornadaRepository(_context);
         var partidoRepo = new PartidoRepository(_context);
+        var participanteRepo = new ParticipanteRepository(_context);
         var uow = new UnitOfWork(_context);
 
         _jornadaService = new JornadaService(
             jornadaRepo,
             partidoRepo,
+            participanteRepo,
             uow,
             NullLogger<JornadaService>.Instance);
 

@@ -246,7 +246,7 @@ public class TorneoControllerTests
             OrganizadorId = "other-user",
             Participantes = new List<Participante>
             {
-                new Participante { Id = 99, UserId = "other-user", NombreDisplay = "OtherUser" }
+                new Participante { Id = 99, UserId = "other-user" }
             }
         };
 
