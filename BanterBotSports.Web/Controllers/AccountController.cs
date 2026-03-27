@@ -123,4 +123,23 @@ public class AccountController : Controller
     [HttpGet]
     [AllowAnonymous]
     public IActionResult AccessDenied() => View();
+
+    // GET /Account/Profile
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> Profile()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user is null)
+            return NotFound();
+
+        var vm = new ProfileViewModel
+        {
+            NombreDisplay = user.NombreDisplay,
+            Email         = user.Email,
+            TelegramChatId = user.PhoneNumber
+        };
+
+        return View(vm);
+    }
 }
