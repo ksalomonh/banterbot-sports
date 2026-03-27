@@ -25,7 +25,7 @@
     @* Mobile header *@
     <header class="relative z-10 bg-background flex items-center justify-between px-6 py-4 w-full md:hidden">
         <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary text-2xl">sports_kabaddi</span>
+            <img src="~/images/logo-icon.png" alt="BanterBot Sports" class="w-10 h-10 rounded-lg" onerror="this.style.display='none'">
             <span class="font-black tracking-tighter uppercase text-2xl italic text-primary">BANTERBOT</span>
         </div>
     </header>
@@ -34,6 +34,8 @@
 
         @* LEFT VALUE PROP (desktop only, lg+) *@
         <section class="hidden lg:flex w-7/12 relative overflow-hidden flex-col justify-center px-20 bg-gradient-to-br from-surface-container-low via-background to-background">
+            @* Stadium background *@
+            <img src="~/images/stadium-hero.jpg" alt="" class="absolute inset-0 w-full h-full object-cover" loading="eager" onerror="this.style.display='none'">
             @* Decorative elements *@
             <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]"></div>
             <div class="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px]"></div>
@@ -89,7 +91,7 @@
                 @* Logo (shown on non-lg) *@
                 <div class="lg:hidden mb-8 flex items-center gap-3">
                     <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center neon-glow-primary">
-                        <span class="material-symbols-outlined text-background" style="font-variation-settings: 'FILL' 1;">sports_kabaddi</span>
+                        <img src="~/images/logo-icon.png" alt="BanterBot Sports" class="w-8 h-8 rounded-lg" onerror="this.style.display='none'">
                     </div>
                     <span class="text-2xl font-black tracking-tighter text-primary uppercase">BanterBot Sports</span>
                 </div>
