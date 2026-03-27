@@ -1,8 +1,175 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "BanterBot Sports — El Coliseo Digital";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@section Styles {
+<style>
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .hero-glow {
+        box-shadow: 0 0 80px rgba(105, 218, 255, 0.12);
+    }
+    .cta-glow {
+        box-shadow: 0 10px 30px rgba(0, 207, 252, 0.4);
+    }
+    .feature-card:hover {
+        transform: translateY(-2px);
+    }
+    .animate-pulse-slow {
+        animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+</style>
+}
+
+<main class="pt-4 pb-24 md:pb-12">
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden min-h-[80vh] md:min-h-[70vh] flex flex-col items-center justify-center text-center px-4 py-16 md:py-24">
+        <!-- Background glow orbs -->
+        <div class="absolute top-0 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-secondary/5 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Status badge -->
+        <div class="relative z-10 mb-6">
+            <span class="flex items-center gap-2 px-4 py-2 bg-secondary/10 text-secondary border border-secondary/20 rounded-full text-xs font-black uppercase tracking-widest">
+                <span class="w-2 h-2 rounded-full bg-secondary animate-pulse-slow"></span>
+                Live Arena Activa
+            </span>
+        </div>
+
+        <!-- Headline -->
+        <div class="relative z-10 space-y-4 max-w-4xl mx-auto">
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-on-surface uppercase leading-none">
+                El Coliseo<br/>
+                <span class="text-primary">Digital</span>
+            </h1>
+            <p class="text-on-surface-variant text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+                Predice, compite y domina a tus amigos en el torneo de pronósticos más épico.
+                <span class="text-primary font-bold">Vía Telegram o Web.</span>
+            </p>
+        </div>
+
+        <!-- CTA Buttons -->
+        <div class="relative z-10 flex flex-col sm:flex-row gap-4 mt-10">
+            <a asp-controller="Account" asp-action="Register"
+               class="flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary-container rounded-full font-black text-sm uppercase tracking-widest cta-glow hover:scale-105 active:scale-95 transition-all">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">sports_soccer</span>
+                Crear Cuenta
+            </a>
+            <a asp-controller="Account" asp-action="Login"
+               class="flex items-center justify-center gap-3 px-8 py-4 bg-surface-container-high text-on-surface rounded-full font-bold text-sm uppercase tracking-widest hover:bg-surface-bright hover:text-primary transition-all border border-outline-variant/20">
+                <span class="material-symbols-outlined text-primary">login</span>
+                Iniciar Sesión
+            </a>
+        </div>
+
+        <!-- Social proof -->
+        <div class="relative z-10 mt-12 flex items-center gap-6 text-on-surface-variant">
+            <div class="flex -space-x-2">
+                @for (int i = 0; i < 5; i++)
+                {
+                    <div class="w-9 h-9 rounded-full bg-surface-container-high border-2 border-background flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary text-sm">person</span>
+                    </div>
+                }
+            </div>
+            <p class="text-sm font-bold">
+                <span class="text-on-surface">+500 jugadores</span> ya compiten
+            </p>
+        </div>
+    </section>
+
+    <!-- Features Section: Bento asymmetric grid -->
+    <section class="px-4 pb-16 md:px-6">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-black tracking-tighter text-on-surface uppercase text-center mb-12">
+                Por qué <span class="text-primary">BanterBot</span>
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
+                <!-- Feature 1: Large card (7 cols desktop) -->
+                <div class="feature-card md:col-span-7 bg-surface-container-low rounded-3xl p-8 space-y-4 transition-all duration-300">
+                    <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary text-2xl">sports_kabaddi</span>
+                    </div>
+                    <h3 class="text-2xl font-black tracking-tight uppercase">Torneos Privados</h3>
+                    <p class="text-on-surface-variant leading-relaxed">
+                        Crea tu propia liga con amigos, configura el sistema de puntos, las jornadas y los premios.
+                        Todo en minutos.
+                    </p>
+                    <div class="flex flex-wrap gap-2 pt-2">
+                        <span class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full uppercase">Configurable</span>
+                        <span class="px-3 py-1 bg-secondary/10 text-secondary text-xs font-bold rounded-full uppercase">Tiempo Real</span>
+                    </div>
+                </div>
+
+                <!-- Feature 2: Smaller card (5 cols desktop) -->
+                <div class="feature-card md:col-span-5 bg-surface-container-low rounded-3xl p-8 space-y-4 transition-all duration-300 relative overflow-hidden">
+                    <div class="absolute -right-6 -top-6 opacity-5">
+                        <span class="material-symbols-outlined text-[160px] text-secondary">send</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-secondary text-2xl">send</span>
+                    </div>
+                    <h3 class="text-2xl font-black tracking-tight uppercase">Via Telegram</h3>
+                    <p class="text-on-surface-variant leading-relaxed">
+                        Ingresa predicciones directamente desde el chat. El bot procesa lenguaje natural.
+                    </p>
+                </div>
+
+                <!-- Feature 3: (5 cols desktop) -->
+                <div class="feature-card md:col-span-5 bg-surface-container-low rounded-3xl p-8 space-y-4 transition-all duration-300">
+                    <div class="w-12 h-12 rounded-2xl bg-tertiary/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-tertiary text-2xl">leaderboard</span>
+                    </div>
+                    <h3 class="text-2xl font-black tracking-tight uppercase">Ranking en Vivo</h3>
+                    <p class="text-on-surface-variant leading-relaxed">
+                        Sigue el ranking actualizado después de cada partido. Ve quién dominó la jornada.
+                    </p>
+                </div>
+
+                <!-- Feature 4: (7 cols desktop) — Banter Rail highlight -->
+                <div class="feature-card md:col-span-7 bg-surface-container-low rounded-3xl p-8 space-y-4 transition-all duration-300 relative overflow-hidden">
+                    <div class="absolute right-0 bottom-0 opacity-5 pointer-events-none">
+                        <span class="material-symbols-outlined text-[200px] text-primary">psychology</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center">
+                        <span class="material-symbols-outlined text-on-primary-container text-2xl" style="font-variation-settings: 'FILL' 1;">psychology</span>
+                    </div>
+                    <h3 class="text-2xl font-black tracking-tight uppercase">Banter Rail IA</h3>
+                    <p class="text-on-surface-variant leading-relaxed">
+                        El canal de banter con comentarios generados por IA en tiempo real.
+                        Celebra victorias, llora derrotas — todo con estilo en el Neon Colosseum.
+                    </p>
+                    <div class="flex gap-2">
+                        <span class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full uppercase">IA Generativa</span>
+                        <span class="px-3 py-1 bg-surface-bright text-on-surface text-xs font-bold rounded-full uppercase">Live</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="px-4 pb-8 md:px-6">
+        <div class="max-w-3xl mx-auto bg-surface-container-low rounded-3xl p-8 md:p-12 text-center space-y-6">
+            <h2 class="text-3xl md:text-4xl font-black tracking-tighter text-on-surface uppercase">
+                ¿Listo para entrar al <span class="text-primary">Coliseo</span>?
+            </h2>
+            <p class="text-on-surface-variant">
+                Crea tu cuenta gratis y empieza a predecir hoy mismo.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a asp-controller="Account" asp-action="Register"
+                   class="flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary-container rounded-full font-black text-sm uppercase tracking-widest cta-glow hover:scale-105 active:scale-95 transition-all">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person_add</span>
+                    Registro Gratuito
+                </a>
+                <a asp-controller="Account" asp-action="Login"
+                   class="flex items-center justify-center gap-3 px-8 py-4 bg-surface-container-high text-on-surface rounded-full font-bold text-sm uppercase tracking-widest hover:bg-surface-bright transition-all">
+                    Ya tengo cuenta
+                </a>
+            </div>
+        </div>
+    </section>
+</main>

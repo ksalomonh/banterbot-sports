@@ -8,6 +8,11 @@ public class HomeController : Controller
 {
     public IActionResult Index()
     {
+        // Authenticated users go directly to the tournament list
+        if (User.Identity?.IsAuthenticated == true)
+            return RedirectToAction("Index", "Torneo");
+
+        // Anonymous users see the branded landing page
         return View();
     }
 
