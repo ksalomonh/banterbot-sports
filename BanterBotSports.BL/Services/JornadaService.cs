@@ -161,6 +161,10 @@ public class JornadaService : IJornadaService
                     var pred = partido.PrediccionesPartido
                         .FirstOrDefault(pp => pp.ParticipanteId == participante.Id);
 
+                    var resultado = PrediccionClassifier.Clasificar(
+                        pred?.GolesEquipo1, pred?.GolesEquipo2,
+                        partido.GolesEquipo1Oficial, partido.GolesEquipo2Oficial);
+
                     return new PrediccionConResultado(
                         PartidoId: partido.Id,
                         Equipo1: partido.Equipo1,
@@ -169,7 +173,10 @@ public class JornadaService : IJornadaService
                         GolesEquipo2Oficial: partido.GolesEquipo2Oficial,
                         GolesPredichos1: pred?.GolesEquipo1,
                         GolesPredichos2: pred?.GolesEquipo2,
-                        PuntosObtenidos: pred?.PuntosObtenidos);
+                        PuntosObtenidos: pred?.PuntosObtenidos,
+                        Resultado: resultado,
+                        LogoUrlLocal: partido.LogoUrlLocal,
+                        LogoUrlVisitante: partido.LogoUrlVisitante);
                 }).ToList();
 
                 var nombreDisplay = displayNames.GetValueOrDefault(participante.UserId, participante.UserId);
@@ -195,4 +202,5 @@ public class JornadaService : IJornadaService
         return await _jornadaRepository.GetByIdAsync(jornadaId)
             ?? throw new InvalidOperationException($"Jornada {jornadaId} no encontrada.");
     }
+
 }

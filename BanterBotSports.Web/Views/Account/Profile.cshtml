@@ -26,8 +26,12 @@
             <!-- Avatar placeholder -->
             <div class="relative">
                 <div class="absolute -inset-1 bg-gradient-to-tr from-primary to-secondary rounded-full blur opacity-20"></div>
-                <div class="relative w-24 h-24 md:w-32 md:h-32 rounded-full bg-surface-container-high border-2 border-primary/30 flex items-center justify-center shadow-[0_0_40px_rgba(105,218,255,0.08)]">
-                    <span class="material-symbols-outlined text-5xl md:text-6xl text-on-surface-variant">account_circle</span>
+                <div class="relative w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-surface-container-high border-2 border-primary/30 flex items-center justify-center shadow-[0_0_40px_rgba(105,218,255,0.08)]">
+                    <img src="~/images/avatar-default.png"
+                         class="w-full h-full object-cover"
+                         alt="Avatar"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                    <span class="material-symbols-outlined text-5xl md:text-6xl text-on-surface-variant" style="display:none">account_circle</span>
                 </div>
             </div>
             <!-- Name & email -->

@@ -106,16 +106,6 @@
     {
         <div asp-validation-summary="All" class="mb-6 p-4 bg-error/10 border border-error/20 rounded-2xl text-error text-sm"
              style="display:@(ViewContext.ViewData.ModelState.IsValid ? "none" : "block")"></div>
-
-        @* Total goals tie-breaker card (mobile — visible on mobile, md hidden handled via form toggle) *@
-        <div class="mb-6 bg-surface-container-low rounded-xl p-5 flex items-center justify-between md:hidden" style="border-left: 4px solid #2ff801;">
-            <div class="flex flex-col">
-                <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Desempate — Total Goles</span>
-                <span class="text-sm font-bold text-on-surface">Pronóstico total de goles</span>
-            </div>
-            <input id="mobile-total-goles" type="number" min="0" max="99" placeholder="00"
-                   class="w-20 bg-surface-container-high border-none rounded-xl text-center font-black text-2xl text-secondary focus:ring-2 focus:ring-secondary/50 py-2" />
-        </div>
     }
 
     @if (isLocked)
@@ -143,9 +133,7 @@
                     </div>
                     <div class="flex-1 flex items-center justify-center gap-6 md:gap-12 w-full mt-4 md:mt-0">
                         <div class="flex flex-col items-center gap-2 text-center flex-1">
-                            <div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-surface-container-low flex items-center justify-center">
-                                <span class="material-symbols-outlined text-on-surface-variant text-2xl">shield</span>
-                            </div>
+                            @await Html.PartialAsync("_TeamLogo", (partido.LogoUrlLocal, partido.Equipo1, "w-16 h-16 md:w-20 md:h-20"))
                             <h3 class="text-sm md:text-lg font-black uppercase tracking-tight">@partido.Equipo1</h3>
                         </div>
                         <div class="flex items-center gap-3">
@@ -158,9 +146,7 @@
                             </div>
                         </div>
                         <div class="flex flex-col items-center gap-2 text-center flex-1">
-                            <div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-surface-container-low flex items-center justify-center">
-                                <span class="material-symbols-outlined text-on-surface-variant text-2xl">shield</span>
-                            </div>
+                            @await Html.PartialAsync("_TeamLogo", (partido.LogoUrlVisitante, partido.Equipo2, "w-16 h-16 md:w-20 md:h-20"))
                             <h3 class="text-sm md:text-lg font-black uppercase tracking-tight">@partido.Equipo2</h3>
                         </div>
                     </div>
@@ -183,6 +169,15 @@
     {
         <!-- Editable prediction form -->
         <form asp-action="Form" asp-route-jornadaId="@Model.Id" method="post" id="predictions-form">
+            @* Tie-breaker — inside the form so it submits with the predictions *@
+            <div class="mb-6 bg-surface-container-low rounded-xl p-5 flex items-center justify-between md:hidden" style="border-left: 4px solid #2ff801;">
+                <div class="flex flex-col">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Desempate — Total Goles</span>
+                    <span class="text-sm font-bold text-on-surface">Pronóstico total de goles</span>
+                </div>
+                <input id="total-goles" name="totalGoles" type="number" min="0" max="99" placeholder="00"
+                       class="w-20 bg-surface-container-high border-none rounded-xl text-center font-black text-2xl text-secondary focus:ring-2 focus:ring-secondary/50 py-2" />
+            </div>
             <div class="space-y-4 md:space-y-6">
                 @foreach (var partido in Model.Partidos.OrderBy(p => p.KickOffUtc))
                 {
@@ -198,12 +193,11 @@
                         <div class="flex items-center justify-between gap-3 w-full mt-4 md:hidden">
                             <!-- Team A -->
                             <div class="flex flex-col items-center flex-1 gap-1">
-                                <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-on-surface-variant">shield</span>
-                                </div>
+                                @await Html.PartialAsync("_TeamLogo", (partido.LogoUrlLocal, partido.Equipo1, "w-12 h-12"))
                                 <span class="text-xs font-bold text-center leading-tight">@partido.Equipo1</span>
                                 <input type="number"
                                        name="predicciones[@partido.Id][0]"
+                                       data-layout="mobile"
                                        class="goles-input w-14 h-14 bg-surface-dim border-none rounded-xl text-center font-black text-2xl text-primary focus:ring-2 focus:ring-primary/50"
                                        value="@(pred?.GolesEquipo1 ?? 0)" min="0" max="20" required />
                             </div>
@@ -216,12 +210,11 @@
                             </div>
                             <!-- Team B -->
                             <div class="flex flex-col items-center flex-1 gap-1">
-                                <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-on-surface-variant">shield</span>
-                                </div>
+                                @await Html.PartialAsync("_TeamLogo", (partido.LogoUrlVisitante, partido.Equipo2, "w-12 h-12"))
                                 <span class="text-xs font-bold text-center leading-tight">@partido.Equipo2</span>
                                 <input type="number"
                                        name="predicciones[@partido.Id][1]"
+                                       data-layout="mobile"
                                        class="goles-input w-14 h-14 bg-surface-dim border-none rounded-xl text-center font-black text-2xl text-primary focus:ring-2 focus:ring-primary/50"
                                        value="@(pred?.GolesEquipo2 ?? 0)" min="0" max="20" required />
                             </div>
@@ -231,28 +224,26 @@
                         <div class="hidden md:flex flex-1 items-center justify-center gap-12 w-full">
                             <!-- Team A -->
                             <div class="flex flex-col items-center gap-4 text-center flex-1">
-                                <div class="w-20 h-20 rounded-full bg-surface-container-low flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-on-surface-variant text-3xl">shield</span>
-                                </div>
+                                @await Html.PartialAsync("_TeamLogo", (partido.LogoUrlLocal, partido.Equipo1, "w-20 h-20"))
                                 <h3 class="text-lg font-black uppercase tracking-tight">@partido.Equipo1</h3>
                             </div>
                             <!-- Score Inputs -->
                             <div class="flex items-center gap-4">
                                 <input type="number"
                                        name="predicciones[@partido.Id][0]"
+                                       data-layout="desktop"
                                        class="goles-input w-16 h-20 bg-surface-low text-4xl font-black text-center text-on-surface rounded-2xl border-2 border-transparent focus:border-primary/50 focus:ring-0 transition-all outline-none"
                                        value="@(pred?.GolesEquipo1 ?? 0)" maxlength="2" min="0" max="20" required />
                                 <span class="text-2xl font-black text-outline/30">:</span>
                                 <input type="number"
                                        name="predicciones[@partido.Id][1]"
+                                       data-layout="desktop"
                                        class="goles-input w-16 h-20 bg-surface-low text-4xl font-black text-center text-on-surface rounded-2xl border-2 border-transparent focus:border-primary/50 focus:ring-0 transition-all outline-none"
                                        value="@(pred?.GolesEquipo2 ?? 0)" maxlength="2" min="0" max="20" required />
                             </div>
                             <!-- Team B -->
                             <div class="flex flex-col items-center gap-4 text-center flex-1">
-                                <div class="w-20 h-20 rounded-full bg-surface-container-low flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-on-surface-variant text-3xl">shield</span>
-                                </div>
+                                @await Html.PartialAsync("_TeamLogo", (partido.LogoUrlVisitante, partido.Equipo2, "w-20 h-20"))
                                 <h3 class="text-lg font-black uppercase tracking-tight">@partido.Equipo2</h3>
                             </div>
                         </div>
@@ -283,18 +274,35 @@
 
 @section Scripts {
 <script>
-    // Auto-sum total goles
-    function updateTotal() {
-        const inputs = document.querySelectorAll('.goles-input');
-        let total = 0;
-        inputs.forEach(i => total += parseInt(i.value) || 0);
-        const mobileDisplay = document.getElementById('mobile-total-goles');
-        // Update mobile display if user hasn't set it manually
-        // (just a hint — doesn't bind to the form directly)
+    // Disable the off-screen layout inputs before POST to prevent double-submission.
+    // Mobile inputs (data-layout="mobile") are hidden at md+; desktop inputs
+    // (data-layout="desktop") are hidden below md. Only the visible set is submitted.
+    const MD_BREAKPOINT = 768;
+
+    function syncLayoutInputs() {
+        const isMobile = window.innerWidth < MD_BREAKPOINT;
+        document.querySelectorAll('[data-layout="mobile"]').forEach(el => {
+            el.disabled = !isMobile;
+        });
+        document.querySelectorAll('[data-layout="desktop"]').forEach(el => {
+            el.disabled = isMobile;
+        });
     }
 
-    document.querySelectorAll('.goles-input').forEach(input => {
-        input.addEventListener('input', updateTotal);
+    // Sync values from visible layout to the other before submit so both sets
+    // reflect the same user intent (avoids stale values if the user resizes).
+    document.getElementById('predictions-form')?.addEventListener('submit', () => {
+        const isMobile = window.innerWidth < MD_BREAKPOINT;
+        const source = isMobile ? 'mobile' : 'desktop';
+        const target = isMobile ? 'desktop' : 'mobile';
+        document.querySelectorAll(`[data-layout="${source}"]`).forEach(src => {
+            const name = src.name;
+            const dest = document.querySelector(`[data-layout="${target}"][name="${CSS.escape(name)}"]`);
+            if (dest) dest.value = src.value;
+        });
     });
+
+    syncLayoutInputs();
+    window.addEventListener('resize', syncLayoutInputs);
 </script>
 }

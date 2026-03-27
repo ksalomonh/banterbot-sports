@@ -1,4 +1,5 @@
 using BanterBotSports.BanterAI;
+using BanterBotSports.BL.Services;
 using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL;
 using BanterBotSports.Entities;
@@ -146,76 +147,67 @@ public class JornadaControllerTests
 }
 
 /// <summary>
-/// Unit tests for PrediccionConResultado.ComputeResultado() — all 5 branches.
+/// Unit tests for PrediccionClassifier.Clasificar() — all 5 classification branches.
 /// </summary>
-public class PrediccionConResultadoTests
+public class PrediccionClassifierTests
 {
-    // Helper to build a PrediccionConResultado with the given goal values.
-    private static PrediccionConResultado Build(
-        int? golesEq1Oficial, int? golesEq2Oficial,
-        int? golesPredichos1, int? golesPredichos2) =>
-        new(
-            PartidoId: 1,
-            Equipo1: "Home",
-            Equipo2: "Away",
-            GolesEquipo1Oficial: golesEq1Oficial,
-            GolesEquipo2Oficial: golesEq2Oficial,
-            GolesPredichos1: golesPredichos1,
-            GolesPredichos2: golesPredichos2,
-            PuntosObtenidos: null);
-
     [Fact]
-    public void Resultado_NoPredictionSubmitted_ReturnsSinPrediccion()
+    public void Clasificar_NoPredictionSubmitted_ReturnsSinPrediccion()
     {
         // No prediction was submitted (nulls on predicted goals)
-        var sut = Build(golesEq1Oficial: 2, golesEq2Oficial: 1,
-                        golesPredichos1: null, golesPredichos2: null);
+        var result = PrediccionClassifier.Clasificar(
+            golesPredichos1: null, golesPredichos2: null,
+            golesOficiales1: 2, golesOficiales2: 1);
 
-        sut.Resultado.Should().Be(ResultadoPrediccion.SinPrediccion,
+        result.Should().Be(ResultadoPrediccion.SinPrediccion,
             "a missing prediction must classify as SinPrediccion");
     }
 
     [Fact]
-    public void Resultado_OfficialResultNotYetAvailable_ReturnsSinPrediccion()
+    public void Clasificar_OfficialResultNotYetAvailable_ReturnsSinPrediccion()
     {
         // Prediction exists but official result has not been entered yet
-        var sut = Build(golesEq1Oficial: null, golesEq2Oficial: null,
-                        golesPredichos1: 1, golesPredichos2: 0);
+        var result = PrediccionClassifier.Clasificar(
+            golesPredichos1: 1, golesPredichos2: 0,
+            golesOficiales1: null, golesOficiales2: null);
 
-        sut.Resultado.Should().Be(ResultadoPrediccion.SinPrediccion,
+        result.Should().Be(ResultadoPrediccion.SinPrediccion,
             "pending official result must classify as SinPrediccion");
     }
 
     [Fact]
-    public void Resultado_ExactScoreMatch_ReturnsExacto()
+    public void Clasificar_ExactScoreMatch_ReturnsExacto()
     {
         // Prediction matches official result exactly
-        var sut = Build(golesEq1Oficial: 2, golesEq2Oficial: 1,
-                        golesPredichos1: 2, golesPredichos2: 1);
+        var result = PrediccionClassifier.Clasificar(
+            golesPredichos1: 2, golesPredichos2: 1,
+            golesOficiales1: 2, golesOficiales2: 1);
 
-        sut.Resultado.Should().Be(ResultadoPrediccion.Exacto,
+        result.Should().Be(ResultadoPrediccion.Exacto,
             "an exact score prediction must classify as Exacto");
     }
 
     [Fact]
-    public void Resultado_SameOutcomeDifferentScore_ReturnsResultadoCorrecto()
+    public void Clasificar_SameOutcomeDifferentScore_ReturnsResultadoCorrecto()
     {
         // Home win predicted correctly but score was different
-        var sut = Build(golesEq1Oficial: 3, golesEq2Oficial: 1,
-                        golesPredichos1: 1, golesPredichos2: 0);
+        var result = PrediccionClassifier.Clasificar(
+            golesPredichos1: 1, golesPredichos2: 0,
+            golesOficiales1: 3, golesOficiales2: 1);
 
-        sut.Resultado.Should().Be(ResultadoPrediccion.ResultadoCorrecto,
+        result.Should().Be(ResultadoPrediccion.ResultadoCorrecto,
             "correct outcome with wrong score must classify as ResultadoCorrecto");
     }
 
     [Fact]
-    public void Resultado_WrongOutcome_ReturnsFallido()
+    public void Clasificar_WrongOutcome_ReturnsFallido()
     {
         // Draw predicted but home side won
-        var sut = Build(golesEq1Oficial: 2, golesEq2Oficial: 0,
-                        golesPredichos1: 1, golesPredichos2: 1);
+        var result = PrediccionClassifier.Clasificar(
+            golesPredichos1: 1, golesPredichos2: 1,
+            golesOficiales1: 2, golesOficiales2: 0);
 
-        sut.Resultado.Should().Be(ResultadoPrediccion.Fallido,
+        result.Should().Be(ResultadoPrediccion.Fallido,
             "wrong outcome prediction must classify as Fallido");
     }
 }
