@@ -98,9 +98,12 @@ using (var scope = app.Services.CreateScope())
 }
 
 // ─── Middleware pipeline ─────────────────────────────────────────────────────
+// UseExceptionHandler is always active so DB/internal errors never expose stack
+// traces to the browser — not even in Development when run outside a debugger.
+app.UseExceptionHandler("/Home/Error");
+
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 

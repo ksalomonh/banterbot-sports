@@ -1,6 +1,7 @@
 using BanterBotSports.BL.Models;
 using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.Entities.ViewModels;
+using BanterBotSports.Web.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
@@ -140,21 +141,21 @@ public class TorneoController : Controller
                 || !long.TryParse(parts[1], out var expiresUnix)
                 || DateTimeOffset.UtcNow.ToUnixTimeSeconds() > expiresUnix)
             {
-                TempData["Error"] = "Link de invitación inválido o expirado.";
+                TempData[TempDataKeys.Error] = "Link de invitación inválido o expirado.";
                 return RedirectToAction(nameof(Index));
             }
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Failed to validate invite token for torneo {TorneoId}", id);
-            TempData["Error"] = "Link de invitación inválido.";
+            TempData[TempDataKeys.Error] = "Link de invitación inválido.";
             return RedirectToAction(nameof(Index));
         }
 
         var userId = _userManager.GetUserId(User)!;
         await _torneoService.UnirseConTokenAsync(id, userId);
 
-        TempData["Success"] = $"Te uniste al torneo {torneo.Nombre}.";
+        TempData[TempDataKeys.Success] = $"Te uniste al torneo {torneo.Nombre}.";
         return RedirectToAction(nameof(Dashboard), new { id });
     }
 }

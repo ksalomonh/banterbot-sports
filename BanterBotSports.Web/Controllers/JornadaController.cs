@@ -1,8 +1,10 @@
 using BanterBotSports.BanterAI;
+using BanterBotSports.BL.Exceptions;
 using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.Entities.DTOs;
 using BanterBotSports.Integrations.ApiFootball;
 using BanterBotSports.Integrations.Telegram;
+using BanterBotSports.Web.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -87,7 +89,7 @@ public class JornadaController : Controller
 
         if (!int.TryParse(externalId, out var extId))
         {
-            TempData["Error"] = "ID externo inválido.";
+            TempData[TempDataKeys.Error] = "ID externo inválido.";
             return RedirectToAction(nameof(Detalle), new { id });
         }
 
@@ -95,7 +97,7 @@ public class JornadaController : Controller
         var matchDto = await _apiFootballClient.GetLiveScoreAsync(extId);
         if (matchDto is null)
         {
-            TempData["Error"] = "No se encontró el partido con ese ID en API-Football.";
+            TempData[TempDataKeys.Error] = "No se encontró el partido con ese ID en API-Football.";
             return RedirectToAction(nameof(Detalle), new { id });
         }
 
@@ -111,7 +113,7 @@ public class JornadaController : Controller
 
         await _partidoService.AsignarPartidoAsync(id, partido);
 
-        TempData["Success"] = $"Partido {partido.Equipo1} vs {partido.Equipo2} asignado.";
+        TempData[TempDataKeys.Success] = $"Partido {partido.Equipo1} vs {partido.Equipo2} asignado.";
         return RedirectToAction(nameof(Detalle), new { id });
     }
 
@@ -126,12 +128,17 @@ public class JornadaController : Controller
         try
         {
             await _jornadaService.AbrirJornadaAsync(id);
-            TempData["Success"] = "Jornada abierta.";
+            TempData[TempDataKeys.Success] = "Jornada abierta.";
+        }
+        catch (JornadaSinPartidosException ex)
+        {
+            _logger.LogWarning(ex, "Failed to abrir jornada {JornadaId}: no partidos", id);
+            TempData[TempDataKeys.Error] = "No se puede abrir una jornada sin partidos asignados.";
         }
         catch (InvalidOperationException ex)
         {
             _logger.LogWarning(ex, "Failed to abrir jornada {JornadaId}", id);
-            TempData["Error"] = "No se pudo abrir la jornada. Verificá que esté en estado válido.";
+            TempData[TempDataKeys.Error] = "No se pudo abrir la jornada. Verificá que esté en estado válido.";
         }
 
         return RedirectToAction(nameof(Detalle), new { id });
@@ -153,12 +160,12 @@ public class JornadaController : Controller
             // Must run after the jornada closes (predictions are now locked).
             await _prediccionService.ActualizarGolesJornadaAsync(id);
 
-            TempData["Success"] = "Jornada cerrada.";
+            TempData[TempDataKeys.Success] = "Jornada cerrada.";
         }
         catch (InvalidOperationException ex)
         {
             _logger.LogWarning(ex, "Failed to cerrar jornada {JornadaId}", id);
-            TempData["Error"] = "No se pudo cerrar la jornada. Verificá que esté en estado válido.";
+            TempData[TempDataKeys.Error] = "No se pudo cerrar la jornada. Verificá que esté en estado válido.";
         }
 
         return RedirectToAction(nameof(Detalle), new { id });
@@ -180,12 +187,12 @@ public class JornadaController : Controller
             // Must run after official results are entered (GolesEquipo1Oficial / GolesEquipo2Oficial set).
             await _prediccionService.CalcularPuntosGolesJornadaAsync(id);
 
-            TempData["Success"] = "Jornada finalizada.";
+            TempData[TempDataKeys.Success] = "Jornada finalizada.";
         }
         catch (InvalidOperationException ex)
         {
             _logger.LogWarning(ex, "Failed to finalizar jornada {JornadaId}", id);
-            TempData["Error"] = "No se pudo finalizar la jornada. Verificá que esté en estado válido.";
+            TempData[TempDataKeys.Error] = "No se pudo finalizar la jornada. Verificá que esté en estado válido.";
         }
 
         return RedirectToAction(nameof(Detalle), new { id });

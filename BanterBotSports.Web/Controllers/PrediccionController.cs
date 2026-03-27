@@ -1,6 +1,7 @@
 using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.Entities;
 using BanterBotSports.Entities.Enums;
+using BanterBotSports.Web.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -127,7 +128,7 @@ public class PrediccionController : Controller
             return View(jornada);
         }
 
-        TempData["Success"] = "Predicciones guardadas correctamente.";
+        TempData[TempDataKeys.Success] = "Predicciones guardadas correctamente.";
         return RedirectToAction(nameof(Form), new { jornadaId });
     }
 

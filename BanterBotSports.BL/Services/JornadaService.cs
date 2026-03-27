@@ -1,3 +1,4 @@
+using BanterBotSports.BL.Exceptions;
 using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL.Repositories.Interfaces;
 using BanterBotSports.Entities;
@@ -71,10 +72,7 @@ public class JornadaService : IJornadaService
         var partidos = await _partidoRepository.GetByJornadaIdAsync(jornadaId);
 
         if (partidos.Count == 0)
-        {
-            throw new InvalidOperationException(
-                $"La jornada {jornada.Numero} no tiene partidos asignados y no puede abrirse.");
-        }
+            throw new JornadaSinPartidosException(jornada.Id, jornada.Numero);
 
         // DeadlineUtc = earliest kick-off so predictions lock at the first match start
         var earliestKickOff = partidos.Min(p => p.KickOffUtc);
