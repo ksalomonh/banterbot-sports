@@ -1,7 +1,10 @@
 @model (string? LogoUrl, string TeamName, string SizeClass)
 @{
     var hasLogo = !string.IsNullOrEmpty(Model.LogoUrl);
-    var iconSize = Model.SizeClass.Contains("w-12") ? "" : Model.SizeClass.Contains("w-16") ? "text-2xl" : "text-3xl";
+    var iconSize = Model.SizeClass.Contains("w-10") ? "text-lg"
+                : Model.SizeClass.Contains("w-12") ? "text-xl"
+                : Model.SizeClass.Contains("w-16") ? "text-2xl"
+                : "text-3xl";
 }
 <div class="@Model.SizeClass rounded-full bg-surface-container-low flex items-center justify-center overflow-hidden">
     @if (hasLogo)
