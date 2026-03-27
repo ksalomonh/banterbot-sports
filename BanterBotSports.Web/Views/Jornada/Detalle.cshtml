@@ -7,156 +7,516 @@
     var torneo = ViewBag.Torneo as Torneo;
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <div>
-        <h2>Jornada @Model.Numero</h2>
-        @if (torneo is not null)
-        {
-            <small class="text-muted">
-                <a asp-controller="Torneo" asp-action="Dashboard" asp-route-id="@torneo.Id">@torneo.Nombre</a>
-            </small>
-        }
-    </div>
-    <span class="badge bg-primary fs-6">@Model.Estado</span>
-</div>
-
-@if (Model.DeadlineUtc.HasValue)
-{
-    <div class="alert alert-warning">
-        <strong>Cierre de predicciones:</strong> @Model.DeadlineUtc.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
-    </div>
+@section Styles {
+<style>
+    .glass-panel {
+        background: rgba(30, 37, 59, 0.6);
+        backdrop-filter: blur(20px);
+    }
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    /* Mobile tab active state */
+    .tab-btn.active {
+        background: linear-gradient(135deg, #69daff, #00cffc);
+        color: #004050;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+</style>
 }
 
-@if (esOrganizador)
-{
-    <div class="card mb-3">
-        <div class="card-header fw-bold">Acciones del Organizador</div>
-        <div class="card-body d-flex gap-2 flex-wrap">
-            @if (Model.Estado == EstadoJornada.PendientePartidos || Model.Estado == EstadoJornada.Cerrada)
-            {
-                <form asp-action="Abrir" asp-route-id="@Model.Id" method="post">
-                    <button type="submit" class="btn btn-success">Abrir Jornada</button>
-                </form>
-            }
-            @if (Model.Estado == EstadoJornada.Abierta)
-            {
-                <form asp-action="Cerrar" asp-route-id="@Model.Id" method="post">
-                    <button type="submit" class="btn btn-warning">Cerrar Jornada</button>
-                </form>
-            }
-            @if (Model.Estado == EstadoJornada.Cerrada)
-            {
-                <form asp-action="Finalizar" asp-route-id="@Model.Id" method="post">
-                    <button type="submit" class="btn btn-danger">Finalizar Jornada</button>
-                </form>
-            }
-        </div>
-    </div>
-
-    <!-- Assign Match Form -->
-    @if (Model.Estado == EstadoJornada.PendientePartidos || Model.Estado == EstadoJornada.Abierta)
-    {
-        <div class="card mb-3">
-            <div class="card-header fw-bold">Agregar Partido desde API-Football</div>
-            <div class="card-body">
-                <form asp-action="AsignarPartido" asp-route-id="@Model.Id" method="post">
-                    <div class="input-group">
-                        <input type="text" name="externalId" class="form-control"
-                               placeholder="ID externo del partido (ej: 1035041)" required />
-                        <button type="submit" class="btn btn-primary">Agregar</button>
-                    </div>
-                </form>
-                <div class="mt-2">
-                    <small class="text-muted">
-                        O buscar por liga:
-                        <input type="text" id="buscar-q" class="form-control form-control-sm mt-1"
-                               placeholder="Ingresá el ID de competición (ej: 128 para Liga MX)" />
-                    </small>
-                    <div id="buscar-resultados" class="list-group mt-2"></div>
-                </div>
+<main class="pt-4 pb-24 md:pb-8 md:pr-[22rem]">
+    <!-- Header -->
+    <header class="mb-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <nav class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">
+                    @if (torneo is not null)
+                    {
+                        <a asp-controller="Torneo" asp-action="Dashboard" asp-route-id="@torneo.Id"
+                           class="hover:text-primary transition-colors">@torneo.Nombre</a>
+                        <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+                    }
+                    <span class="text-primary">Jornada @Model.Numero</span>
+                </nav>
+                <h1 class="text-4xl md:text-5xl font-black tracking-tighter text-on-surface uppercase">
+                    Jornada @Model.Numero
+                </h1>
+                @if (Model.DeadlineUtc.HasValue)
+                {
+                    var deadlineLocal = Model.DeadlineUtc.Value.ToLocalTime();
+                    <p class="text-on-surface-variant mt-2 flex items-center gap-2 text-sm">
+                        <span class="material-symbols-outlined text-sm text-tertiary">timer</span>
+                        Cierre: <span class="font-bold text-tertiary">@deadlineLocal.ToString("dd/MM/yyyy HH:mm")</span>
+                    </p>
+                }
+            </div>
+            <div class="flex items-center gap-3">
+                @{
+                    var estadoClass = Model.Estado switch
+                    {
+                        EstadoJornada.Abierta => "bg-secondary/10 text-secondary",
+                        EstadoJornada.Cerrada => "bg-tertiary/10 text-tertiary",
+                        EstadoJornada.Finalizada => "bg-surface-bright text-on-surface-variant",
+                        _ => "bg-primary/10 text-primary"
+                    };
+                }
+                <span class="px-3 py-1 @estadoClass text-[10px] font-black rounded uppercase tracking-widest">
+                    @Model.Estado
+                </span>
+                @if (Model.Estado == EstadoJornada.Abierta)
+                {
+                    <a asp-controller="Prediccion" asp-action="Form" asp-route-jornadaId="@Model.Id"
+                       class="flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary-container rounded-xl font-black text-sm uppercase shadow-[0_0_20px_rgba(105,218,255,0.3)] hover:scale-105 transition-all">
+                        <span class="material-symbols-outlined text-sm">edit_square</span>
+                        Mis Predicciones
+                    </a>
+                }
+                @if (Model.Estado == EstadoJornada.Finalizada)
+                {
+                    <a asp-controller="Jornada" asp-action="Resumen" asp-route-id="@Model.Id"
+                       class="flex items-center gap-2 px-6 py-3 bg-surface-container-high rounded-xl font-bold text-sm hover:bg-surface-bright transition-all">
+                        <span class="material-symbols-outlined text-sm">analytics</span>
+                        Ver Resumen
+                    </a>
+                }
             </div>
         </div>
-    }
-}
+    </header>
 
-<!-- Matches List -->
-<div class="card">
-    <div class="card-header fw-bold">Partidos (@Model.Partidos.Count)</div>
-    @if (!Model.Partidos.Any())
-    {
-        <div class="card-body text-muted">No hay partidos asignados todavía.</div>
-    }
-    else
-    {
-        <div class="list-group list-group-flush">
-            @foreach (var partido in Model.Partidos.OrderBy(p => p.KickOffUtc))
+    <!-- ── MOBILE: Tabbed Layout ────────────────────────────────────────────── -->
+    <div class="md:hidden">
+        <!-- Tab Nav -->
+        <div class="flex gap-2 mb-6 p-1 bg-surface-container-high rounded-xl">
+            <button class="tab-btn active flex-1 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all" data-tab="matches">
+                Partidos
+            </button>
+            <button class="tab-btn flex-1 py-2 rounded-lg text-xs font-black uppercase tracking-widest text-on-surface-variant transition-all" data-tab="participants">
+                Participantes
+            </button>
+            @if (esOrganizador)
             {
-                <div class="list-group-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>@partido.Equipo1</strong> vs <strong>@partido.Equipo2</strong>
-                            <br />
-                            <small class="text-muted">@partido.KickOffUtc.ToLocalTime().ToString("dd/MM HH:mm")</small>
+                <button class="tab-btn flex-1 py-2 rounded-lg text-xs font-black uppercase tracking-widest text-on-surface-variant transition-all" data-tab="controls">
+                    Controles
+                </button>
+            }
+        </div>
+
+        <!-- Tab: Matches -->
+        <div id="tab-matches" class="tab-panel active space-y-3">
+            @if (!Model.Partidos.Any())
+            {
+                <div class="p-6 bg-surface-container-low rounded-xl text-center text-on-surface-variant text-sm">
+                    No hay partidos asignados todavía.
+                </div>
+            }
+            else
+            {
+                @foreach (var partido in Model.Partidos.OrderBy(p => p.KickOffUtc))
+                {
+                    <div class="bg-surface-container-high rounded-xl p-4 flex items-center justify-between">
+                        <div class="flex flex-col gap-1 flex-1">
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm font-bold">@partido.Equipo1</span>
+                                <span class="text-on-surface-variant text-xs">vs</span>
+                                <span class="text-sm font-bold">@partido.Equipo2</span>
+                            </div>
+                            <span class="text-[10px] text-on-surface-variant flex items-center gap-1">
+                                <span class="material-symbols-outlined text-xs">schedule</span>
+                                @partido.KickOffUtc.ToLocalTime().ToString("dd/MM HH:mm")
+                            </span>
                         </div>
-                        <div class="text-end">
-                            <span class="badge bg-secondary">@partido.Estado</span>
+                        <div class="flex flex-col items-end gap-1">
+                            @{
+                                var pEstadoClass = partido.Estado == EstadoPartido.Finalizado
+                                    ? "bg-surface-bright text-on-surface-variant"
+                                    : "bg-secondary/10 text-secondary";
+                            }
+                            <span class="px-2 py-0.5 @pEstadoClass text-[10px] font-black rounded uppercase">@partido.Estado</span>
                             @if (partido.GolesEquipo1Oficial.HasValue && partido.GolesEquipo2Oficial.HasValue)
                             {
-                                <br />
-                                <strong>@partido.GolesEquipo1Oficial - @partido.GolesEquipo2Oficial</strong>
+                                <span class="font-black text-on-surface text-sm">@partido.GolesEquipo1Oficial – @partido.GolesEquipo2Oficial</span>
                             }
                         </div>
                     </div>
-                </div>
+                }
             }
         </div>
-    }
-</div>
 
-@if (Model.Estado == EstadoJornada.Abierta)
-{
-    <div class="mt-3">
-        <a asp-controller="Prediccion" asp-action="Form" asp-route-jornadaId="@Model.Id"
-           class="btn btn-success">
-            Ingresar mis predicciones
-        </a>
+        <!-- Tab: Participants -->
+        <div id="tab-participants" class="tab-panel space-y-3">
+            @{
+                var participantes = torneo?.Participantes ?? new List<Participante>();
+            }
+            @if (!participantes.Any())
+            {
+                <div class="p-6 bg-surface-container-low rounded-xl text-center text-on-surface-variant text-sm">
+                    Sin participantes aún.
+                </div>
+            }
+            else
+            {
+                @foreach (var p in participantes)
+                {
+                    <div class="flex items-center justify-between p-4 bg-surface-container-high rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary text-sm">person</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold">@p.UserId</p>
+                                <p class="text-[10px] text-on-surface-variant uppercase">@p.Rol</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 @(p.Pago ? "bg-secondary/10 text-secondary" : "bg-error/10 text-error") text-[10px] font-black rounded uppercase">
+                            @(p.Pago ? "Pagó" : "Pendiente")
+                        </span>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Tab: Controls (Organizer only) -->
+        @if (esOrganizador)
+        {
+            <div id="tab-controls" class="tab-panel space-y-4">
+                <!-- State Controls -->
+                <div class="p-5 bg-surface-container-low rounded-xl space-y-3">
+                    <h3 class="text-xs font-black uppercase tracking-widest text-on-surface-variant flex items-center gap-2">
+                        <span class="material-symbols-outlined text-secondary text-sm">event_available</span>
+                        Estado de Jornada
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        @if (Model.Estado == EstadoJornada.PendientePartidos || Model.Estado == EstadoJornada.Cerrada)
+                        {
+                            <form asp-action="Abrir" asp-route-id="@Model.Id" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="flex items-center gap-2 px-4 py-2 bg-secondary/10 text-secondary rounded-lg font-black text-xs uppercase">
+                                    <span class="material-symbols-outlined text-sm">lock_open</span>
+                                    Abrir Jornada
+                                </button>
+                            </form>
+                        }
+                        @if (Model.Estado == EstadoJornada.Abierta)
+                        {
+                            <form asp-action="Cerrar" asp-route-id="@Model.Id" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="flex items-center gap-2 px-4 py-2 bg-tertiary/10 text-tertiary rounded-lg font-black text-xs uppercase">
+                                    <span class="material-symbols-outlined text-sm">lock</span>
+                                    Cerrar Jornada
+                                </button>
+                            </form>
+                        }
+                        @if (Model.Estado == EstadoJornada.Cerrada)
+                        {
+                            <form asp-action="Finalizar" asp-route-id="@Model.Id" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="flex items-center gap-2 px-4 py-2 bg-error/10 text-error rounded-lg font-black text-xs uppercase">
+                                    <span class="material-symbols-outlined text-sm">flag</span>
+                                    Finalizar Jornada
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+
+                <!-- Assign Match Form -->
+                @if (Model.Estado == EstadoJornada.PendientePartidos || Model.Estado == EstadoJornada.Abierta)
+                {
+                    <div class="p-5 bg-surface-container-low rounded-xl space-y-3">
+                        <h3 class="text-xs font-black uppercase tracking-widest text-on-surface-variant flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-sm">sports_soccer</span>
+                            Agregar Partido
+                        </h3>
+                        <form asp-action="AsignarPartido" asp-route-id="@Model.Id" method="post" class="space-y-3">
+                            @Html.AntiForgeryToken()
+                            <input type="text" name="externalId"
+                                   class="w-full bg-surface-container-high border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/40 text-on-surface text-sm"
+                                   placeholder="ID externo del partido (ej: 1035041)" required />
+                            <button type="submit" class="w-full py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container rounded-xl font-black text-xs uppercase">
+                                Agregar Partido
+                            </button>
+                        </form>
+                        <div>
+                            <input type="text" id="buscar-q"
+                                   class="w-full bg-surface-container-high border-none rounded-xl py-3 px-4 text-xs focus:ring-2 focus:ring-primary/40"
+                                   placeholder="Buscar por liga ID (ej: 128)" />
+                            <div id="buscar-resultados" class="space-y-2 mt-2"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
     </div>
-}
+
+    <!-- ── DESKTOP: Bento Grid Layout ───────────────────────────────────────── -->
+    <div class="hidden md:grid grid-cols-12 gap-6">
+
+        <!-- Matches: full width -->
+        <section class="col-span-12 bg-surface-container-low rounded-3xl p-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">sports_soccer</span>
+                    <h2 class="text-2xl font-bold tracking-tight">Partidos (@Model.Partidos.Count)</h2>
+                </div>
+            </div>
+            @if (!Model.Partidos.Any())
+            {
+                <p class="text-on-surface-variant text-sm">No hay partidos asignados todavía.</p>
+            }
+            else
+            {
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+                                <th class="pb-4 pl-4">Partido</th>
+                                <th class="pb-4">Hora</th>
+                                <th class="pb-4">Estado</th>
+                                <th class="pb-4">Resultado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var partido in Model.Partidos.OrderBy(p => p.KickOffUtc))
+                            {
+                                <tr class="group hover:bg-surface-bright/30 transition-colors">
+                                    <td class="py-5 pl-4">
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm font-bold">@partido.Equipo1</span>
+                                            <span class="text-xs text-on-surface-variant">vs</span>
+                                            <span class="text-sm font-bold">@partido.Equipo2</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-5">
+                                        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                                            <span class="material-symbols-outlined text-sm">schedule</span>
+                                            @partido.KickOffUtc.ToLocalTime().ToString("dd/MM HH:mm")
+                                        </div>
+                                    </td>
+                                    <td class="py-5">
+                                        @{
+                                            var pEstClass = partido.Estado == EstadoPartido.Finalizado
+                                                ? "bg-surface-bright text-on-surface-variant"
+                                                : "bg-secondary/10 text-secondary";
+                                        }
+                                        <span class="px-2 py-1 @pEstClass text-[10px] font-black rounded uppercase">@partido.Estado</span>
+                                    </td>
+                                    <td class="py-5 font-black text-on-surface">
+                                        @if (partido.GolesEquipo1Oficial.HasValue && partido.GolesEquipo2Oficial.HasValue)
+                                        {
+                                            <span>@partido.GolesEquipo1Oficial – @partido.GolesEquipo2Oficial</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-on-surface-variant">–</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+
+        <!-- Jornada Status (Organizer Controls) -->
+        @if (esOrganizador)
+        {
+            <section class="col-span-12 lg:col-span-5 bg-surface-container-low rounded-3xl p-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="material-symbols-outlined text-secondary">event_available</span>
+                    <h2 class="text-2xl font-bold tracking-tight">Control de Estado</h2>
+                </div>
+                <div class="flex flex-wrap gap-3 mb-6">
+                    @if (Model.Estado == EstadoJornada.PendientePartidos || Model.Estado == EstadoJornada.Cerrada)
+                    {
+                        <form asp-action="Abrir" asp-route-id="@Model.Id" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="flex items-center gap-2 px-6 py-3 bg-secondary/10 text-secondary rounded-xl font-black text-sm uppercase hover:bg-secondary/20 transition-all">
+                                <span class="material-symbols-outlined text-sm">lock_open</span>
+                                Abrir Jornada
+                            </button>
+                        </form>
+                    }
+                    @if (Model.Estado == EstadoJornada.Abierta)
+                    {
+                        <form asp-action="Cerrar" asp-route-id="@Model.Id" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="flex items-center gap-2 px-6 py-3 bg-tertiary/10 text-tertiary rounded-xl font-black text-sm uppercase hover:bg-tertiary/20 transition-all">
+                                <span class="material-symbols-outlined text-sm">lock</span>
+                                Cerrar Jornada
+                            </button>
+                        </form>
+                    }
+                    @if (Model.Estado == EstadoJornada.Cerrada)
+                    {
+                        <form asp-action="Finalizar" asp-route-id="@Model.Id" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="flex items-center gap-2 px-6 py-3 bg-error/10 text-error rounded-xl font-black text-sm uppercase hover:bg-error/20 transition-all">
+                                <span class="material-symbols-outlined text-sm">flag</span>
+                                Finalizar Jornada
+                            </button>
+                        </form>
+                    }
+                </div>
+
+                <!-- Assign Match Form (desktop) -->
+                @if (Model.Estado == EstadoJornada.PendientePartidos || Model.Estado == EstadoJornada.Abierta)
+                {
+                    <div class="p-4 bg-background rounded-2xl space-y-4">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant block">Agregar desde API-Football</span>
+                        <form asp-action="AsignarPartido" asp-route-id="@Model.Id" method="post" class="flex gap-2">
+                            @Html.AntiForgeryToken()
+                            <input type="text" name="externalId"
+                                   class="flex-1 bg-surface-container-high border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/40 text-on-surface text-sm"
+                                   placeholder="ID externo (ej: 1035041)" required />
+                            <button type="submit" class="px-6 py-3 bg-primary text-on-primary-container rounded-xl font-black text-xs uppercase hover:bg-primary-container transition-colors">
+                                Agregar
+                            </button>
+                        </form>
+                        <div>
+                            <input type="text" id="buscar-q-desktop"
+                                   class="w-full bg-surface-container-high border-none rounded-xl py-3 px-4 text-xs focus:ring-2 focus:ring-primary/40"
+                                   placeholder="Buscar por liga ID (ej: 128 = Liga MX)" />
+                            <div id="buscar-resultados-desktop" class="space-y-2 mt-2"></div>
+                        </div>
+                    </div>
+                }
+            </section>
+
+            <!-- Participant Management (desktop) -->
+            <section class="col-span-12 lg:col-span-7 bg-surface-container-low rounded-3xl p-8">
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">groups</span>
+                        <h2 class="text-2xl font-bold tracking-tight">Participantes</h2>
+                    </div>
+                    @{
+                        var participantesCount = torneo?.Participantes?.Count ?? 0;
+                    }
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant bg-surface-container-high px-3 py-1 rounded-full">
+                        @participantesCount Jugadores
+                    </span>
+                </div>
+                <div class="space-y-2">
+                    @{
+                        var participantesDesktop = torneo?.Participantes ?? new List<Participante>();
+                    }
+                    @if (!participantesDesktop.Any())
+                    {
+                        <p class="text-on-surface-variant text-sm">Sin participantes aún.</p>
+                    }
+                    else
+                    {
+                        @foreach (var p in participantesDesktop)
+                        {
+                            <div class="flex items-center justify-between p-4 bg-surface-container-high rounded-2xl hover:bg-surface-bright transition-colors">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-primary text-sm">person</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold">@p.UserId</p>
+                                        <p class="text-[10px] text-on-surface-variant uppercase">@p.Rol</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <span class="px-2 py-1 @(p.Pago ? "bg-secondary/10 text-secondary" : "bg-error/10 text-error") text-[10px] font-black rounded uppercase">
+                                        @(p.Pago ? "Pagó" : "Pendiente")
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </section>
+        }
+        else
+        {
+            <!-- Participants (non-organizer view) -->
+            <section class="col-span-12 bg-surface-container-low rounded-3xl p-8">
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">groups</span>
+                        <h2 class="text-2xl font-bold tracking-tight">Participantes</h2>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    @{
+                        var pNonOrg = torneo?.Participantes ?? new List<Participante>();
+                    }
+                    @foreach (var p in pNonOrg)
+                    {
+                        <div class="flex items-center gap-4 p-4 bg-surface-container-high rounded-2xl">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary text-sm">person</span>
+                            </div>
+                            <p class="text-sm font-bold">@p.UserId</p>
+                        </div>
+                    }
+                </div>
+            </section>
+        }
+    </div>
+</main>
 
 @section Scripts {
-@if (esOrganizador)
-{
 <script>
+    // ── Mobile tab switching ──────────────────────────────────────────────────
+    const tabBtns  = document.querySelectorAll('.tab-btn');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = btn.dataset.tab;
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabPanels.forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            const panel = document.getElementById('tab-' + target);
+            if (panel) panel.classList.add('active');
+        });
+    });
+
+    // ── Match search (mobile) ─────────────────────────────────────────────────
+    @if (esOrganizador)
+    {
+        <text>
     const jornadaId = @Model.Id;
-    const buscarInput = document.getElementById("buscar-q");
-    const resultadosDiv = document.getElementById("buscar-resultados");
 
-    if (buscarInput) {
-        let debounceTimer;
-        buscarInput.addEventListener("input", () => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(async () => {
-                const q = buscarInput.value.trim();
-                if (!q) { resultadosDiv.innerHTML = ""; return; }
-
+    function setupSearch(inputId, resultsId, targetInputSelector) {
+        const input = document.getElementById(inputId);
+        const results = document.getElementById(resultsId);
+        if (!input) return;
+        let timer;
+        input.addEventListener('input', () => {
+            clearTimeout(timer);
+            timer = setTimeout(async () => {
+                const q = input.value.trim();
+                if (!q) { results.innerHTML = ''; return; }
                 const resp = await fetch(`/jornada/${jornadaId}/buscar-partidos?q=${encodeURIComponent(q)}`);
                 const matches = await resp.json();
-                resultadosDiv.innerHTML = "";
+                results.innerHTML = '';
                 matches.forEach(m => {
-                    const item = document.createElement("a");
-                    item.className = "list-group-item list-group-item-action";
-                    item.href = "#";
-                    item.textContent = `${m.equipo1} vs ${m.equipo2} (ID: ${m.externalId})`;
-                    item.addEventListener("click", (e) => {
-                        e.preventDefault();
-                        document.querySelector("input[name='externalId']").value = m.externalId;
-                        resultadosDiv.innerHTML = "";
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'w-full text-left px-4 py-3 bg-surface-container-high rounded-xl text-xs font-bold hover:bg-surface-bright transition-colors';
+                    btn.textContent = `${m.equipo1} vs ${m.equipo2} (ID: ${m.externalId})`;
+                    btn.addEventListener('click', () => {
+                        const target = document.querySelector(targetInputSelector);
+                        if (target) target.value = m.externalId;
+                        results.innerHTML = '';
+                        input.value = '';
                     });
-                    resultadosDiv.appendChild(item);
+                    results.appendChild(btn);
                 });
             }, 400);
         });
     }
+
+    setupSearch('buscar-q', 'buscar-resultados', "input[name='externalId']");
+    setupSearch('buscar-q-desktop', 'buscar-resultados-desktop', "input[name='externalId']");
+        </text>
+    }
 </script>
-}
 }

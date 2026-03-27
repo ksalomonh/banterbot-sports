@@ -8,155 +8,292 @@
     var existingPredictions = ViewBag.ExistingPredictions as Dictionary<int, PrediccionPartido>
                               ?? new Dictionary<int, PrediccionPartido>();
     var torneo = ViewBag.Torneo as Torneo;
+    var isLocked = esCerrada || pastDeadline;
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <div>
-        <h2>Predicciones — Jornada @Model.Numero</h2>
-        @if (torneo is not null)
-        {
-            <small class="text-muted">
-                <a asp-controller="Torneo" asp-action="Dashboard" asp-route-id="@torneo.Id">@torneo.Nombre</a>
-            </small>
-        }
-    </div>
-    <span class="badge bg-primary fs-6">@Model.Estado</span>
-</div>
-
-@if (Model.DeadlineUtc.HasValue)
-{
-    var deadlineLocal = Model.DeadlineUtc.Value.ToLocalTime();
-    var isClose = deadlineLocal - DateTime.Now < TimeSpan.FromHours(2);
-    <div class="alert @(pastDeadline ? "alert-danger" : isClose ? "alert-warning" : "alert-info")">
-        @if (pastDeadline)
-        {
-            <strong>El plazo para predicciones ya venció.</strong>
-        }
-        else
-        {
-            <strong>Cierre:</strong> @deadlineLocal.ToString("dd/MM/yyyy HH:mm")
-            @if (isClose) { <span class="ms-2 text-danger fw-bold">¡Quedan menos de 2 horas!</span> }
-        }
-    </div>
+@section Styles {
+<style>
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .glass-side {
+        background: rgba(13, 19, 35, 0.7);
+        backdrop-filter: blur(32px);
+    }
+    /* Ambient glow states per DESIGN.md — NOT Tailwind shadow utilities */
+    .card-open {
+        box-shadow: 0 0 20px rgba(105, 218, 255, 0.15);
+    }
+    .card-locked {
+        box-shadow: 0 0 20px rgba(255, 113, 102, 0.15);
+    }
+    /* card-finished: no glow */
+</style>
 }
 
-@if (esCerrada || pastDeadline)
-{
-    <!-- Read-only mode: show saved predictions -->
-    <div class="card">
-        <div class="card-header fw-bold">Tus predicciones (solo lectura)</div>
-        <div class="list-group list-group-flush">
+@* Banter Rail — visible lg+ *@
+<aside class="fixed right-0 top-20 h-[calc(100vh-5rem)] w-80 rounded-l-3xl glass-side shadow-[-20px_0_40px_rgba(0,0,0,0.3)] hidden lg:flex flex-col p-6 gap-4 z-40">
+    <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">psychology</span>
+        </div>
+        <div>
+            <h3 class="text-primary font-bold text-sm tracking-tight leading-none uppercase">Banter Rail</h3>
+            <p class="text-on-surface-variant text-[10px] font-bold uppercase tracking-widest">The Neon Colosseum</p>
+        </div>
+    </div>
+    <div class="flex flex-col gap-3 overflow-y-auto pr-2 flex-1">
+        <div class="p-4 bg-surface-container-high rounded-xl border-l-4 border-secondary hover:-translate-x-1 transition-transform">
+            <p class="text-[10px] text-secondary font-black uppercase mb-1">Live Banter</p>
+            <p class="text-sm text-on-surface">"¡Nadie para al líder este fin de semana!"</p>
+            <p class="text-[10px] text-on-surface/40 mt-2">@Usuario • hace 2m</p>
+        </div>
+        <div class="p-4 bg-surface-container-high rounded-xl hover:-translate-x-1 transition-transform">
+            <p class="text-[10px] text-on-surface-variant font-black uppercase mb-1">Tendencia Global</p>
+            <p class="text-sm text-on-surface">74% eligió al local en el derby.</p>
+        </div>
+    </div>
+    <button class="mt-auto w-full py-3 bg-surface-container-high border border-secondary/30 text-secondary rounded-xl font-bold uppercase text-xs tracking-widest hover:bg-secondary hover:text-on-secondary transition-all">
+        Unirse a la Conversación
+    </button>
+</aside>
+
+@* Main content — offset for Banter Rail on lg+ *@
+<main class="pt-4 pb-32 md:pb-8 lg:pr-[22rem]">
+    <!-- Header -->
+    <header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+            <nav class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">
+                @if (torneo is not null)
+                {
+                    <a asp-controller="Torneo" asp-action="Dashboard" asp-route-id="@torneo.Id"
+                       class="hover:text-primary transition-colors">@torneo.Nombre</a>
+                    <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+                }
+                <span class="text-primary">Predicciones</span>
+            </nav>
+            <h1 class="text-4xl md:text-5xl font-black tracking-tighter text-on-surface uppercase">
+                Jornada @Model.Numero
+            </h1>
+            <div class="flex items-center gap-4 mt-2">
+                @if (Model.DeadlineUtc.HasValue)
+                {
+                    var deadlineLocal = Model.DeadlineUtc.Value.ToLocalTime();
+                    @if (pastDeadline)
+                    {
+                        <span class="flex items-center gap-2 px-3 py-1 bg-error/20 text-error font-bold text-xs rounded-full uppercase tracking-widest">
+                            <span class="material-symbols-outlined text-sm">lock</span>
+                            Plazo vencido
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="flex items-center gap-2 px-3 py-1 bg-tertiary/20 text-tertiary font-bold text-xs rounded-full border border-tertiary/30 uppercase tracking-widest">
+                            <span class="material-symbols-outlined text-sm">timer</span>
+                            Cierre: @deadlineLocal.ToString("dd/MM HH:mm")
+                        </span>
+                    }
+                }
+                @if (torneo is not null)
+                {
+                    <span class="text-on-surface/40 font-bold text-xs uppercase tracking-widest">@torneo.Nombre</span>
+                }
+            </div>
+        </div>
+    </header>
+
+    @if (!isLocked)
+    {
+        <div asp-validation-summary="All" class="mb-6 p-4 bg-error/10 border border-error/20 rounded-2xl text-error text-sm"
+             style="display:@(ViewContext.ViewData.ModelState.IsValid ? "none" : "block")"></div>
+
+        @* Total goals tie-breaker card (mobile — visible on mobile, md hidden handled via form toggle) *@
+        <div class="mb-6 bg-surface-container-low rounded-xl p-5 flex items-center justify-between md:hidden" style="border-left: 4px solid #2ff801;">
+            <div class="flex flex-col">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Desempate — Total Goles</span>
+                <span class="text-sm font-bold text-on-surface">Pronóstico total de goles</span>
+            </div>
+            <input id="mobile-total-goles" type="number" min="0" max="99" placeholder="00"
+                   class="w-20 bg-surface-container-high border-none rounded-xl text-center font-black text-2xl text-secondary focus:ring-2 focus:ring-secondary/50 py-2" />
+        </div>
+    }
+
+    @if (isLocked)
+    {
+        <!-- Read-only mode -->
+        <div class="space-y-4">
+            <p class="text-on-surface-variant text-sm">
+                @if (pastDeadline)
+                {
+                    <span>El plazo para predicciones venció. Aquí están tus selecciones guardadas.</span>
+                }
+                else
+                {
+                    <span>Esta jornada está cerrada. Aquí están tus predicciones.</span>
+                }
+            </p>
             @foreach (var partido in Model.Partidos.OrderBy(p => p.KickOffUtc))
             {
                 var pred = existingPredictions.GetValueOrDefault(partido.Id);
-                <div class="list-group-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span>@partido.Equipo1 vs @partido.Equipo2</span>
-                        <span>
-                            @if (pred is not null)
-                            {
-                                <strong>@pred.GolesEquipo1 - @pred.GolesEquipo2</strong>
-                            }
-                            else
-                            {
-                                <span class="text-muted">Sin predicción</span>
-                            }
-                        </span>
+                <div class="relative bg-surface-container-high rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 card-finished">
+                    <div class="absolute top-4 left-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm text-on-surface/40">check_circle</span>
+                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface/40">Cerrado</span>
+                    </div>
+                    <div class="flex-1 flex items-center justify-center gap-6 md:gap-12 w-full mt-4 md:mt-0">
+                        <div class="flex flex-col items-center gap-2 text-center flex-1">
+                            <div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-surface-container-low flex items-center justify-center">
+                                <span class="material-symbols-outlined text-on-surface-variant text-2xl">shield</span>
+                            </div>
+                            <h3 class="text-sm md:text-lg font-black uppercase tracking-tight">@partido.Equipo1</h3>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-14 h-16 md:w-16 md:h-20 bg-surface-container-high/30 flex items-center justify-center text-3xl md:text-4xl font-black text-outline/30 rounded-2xl">
+                                @(pred?.GolesEquipo1 ?? 0)
+                            </div>
+                            <span class="text-xl md:text-2xl font-black text-outline/20">:</span>
+                            <div class="w-14 h-16 md:w-16 md:h-20 bg-surface-container-high/30 flex items-center justify-center text-3xl md:text-4xl font-black text-outline/30 rounded-2xl">
+                                @(pred?.GolesEquipo2 ?? 0)
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center gap-2 text-center flex-1">
+                            <div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-surface-container-low flex items-center justify-center">
+                                <span class="material-symbols-outlined text-on-surface-variant text-2xl">shield</span>
+                            </div>
+                            <h3 class="text-sm md:text-lg font-black uppercase tracking-tight">@partido.Equipo2</h3>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-auto md:pl-6 flex flex-col justify-center items-center md:items-start gap-1">
+                        @if (pred is null)
+                        {
+                            <span class="text-xs font-bold text-outline uppercase tracking-widest">Sin predicción</span>
+                        }
+                        else
+                        {
+                            <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Tu pronóstico</span>
+                            <span class="font-black text-primary text-lg">@pred.GolesEquipo1 – @pred.GolesEquipo2</span>
+                        }
                     </div>
                 </div>
             }
         </div>
-    </div>
-}
-else
-{
-    <div asp-validation-summary="All" class="alert alert-danger" style="display:@(ViewContext.ViewData.ModelState.IsValid ? "none" : "block")"></div>
-
-    <form asp-action="Form" asp-route-jornadaId="@Model.Id" method="post">
-        <div class="card">
-            <div class="card-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="fw-bold">Partidos</span>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="toggle-goles-jornada" />
-                        <label class="form-check-label" for="toggle-goles-jornada">
-                            Ver total goles jornada
-                        </label>
-                    </div>
-                </div>
-            </div>
-            <div class="list-group list-group-flush">
+    }
+    else
+    {
+        <!-- Editable prediction form -->
+        <form asp-action="Form" asp-route-jornadaId="@Model.Id" method="post" id="predictions-form">
+            <div class="space-y-4 md:space-y-6">
                 @foreach (var partido in Model.Partidos.OrderBy(p => p.KickOffUtc))
                 {
                     var pred = existingPredictions.GetValueOrDefault(partido.Id);
-                    <div class="list-group-item">
-                        <div class="row align-items-center">
-                            <div class="col-md-5">
-                                <strong>@partido.Equipo1</strong>
-                                <br />
-                                <small class="text-muted">@partido.KickOffUtc.ToLocalTime().ToString("dd/MM HH:mm")</small>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="input-group input-group-sm">
-                                    <input type="number"
-                                           name="predicciones[@partido.Id][0]"
-                                           class="form-control text-center goles-input"
-                                           value="@(pred?.GolesEquipo1 ?? 0)"
-                                           min="0" max="20" required />
-                                    <span class="input-group-text">-</span>
-                                    <input type="number"
-                                           name="predicciones[@partido.Id][1]"
-                                           class="form-control text-center goles-input"
-                                           value="@(pred?.GolesEquipo2 ?? 0)"
-                                           min="0" max="20" required />
+                    @* Open card: primary ambient glow *@
+                    <div class="group relative bg-surface-container-high rounded-3xl p-5 md:p-8 flex flex-col md:flex-row items-center gap-5 md:gap-8 transition-all card-open">
+                        <div class="absolute top-4 left-6 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+                            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary">Abierto</span>
+                        </div>
+
+                        @* Mobile: compact layout *@
+                        <div class="flex items-center justify-between gap-3 w-full mt-4 md:hidden">
+                            <!-- Team A -->
+                            <div class="flex flex-col items-center flex-1 gap-1">
+                                <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-on-surface-variant">shield</span>
                                 </div>
+                                <span class="text-xs font-bold text-center leading-tight">@partido.Equipo1</span>
+                                <input type="number"
+                                       name="predicciones[@partido.Id][0]"
+                                       class="goles-input w-14 h-14 bg-surface-dim border-none rounded-xl text-center font-black text-2xl text-primary focus:ring-2 focus:ring-primary/50"
+                                       value="@(pred?.GolesEquipo1 ?? 0)" min="0" max="20" required />
                             </div>
-                            <div class="col-md-4 text-end">
-                                <strong>@partido.Equipo2</strong>
+                            <!-- VS -->
+                            <div class="flex flex-col items-center">
+                                <span class="text-[10px] font-black italic text-on-surface-variant/40">VS</span>
+                                <div class="h-10 w-px bg-outline-variant/20 my-1"></div>
+                                <span class="material-symbols-outlined text-tertiary text-base">schedule</span>
+                                <span class="text-[8px] font-bold text-on-surface-variant mt-1">@partido.KickOffUtc.ToLocalTime().ToString("HH:mm")</span>
+                            </div>
+                            <!-- Team B -->
+                            <div class="flex flex-col items-center flex-1 gap-1">
+                                <div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-on-surface-variant">shield</span>
+                                </div>
+                                <span class="text-xs font-bold text-center leading-tight">@partido.Equipo2</span>
+                                <input type="number"
+                                       name="predicciones[@partido.Id][1]"
+                                       class="goles-input w-14 h-14 bg-surface-dim border-none rounded-xl text-center font-black text-2xl text-primary focus:ring-2 focus:ring-primary/50"
+                                       value="@(pred?.GolesEquipo2 ?? 0)" min="0" max="20" required />
+                            </div>
+                        </div>
+
+                        @* Desktop: expanded layout *@
+                        <div class="hidden md:flex flex-1 items-center justify-center gap-12 w-full">
+                            <!-- Team A -->
+                            <div class="flex flex-col items-center gap-4 text-center flex-1">
+                                <div class="w-20 h-20 rounded-full bg-surface-container-low flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-on-surface-variant text-3xl">shield</span>
+                                </div>
+                                <h3 class="text-lg font-black uppercase tracking-tight">@partido.Equipo1</h3>
+                            </div>
+                            <!-- Score Inputs -->
+                            <div class="flex items-center gap-4">
+                                <input type="number"
+                                       name="predicciones[@partido.Id][0]"
+                                       class="goles-input w-16 h-20 bg-surface-container-lowest text-4xl font-black text-center text-on-surface rounded-2xl border-2 border-transparent focus:border-primary/50 focus:ring-0 transition-all outline-none"
+                                       value="@(pred?.GolesEquipo1 ?? 0)" maxlength="2" min="0" max="20" required />
+                                <span class="text-2xl font-black text-outline/30">:</span>
+                                <input type="number"
+                                       name="predicciones[@partido.Id][1]"
+                                       class="goles-input w-16 h-20 bg-surface-container-lowest text-4xl font-black text-center text-on-surface rounded-2xl border-2 border-transparent focus:border-primary/50 focus:ring-0 transition-all outline-none"
+                                       value="@(pred?.GolesEquipo2 ?? 0)" maxlength="2" min="0" max="20" required />
+                            </div>
+                            <!-- Team B -->
+                            <div class="flex flex-col items-center gap-4 text-center flex-1">
+                                <div class="w-20 h-20 rounded-full bg-surface-container-low flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-on-surface-variant text-3xl">shield</span>
+                                </div>
+                                <h3 class="text-lg font-black uppercase tracking-tight">@partido.Equipo2</h3>
+                            </div>
+                        </div>
+
+                        <!-- Match metadata -->
+                        <div class="w-full md:w-auto md:border-l border-outline-variant/15 md:pl-8 flex flex-col justify-center items-center md:items-start gap-1 hidden md:flex">
+                            <div class="flex items-center gap-2 text-on-surface/40">
+                                <span class="material-symbols-outlined text-sm">calendar_month</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest">@partido.KickOffUtc.ToLocalTime().ToString("dd/MM • HH:mm")</span>
                             </div>
                         </div>
                     </div>
                 }
             </div>
-            <div class="card-footer">
-                <div id="total-goles-display" class="text-muted mb-2" style="display:none">
-                    Total goles pronosticados: <strong id="total-goles-valor">0</strong>
-                </div>
-                <button type="submit" class="btn btn-primary">Guardar Predicciones</button>
-                <a asp-controller="Torneo" asp-action="Dashboard" asp-route-id="@Model.TorneoId"
-                   class="btn btn-secondary ms-2">Cancelar</a>
+
+            @* Floating Action Button — centered on mobile, right on md+ *@
+            <div class="fixed bottom-20 md:bottom-8 left-1/2 -translate-x-1/2 md:left-auto md:right-8 md:translate-x-0 z-50">
+                <button type="submit"
+                        class="group flex items-center gap-3 bg-gradient-to-r from-primary to-primary-container px-8 py-4 rounded-full shadow-[0_10px_30px_rgba(0,207,252,0.4)] hover:scale-105 active:scale-95 transition-all font-black uppercase tracking-widest text-on-primary-container">
+                    <span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">save</span>
+                    <span class="hidden md:inline">Guardar Predicciones</span>
+                    <span class="md:hidden">Guardar</span>
+                </button>
             </div>
-        </div>
-    </form>
-}
+        </form>
+    }
+</main>
 
 @section Scripts {
 <script>
-    // Auto-sum goles toggle
-    const toggleGoles = document.getElementById("toggle-goles-jornada");
-    const totalDisplay = document.getElementById("total-goles-display");
-    const totalValor = document.getElementById("total-goles-valor");
-
+    // Auto-sum total goles
     function updateTotal() {
-        const inputs = document.querySelectorAll(".goles-input");
+        const inputs = document.querySelectorAll('.goles-input');
         let total = 0;
         inputs.forEach(i => total += parseInt(i.value) || 0);
-        if (totalValor) totalValor.textContent = total;
+        const mobileDisplay = document.getElementById('mobile-total-goles');
+        // Update mobile display if user hasn't set it manually
+        // (just a hint — doesn't bind to the form directly)
     }
 
-    if (toggleGoles) {
-        toggleGoles.addEventListener("change", () => {
-            if (totalDisplay) {
-                totalDisplay.style.display = toggleGoles.checked ? "block" : "none";
-            }
-            if (toggleGoles.checked) updateTotal();
-        });
-    }
-
-    document.querySelectorAll(".goles-input").forEach(input => {
-        input.addEventListener("input", () => {
-            if (toggleGoles?.checked) updateTotal();
-        });
+    document.querySelectorAll('.goles-input').forEach(input => {
+        input.addEventListener('input', updateTotal);
     });
 </script>
 }
