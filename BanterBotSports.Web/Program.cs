@@ -67,7 +67,15 @@ builder.Services.AddHttpClient("TelegramBot");
 // ─── Integration Services ────────────────────────────────────────────────────
 builder.Services.AddScoped<IApiFootballClient, ApiFootballClient>();
 builder.Services.AddScoped<IWhisperService, WhisperService>();
-builder.Services.AddSingleton<ITelegramBotService, TelegramBotService>();
+var telegramToken = builder.Configuration["Telegram:BotToken"];
+if (string.IsNullOrWhiteSpace(telegramToken))
+{
+    builder.Services.AddSingleton<ITelegramBotService, NullTelegramBotService>();
+}
+else
+{
+    builder.Services.AddSingleton<ITelegramBotService, TelegramBotService>();
+}
 builder.Services.AddSingleton<JornadaAbiertaNotifier>();
 
 // ─── BanterAI Services (Scoped) ──────────────────────────────────────────────

@@ -26,8 +26,9 @@ public class TelegramBotService : ITelegramBotService
 
         _logger = logger;
 
-        var botToken = configuration["Telegram:BotToken"]
-            ?? throw new InvalidOperationException("Telegram:BotToken configuration is required.");
+        var botToken = configuration["Telegram:BotToken"];
+        if (string.IsNullOrWhiteSpace(botToken))
+            throw new InvalidOperationException("Telegram:BotToken configuration is required and must not be empty.");
 
         var httpClient = httpClientFactory.CreateClient(ClientName);
         _botClient = new TelegramBotClient(botToken, httpClient);
