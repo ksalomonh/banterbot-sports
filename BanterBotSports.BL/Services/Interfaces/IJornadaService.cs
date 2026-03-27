@@ -1,4 +1,5 @@
 using BanterBotSports.Entities;
+using BanterBotSports.Entities.ViewModels;
 
 namespace BanterBotSports.BL.Services.Interfaces;
 
@@ -8,6 +9,13 @@ public interface IJornadaService
 
     /// <summary>Returns a jornada by ID including partidos and predicciones.</summary>
     Task<Jornada?> GetDetalleAsync(int jornadaId);
+
+    /// <summary>
+    /// Returns a fully-shaped ResumenViewModel for the given jornada.
+    /// Includes all participants' predictions vs official results.
+    /// Returns null when the jornada does not exist.
+    /// </summary>
+    Task<ResumenViewModel?> GetResumenJornadaAsync(int jornadaId);
 
     /// <summary>Returns all jornadas for a torneo ordered by number.</summary>
     Task<IReadOnlyList<Jornada>> GetByTorneoIdAsync(int torneoId);

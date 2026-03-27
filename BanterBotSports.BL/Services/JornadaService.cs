@@ -3,6 +3,7 @@ using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL.Repositories.Interfaces;
 using BanterBotSports.Entities;
 using BanterBotSports.Entities.Enums;
+using BanterBotSports.Entities.ViewModels;
 using Microsoft.Extensions.Logging;
 
 namespace BanterBotSports.BL.Services;
@@ -16,6 +17,7 @@ public class JornadaService : IJornadaService
 {
     private readonly IJornadaRepository _jornadaRepository;
     private readonly IPartidoRepository _partidoRepository;
+    private readonly IParticipanteRepository _participanteRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<JornadaService> _logger;
 
@@ -34,16 +36,19 @@ public class JornadaService : IJornadaService
     public JornadaService(
         IJornadaRepository jornadaRepository,
         IPartidoRepository partidoRepository,
+        IParticipanteRepository participanteRepository,
         IUnitOfWork unitOfWork,
         ILogger<JornadaService> logger)
     {
         ArgumentNullException.ThrowIfNull(jornadaRepository);
         ArgumentNullException.ThrowIfNull(partidoRepository);
+        ArgumentNullException.ThrowIfNull(participanteRepository);
         ArgumentNullException.ThrowIfNull(unitOfWork);
         ArgumentNullException.ThrowIfNull(logger);
 
         _jornadaRepository = jornadaRepository;
         _partidoRepository = partidoRepository;
+        _participanteRepository = participanteRepository;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
@@ -123,6 +128,66 @@ public class JornadaService : IJornadaService
         // Notify subscribers (e.g. BanterAI dispatch, score settlement)
         if (JornadaFinalizada is not null)
             await JornadaFinalizada.Invoke(jornada);
+    }
+
+    // ─── Resumen ──────────────────────────────────────────────────────────────
+
+    public async Task<ResumenViewModel?> GetResumenJornadaAsync(int jornadaId)
+    {
+        // Single query: jornada + torneo + participantes + partidos + predicciones por partido
+        var jornada = await _jornadaRepository.GetByIdWithResumenAsync(jornadaId);
+        if (jornada is null)
+            return null;
+
+        var torneo = jornada.Torneo;
+        var partidos = jornada.Partidos.OrderBy(p => p.KickOffUtc).ToList();
+
+        // Resolve display names for all participants in one query
+        var userIds = torneo.Participantes.Select(p => p.UserId).ToList();
+        var displayNames = await _participanteRepository.GetDisplayNamesByIdsAsync(userIds);
+
+        // Build per-participant rows
+        var filas = torneo.Participantes
+            .Select(participante =>
+            {
+                // Points for this jornada from PrediccionesJornada
+                var pjornada = jornada.PrediccionesJornada
+                    .FirstOrDefault(pj => pj.ParticipanteId == participante.Id);
+                int puntosJornada = pjornada?.PuntosObtenidos ?? 0;
+
+                // Per-match prediction vs result
+                var predicciones = partidos.Select(partido =>
+                {
+                    var pred = partido.PrediccionesPartido
+                        .FirstOrDefault(pp => pp.ParticipanteId == participante.Id);
+
+                    return new PrediccionConResultado(
+                        PartidoId: partido.Id,
+                        Equipo1: partido.Equipo1,
+                        Equipo2: partido.Equipo2,
+                        GolesEquipo1Oficial: partido.GolesEquipo1Oficial,
+                        GolesEquipo2Oficial: partido.GolesEquipo2Oficial,
+                        GolesPredichos1: pred?.GolesEquipo1,
+                        GolesPredichos2: pred?.GolesEquipo2,
+                        PuntosObtenidos: pred?.PuntosObtenidos);
+                }).ToList();
+
+                var nombreDisplay = displayNames.GetValueOrDefault(participante.UserId, participante.UserId);
+
+                return new ResumenParticipanteRow(
+                    NombreDisplay: nombreDisplay,
+                    PuntosJornada: puntosJornada,
+                    Predicciones: predicciones);
+            })
+            .OrderByDescending(r => r.PuntosJornada)
+            .ToList();
+
+        return new ResumenViewModel(
+            JornadaId: jornada.Id,
+            JornadaNumero: jornada.Numero,
+            TorneoNombre: torneo.Nombre,
+            TorneoId: torneo.Id,
+            Participantes: filas);
     }
 
     private async Task<Jornada> GetJornadaOrThrowAsync(int jornadaId)

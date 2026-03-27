@@ -198,6 +198,17 @@ public class JornadaController : Controller
         return RedirectToAction(nameof(Detalle), new { id });
     }
 
+    // GET /jornada/{id}/resumen
+    [HttpGet("/jornada/{id:int}/resumen")]
+    public async Task<IActionResult> Resumen(int id)
+    {
+        var resumen = await _jornadaService.GetResumenJornadaAsync(id);
+        if (resumen is null)
+            return NotFound();
+
+        return View(resumen);
+    }
+
     // GET /jornada/{id}/buscar-partidos?q=...
     [HttpGet("/jornada/{id:int}/buscar-partidos")]
     public async Task<IActionResult> BuscarPartidos(int id, [FromQuery] string? q)

@@ -26,6 +26,16 @@ public class JornadaRepository : IJornadaRepository
             .Include(j => j.PrediccionesJornada)
             .FirstOrDefaultAsync(j => j.Id == id);
 
+    public async Task<Jornada?> GetByIdWithResumenAsync(int id)
+        => await _context.Jornadas
+            .Include(j => j.Torneo)
+                .ThenInclude(t => t.Participantes)
+            .Include(j => j.Partidos)
+                .ThenInclude(p => p.PrediccionesPartido)
+                    .ThenInclude(pp => pp.Participante)
+            .Include(j => j.PrediccionesJornada)
+            .FirstOrDefaultAsync(j => j.Id == id);
+
     public async Task<IReadOnlyList<Jornada>> GetAllAsync()
         => await _context.Jornadas.ToListAsync();
 

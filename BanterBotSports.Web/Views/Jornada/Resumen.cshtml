@@ -1,0 +1,279 @@
+@using BanterBotSports.Entities.ViewModels
+@model ResumenViewModel
+@{
+    ViewData["Title"] = $"Resumen — Jornada {Model.JornadaNumero}";
+}
+
+@section Styles {
+<style>
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .neon-glow-primary { box-shadow: 0 0 15px rgba(105, 218, 255, 0.3); }
+    .neon-glow-secondary { box-shadow: 0 0 15px rgba(47, 248, 1, 0.3); }
+    .prediction-result-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 0.25rem;
+        font-size: 0.6rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+</style>
+}
+
+@{
+    // Helper: map ResultadoPrediccion enum to Tailwind CSS classes
+    // Computed in the BL layer — no logic in the view
+    static string BadgeClass(ResultadoPrediccion r) => r switch
+    {
+        ResultadoPrediccion.Exacto           => "bg-secondary text-on-secondary",
+        ResultadoPrediccion.ResultadoCorrecto => "bg-primary/20 text-primary",
+        _                                     => "bg-surface-variant text-on-surface-variant"
+    };
+
+    static string BadgeText(ResultadoPrediccion r) => r switch
+    {
+        ResultadoPrediccion.Exacto            => "Exacto",
+        ResultadoPrediccion.ResultadoCorrecto => "Resultado",
+        ResultadoPrediccion.Fallido           => "Fallido",
+        _                                     => "–"
+    };
+
+    static string PredBorderClass(ResultadoPrediccion r) => r switch
+    {
+        ResultadoPrediccion.Exacto            => "border border-secondary/30",
+        ResultadoPrediccion.ResultadoCorrecto => "border border-primary/20",
+        _                                     => "border border-outline-variant/10"
+    };
+
+    static string PredTextClass(ResultadoPrediccion r) => r switch
+    {
+        ResultadoPrediccion.Exacto            => "text-secondary",
+        ResultadoPrediccion.ResultadoCorrecto => "text-primary",
+        _                                     => "text-on-surface"
+    };
+}
+
+<main class="pt-4 pb-24 md:pb-8 md:pr-[22rem]">
+    <!-- Header -->
+    <header class="mb-12 flex flex-col md:flex-row items-end justify-between gap-6">
+        <div class="space-y-2">
+            <nav class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">
+                <a asp-controller="Torneo" asp-action="Dashboard" asp-route-id="@Model.TorneoId"
+                   class="hover:text-primary transition-colors">@Model.TorneoNombre</a>
+                <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+                <a asp-controller="Jornada" asp-action="Detalle" asp-route-id="@Model.JornadaId"
+                   class="hover:text-primary transition-colors">Jornada @Model.JornadaNumero</a>
+                <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+                <span class="text-primary">Resumen</span>
+            </nav>
+            <span class="bg-secondary text-on-secondary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest neon-glow-secondary">
+                Jornada @Model.JornadaNumero Finalizada
+            </span>
+            <h1 class="text-4xl md:text-6xl font-black italic tracking-tighter text-on-background uppercase">
+                Recap <span class="text-primary">Jornada</span>
+            </h1>
+        </div>
+        <!-- Stats grid -->
+        <div class="flex gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+            @{
+                var topParticipante = Model.Participantes.FirstOrDefault();
+            }
+            @if (topParticipante is not null)
+            {
+                <div class="bg-surface-container-high p-6 rounded-xl min-w-[160px] flex flex-col justify-between h-32 border-l-4 border-primary flex-shrink-0">
+                    <span class="text-[10px] uppercase tracking-widest text-on-surface-variant">Líder</span>
+                    <div>
+                        <p class="text-sm font-black text-primary">@topParticipante.NombreDisplay</p>
+                        <p class="text-2xl font-black text-on-surface">@topParticipante.PuntosJornada pts</p>
+                    </div>
+                </div>
+            }
+            <div class="bg-surface-container-high p-6 rounded-xl min-w-[160px] flex flex-col justify-between h-32 border-l-4 border-secondary flex-shrink-0">
+                <span class="text-[10px] uppercase tracking-widest text-on-surface-variant">Participantes</span>
+                <span class="text-4xl font-black text-on-surface">@Model.Participantes.Count</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Match Results comparison (main column) -->
+        <div class="lg:col-span-8 space-y-6">
+            <h2 class="text-2xl font-bold flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">analytics</span>
+                Predicciones vs Resultado
+            </h2>
+
+            @if (!Model.Participantes.Any())
+            {
+                <div class="p-6 bg-surface-container-low rounded-2xl text-on-surface-variant text-sm">
+                    No hay participantes con predicciones para esta jornada.
+                </div>
+            }
+            else
+            {
+                @foreach (var participante in Model.Participantes)
+                {
+                    <div class="bg-surface-container-low rounded-2xl overflow-hidden">
+                        <!-- Participant header -->
+                        <div class="flex items-center justify-between px-6 py-4 bg-surface-container-high">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-primary text-sm">person</span>
+                                </div>
+                                <span class="font-black text-sm uppercase tracking-tight">@participante.NombreDisplay</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Puntos Jornada</span>
+                                <span class="text-2xl font-black @(participante.PuntosJornada > 0 ? "text-secondary" : "text-on-surface-variant/40")">
+                                    +@participante.PuntosJornada
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Match rows -->
+                        <div class="divide-y divide-outline-variant/5">
+                            @foreach (var pred in participante.Predicciones)
+                            {
+                                @* pred.Resultado is computed in BL (ResultadoPrediccion enum) — no logic here *@
+                                var resultado = pred.Resultado;
+                                var tieneResultado = pred.GolesEquipo1Oficial.HasValue && pred.GolesEquipo2Oficial.HasValue;
+                                var tienePrediccion = pred.GolesPredichos1.HasValue && pred.GolesPredichos2.HasValue;
+
+                                <div class="p-5 flex flex-col md:flex-row items-center justify-between gap-4 relative group hover:bg-surface-container/30 transition-colors">
+                                    <!-- Match teams + official result -->
+                                    <div class="flex items-center gap-3 z-10 w-full md:w-auto justify-between md:justify-start">
+                                        <div class="text-center">
+                                            <div class="w-10 h-10 bg-surface-container-highest rounded-full flex items-center justify-center mb-1">
+                                                <span class="material-symbols-outlined text-on-surface-variant text-sm">shield</span>
+                                            </div>
+                                            <p class="text-[0.6rem] font-black uppercase text-on-surface-variant">@pred.Equipo1</p>
+                                        </div>
+                                        <div class="flex flex-col items-center gap-1 px-3">
+                                            @if (tieneResultado)
+                                            {
+                                                <span class="text-xl font-black tracking-widest">@pred.GolesEquipo1Oficial – @pred.GolesEquipo2Oficial</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-xl font-black text-on-surface-variant/40">? – ?</span>
+                                            }
+                                            <span class="text-[0.6rem] text-on-surface-variant uppercase bg-surface-container px-2 py-0.5 rounded">Resultado</span>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="w-10 h-10 bg-surface-container-highest rounded-full flex items-center justify-center mb-1">
+                                                <span class="material-symbols-outlined text-on-surface-variant text-sm">shield</span>
+                                            </div>
+                                            <p class="text-[0.6rem] font-black uppercase text-on-surface-variant">@pred.Equipo2</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Prediction marker -->
+                                    <div class="bg-surface-container-high px-6 py-3 rounded-xl flex flex-col items-center justify-center @PredBorderClass(resultado) z-10">
+                                        <span class="text-[0.65rem] uppercase tracking-widest text-on-surface-variant mb-1">Tu predicción</span>
+                                        @if (tienePrediccion)
+                                        {
+                                            <span class="text-lg font-bold @PredTextClass(resultado)">
+                                                @pred.GolesPredichos1 – @pred.GolesPredichos2
+                                            </span>
+                                            @if (resultado != ResultadoPrediccion.SinPrediccion)
+                                            {
+                                                <span class="prediction-result-badge @BadgeClass(resultado) mt-1">@BadgeText(resultado)</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-sm font-bold text-on-surface-variant">Sin predicción</span>
+                                        }
+                                    </div>
+
+                                    <!-- Points -->
+                                    <div class="flex flex-col items-end z-10">
+                                        @if (pred.PuntosObtenidos.HasValue && pred.PuntosObtenidos.Value > 0)
+                                        {
+                                            <span class="text-3xl font-black text-secondary">+@pred.PuntosObtenidos</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-3xl font-black text-on-surface-variant opacity-40">+0</span>
+                                        }
+                                        <span class="text-[0.6rem] uppercase tracking-widest text-on-surface-variant">pts</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Standings sidebar (desktop) -->
+        <aside class="lg:col-span-4 space-y-6">
+            <h2 class="text-2xl font-bold flex items-center gap-2">
+                <span class="material-symbols-outlined text-secondary">leaderboard</span>
+                Clasificación Jornada
+            </h2>
+            <div class="bg-surface-container-highest/60 backdrop-blur-xl rounded-3xl p-6 space-y-4">
+                @foreach (var (participante, idx) in Model.Participantes.Select((p, i) => (p, i)))
+                {
+                    var posClass = idx == 0 ? "text-secondary" : idx == 1 ? "text-primary" : "text-on-surface-variant";
+                    <div class="flex items-center justify-between p-3 @(idx == 0 ? "bg-secondary/10 rounded-xl" : "")">
+                        <div class="flex items-center gap-3">
+                            <span class="text-lg font-black @posClass w-6 text-center">@(idx + 1)</span>
+                            <span class="text-sm font-bold">@participante.NombreDisplay</span>
+                        </div>
+                        <span class="font-black @posClass">@participante.PuntosJornada pts</span>
+                    </div>
+                }
+            </div>
+
+            <!-- CTA -->
+            <div class="p-6 bg-surface-container-low rounded-3xl flex flex-col gap-4">
+                <h3 class="text-lg font-bold text-on-surface">¿Listo para la siguiente?</h3>
+                <div class="flex flex-col gap-2">
+                    <a asp-controller="Torneo" asp-action="Dashboard" asp-route-id="@Model.TorneoId"
+                       class="text-center px-6 py-3 bg-surface-container-highest text-on-surface font-bold rounded-xl hover:bg-surface-bright transition-colors">
+                        Ver Torneo
+                    </a>
+                    <a asp-controller="Torneo" asp-action="Leaderboard" asp-route-id="@Model.TorneoId"
+                       class="text-center px-6 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-black rounded-xl neon-glow-primary">
+                        Ver Ranking
+                    </a>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Mobile: Standings list (below cards) -->
+    <div class="lg:hidden mt-8 space-y-4">
+        <h2 class="text-xl font-bold flex items-center gap-2">
+            <span class="w-1 h-5 bg-secondary rounded-full"></span>
+            Clasificación Jornada
+        </h2>
+        <div class="bg-surface-container-low rounded-2xl overflow-hidden divide-y divide-outline-variant/5">
+            @foreach (var (participante, idx) in Model.Participantes.Select((p, i) => (p, i)))
+            {
+                var rowBg = idx == 0 ? "bg-secondary/10" : "hover:bg-surface-container/30";
+                <div class="flex items-center justify-between px-4 py-4 @rowBg transition-colors">
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-black text-on-surface-variant w-6 text-center">@(idx + 1)</span>
+                        <span class="text-sm font-bold">@participante.NombreDisplay</span>
+                    </div>
+                    <span class="font-black @(idx == 0 ? "text-secondary" : "text-on-surface")">@participante.PuntosJornada pts</span>
+                </div>
+            }
+        </div>
+        <div class="flex gap-3 mt-4">
+            <a asp-controller="Torneo" asp-action="Dashboard" asp-route-id="@Model.TorneoId"
+               class="flex-1 text-center py-3 bg-surface-container-highest text-on-surface font-bold rounded-xl">
+                Ver Torneo
+            </a>
+            <a asp-controller="Torneo" asp-action="Leaderboard" asp-route-id="@Model.TorneoId"
+               class="flex-1 text-center py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-black rounded-xl">
+                Ranking
+            </a>
+        </div>
+    </div>
+</main>
