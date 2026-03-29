@@ -9,6 +9,7 @@ using BanterBotSports.Integrations.ApiFootball;
 using BanterBotSports.Integrations.Hosted;
 using BanterBotSports.Integrations.Telegram;
 using BanterBotSports.Web.Hubs;
+using BanterBotSports.Web.Services;
 using BanterBotSports.Web.Telegram;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,8 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<AppUser>, AppUserClaimsPrincipalFactory>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
