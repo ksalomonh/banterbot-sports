@@ -2,6 +2,7 @@ using BanterBotSports.DAL;
 using BanterBotSports.DAL.Repositories.Interfaces;
 using BanterBotSports.Entities;
 using BanterBotSports.Entities.DTOs;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
 namespace BanterBotSports.Integrations.ApiFootball;
@@ -9,29 +10,37 @@ namespace BanterBotSports.Integrations.ApiFootball;
 /// <summary>
 /// Caching wrapper for IApiFootballClient.
 /// Reads from PostgreSQL when cached data is available for the requested range.
-/// Calls the API otherwise and persists results to PostgreSQL before returning.
+/// Falls back to in-memory cache (short TTL) for search results that cannot be
+/// persisted to PostgreSQL yet (no JornadaId assigned).
+/// Calls the API only on a complete cache miss.
 /// </summary>
 public class ApiFootballSyncService : IApiFootballSyncService
 {
     private readonly IApiFootballClient _apiClient;
     private readonly IPartidoRepository _partidoRepository;
     private readonly AppDbContext _context;
+    private readonly IMemoryCache _memoryCache;
     private readonly ILogger<ApiFootballSyncService> _logger;
+
+    private static readonly TimeSpan SearchCacheTtl = TimeSpan.FromMinutes(10);
 
     public ApiFootballSyncService(
         IApiFootballClient apiClient,
         IPartidoRepository partidoRepository,
         AppDbContext context,
+        IMemoryCache memoryCache,
         ILogger<ApiFootballSyncService> logger)
     {
         ArgumentNullException.ThrowIfNull(apiClient);
         ArgumentNullException.ThrowIfNull(partidoRepository);
         ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(memoryCache);
         ArgumentNullException.ThrowIfNull(logger);
 
         _apiClient = apiClient;
         _partidoRepository = partidoRepository;
         _context = context;
+        _memoryCache = memoryCache;
         _logger = logger;
     }
 
@@ -51,12 +60,23 @@ public class ApiFootballSyncService : IApiFootballSyncService
             return cached.Select(MapToDto).ToList().AsReadOnly();
         }
 
-        // 2. Cache miss — fetch from API
+        // 2. Check in-memory cache (short TTL) — covers search results that cannot be
+        //    persisted to PostgreSQL because no JornadaId has been assigned yet.
+        var memoryCacheKey = $"apifootball:search:{competitionId}:{from:yyyy-MM-dd}:{to:yyyy-MM-dd}";
+        if (_memoryCache.TryGetValue(memoryCacheKey, out IReadOnlyList<PartidoDto>? memoryCached) && memoryCached is not null)
+        {
+            _logger.LogDebug("Returning {Count} matches from in-memory cache for competition {CompetitionId}.",
+                memoryCached.Count, competitionId);
+            return memoryCached;
+        }
+
+        // 3. Full cache miss — fetch from API
         _logger.LogDebug("Cache miss for range {From}–{To} — fetching from API-Football.", from, to);
         var apiResults = await _apiClient.GetMatchesAsync(competitionId, from, to);
 
-        // 3. Persist to PostgreSQL — update existing records by externalId
+        // 4. Persist to PostgreSQL for already-assigned fixtures; cache remainder in memory
         await PersistMatchResultsAsync(apiResults);
+        _memoryCache.Set(memoryCacheKey, apiResults, SearchCacheTtl);
 
         return apiResults;
     }
@@ -69,6 +89,21 @@ public class ApiFootballSyncService : IApiFootballSyncService
             await PersistLiveScoreAsync(liveScore);
 
         return liveScore;
+    }
+
+    public async Task<PartidoDto?> GetFixtureByIdAsync(int externalId, CancellationToken ct = default)
+    {
+        // 1. Try DB cache first
+        var existing = await _partidoRepository.GetByExternalIdAsync(externalId.ToString());
+        if (existing is not null)
+        {
+            _logger.LogDebug("Returning fixture {ExternalId} from PostgreSQL cache.", externalId);
+            return MapToDto(existing);
+        }
+
+        // 2. Cache miss — fetch from API (do not persist; no JornadaId assigned yet)
+        _logger.LogDebug("Cache miss for fixture {ExternalId} — fetching from API-Football.", externalId);
+        return await _apiClient.GetFixtureByIdAsync(externalId, ct);
     }
 
     private async Task PersistMatchResultsAsync(IReadOnlyList<PartidoDto> partidos)

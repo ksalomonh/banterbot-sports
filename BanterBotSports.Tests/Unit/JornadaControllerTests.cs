@@ -47,7 +47,7 @@ public class JornadaControllerTests
         var partidoSvc = partidoServiceMock ?? new Mock<IPartidoService>();
         var torneoSvc = torneoServiceMock ?? new Mock<ITorneoService>();
         var prediccionSvc = prediccionServiceMock ?? new Mock<IPrediccionService>();
-        var apiFootball = new Mock<IApiFootballClient>();
+        var apiFootball = new Mock<IApiFootballSyncService>();
         var banterDispatch = new Mock<IBanterDispatchService>();
 
         // UserManager<AppUser>: mock the minimum surface needed.

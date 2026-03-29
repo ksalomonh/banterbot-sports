@@ -19,4 +19,11 @@ public interface IApiFootballSyncService
     /// Fetches live score for a match from API-Football and updates the PostgreSQL cache.
     /// </summary>
     Task<PartidoDto?> GetLiveScoreAsync(int externalId);
+
+    /// <summary>
+    /// Returns fixture data for the given external fixture ID.
+    /// Tries PostgreSQL cache first; falls back to API-Football on cache miss.
+    /// Does not persist on cache miss (no JornadaId assigned yet).
+    /// </summary>
+    Task<PartidoDto?> GetFixtureByIdAsync(int externalId, CancellationToken ct = default);
 }

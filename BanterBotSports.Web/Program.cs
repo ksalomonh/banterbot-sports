@@ -61,6 +61,9 @@ builder.Services.AddScoped<IPartidoService, PartidoService>();
 builder.Services.AddScoped<IJornadaService, JornadaService>();
 builder.Services.AddScoped<ITelegramVinculacionService, TelegramVinculacionService>();
 
+// ─── In-Memory Cache (used by ApiFootballSyncService for search results) ─────
+builder.Services.AddMemoryCache();
+
 // ─── Named HttpClients ───────────────────────────────────────────────────────
 builder.Services.AddHttpClient("ApiFootball");
 builder.Services.AddHttpClient("Anthropic");
@@ -68,7 +71,23 @@ builder.Services.AddHttpClient("Whisper");
 builder.Services.AddHttpClient("TelegramBot");
 
 // ─── Integration Services ────────────────────────────────────────────────────
-builder.Services.AddScoped<IApiFootballClient, ApiFootballClient>();
+var apiFootballKey = builder.Configuration["ApiFootball:ApiKey"];
+var apiFootballConfigured = !string.IsNullOrWhiteSpace(apiFootballKey)
+    && apiFootballKey != "REPLACE_WITH_API_KEY";
+
+if (apiFootballConfigured)
+{
+    // ApiFootballClient uses IHttpClientFactory internally (named client "ApiFootball"),
+    // so we register it as a scoped service — not as a typed HttpClient.
+    builder.Services.AddScoped<IApiFootballClient, ApiFootballClient>();
+    builder.Services.AddScoped<IApiFootballSyncService, ApiFootballSyncService>();
+}
+else
+{
+    builder.Services.AddSingleton<IApiFootballClient, NullApiFootballClient>();
+    builder.Services.AddSingleton<IApiFootballSyncService, NullApiFootballSyncService>();
+}
+
 builder.Services.AddScoped<IWhisperService, WhisperService>();
 var telegramToken = builder.Configuration["Telegram:BotToken"];
 if (string.IsNullOrWhiteSpace(telegramToken))

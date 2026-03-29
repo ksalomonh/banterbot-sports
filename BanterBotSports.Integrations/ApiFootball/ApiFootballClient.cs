@@ -83,16 +83,33 @@ public class ApiFootballClient : IApiFootballClient
         }
     }
 
-    private async Task<T?> FetchAsync<T>(string url)
+    public async Task<PartidoDto?> GetFixtureByIdAsync(int externalId, CancellationToken ct = default)
+    {
+        var url = $"{BaseAddress}/fixtures?id={externalId}";
+
+        try
+        {
+            var apiResponse = await FetchAsync<ApiFootballResponse>(url, ct);
+            var fixture = apiResponse?.Response?.FirstOrDefault();
+            return fixture is null ? null : MapFixtureToDto(fixture);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching fixture by id {ExternalId}", externalId);
+            return null;
+        }
+    }
+
+    private async Task<T?> FetchAsync<T>(string url, CancellationToken ct = default)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.Headers.Add("x-apisports-key", _apiKey);
 
         var client = _httpClientFactory.CreateClient(ClientName);
-        var response = await client.SendAsync(request);
+        var response = await client.SendAsync(request, ct);
         response.EnsureSuccessStatusCode();
 
-        var json = await response.Content.ReadAsStringAsync();
+        var json = await response.Content.ReadAsStringAsync(ct);
         return JsonSerializer.Deserialize<T>(json, JsonOptions);
     }
 

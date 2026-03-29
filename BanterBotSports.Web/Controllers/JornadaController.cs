@@ -18,7 +18,7 @@ public class JornadaController : Controller
     private readonly IPartidoService _partidoService;
     private readonly ITorneoService _torneoService;
     private readonly IPrediccionService _prediccionService;
-    private readonly IApiFootballClient _apiFootballClient;
+    private readonly IApiFootballSyncService _apiFootballSyncService;
     private readonly UserManager<DAL.AppUser> _userManager;
     private readonly ILogger<JornadaController> _logger;
 
@@ -27,7 +27,7 @@ public class JornadaController : Controller
         IPartidoService partidoService,
         ITorneoService torneoService,
         IPrediccionService prediccionService,
-        IApiFootballClient apiFootballClient,
+        IApiFootballSyncService apiFootballSyncService,
         UserManager<DAL.AppUser> userManager,
         ILogger<JornadaController> logger,
         JornadaAbiertaNotifier jornadaAbiertaNotifier,
@@ -37,7 +37,7 @@ public class JornadaController : Controller
         ArgumentNullException.ThrowIfNull(partidoService);
         ArgumentNullException.ThrowIfNull(torneoService);
         ArgumentNullException.ThrowIfNull(prediccionService);
-        ArgumentNullException.ThrowIfNull(apiFootballClient);
+        ArgumentNullException.ThrowIfNull(apiFootballSyncService);
         ArgumentNullException.ThrowIfNull(userManager);
         ArgumentNullException.ThrowIfNull(logger);
         ArgumentNullException.ThrowIfNull(jornadaAbiertaNotifier);
@@ -47,7 +47,7 @@ public class JornadaController : Controller
         _partidoService = partidoService;
         _torneoService = torneoService;
         _prediccionService = prediccionService;
-        _apiFootballClient = apiFootballClient;
+        _apiFootballSyncService = apiFootballSyncService;
         _userManager = userManager;
         _logger = logger;
 
@@ -93,8 +93,7 @@ public class JornadaController : Controller
             return RedirectToAction(nameof(Detalle), new { id });
         }
 
-        // IApiFootballClient caches responses in PostgreSQL per integrations layer rule.
-        var matchDto = await _apiFootballClient.GetLiveScoreAsync(extId);
+        var matchDto = await _apiFootballSyncService.GetFixtureByIdAsync(extId);
         if (matchDto is null)
         {
             TempData[TempDataKeys.Error] = "No se encontró el partido con ese ID en API-Football.";
@@ -220,9 +219,6 @@ public class JornadaController : Controller
         var from = today.AddDays(-30);
         var to = today.AddDays(30);
 
-        // IApiFootballClient caches responses in PostgreSQL per integrations layer rule.
-        // Results are returned from the local cache when available; the API is only hit on misses.
-        //
         // Search modes:
         //  - Numeric q → treated as a competition/league ID; returns all matches for that competition.
         //  - Text q    → requires a prior competition search; returns empty (API-Football does not support
@@ -230,7 +226,7 @@ public class JornadaController : Controller
         if (!int.TryParse(q, out var competitionId))
             return Json(Array.Empty<PartidoDto>());
 
-        var results = await _apiFootballClient.GetMatchesAsync(competitionId, from, to);
+        var results = await _apiFootballSyncService.GetMatchesAsync(competitionId, from, to);
 
         var filtered = results.Take(20).ToList();
 
