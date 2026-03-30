@@ -152,6 +152,14 @@ app.MapControllerRoute(
 
 app.MapHub<TorneoHub>("/torneoHub");
 
+// ─── API-Football null-mode warning ─────────────────────────────────────────
+if (!apiFootballConfigured)
+{
+    app.Logger.LogWarning(
+        "API-Football: ApiKey not configured or is placeholder — running in null mode. " +
+        "Set ApiFootball:ApiKey in appsettings to enable live scores.");
+}
+
 // ─── Telegram webhook setup ──────────────────────────────────────────────────
 var webhookUrl = builder.Configuration["Telegram:WebhookUrl"];
 if (!string.IsNullOrWhiteSpace(webhookUrl))
