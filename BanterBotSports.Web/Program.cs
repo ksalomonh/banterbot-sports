@@ -9,6 +9,7 @@ using BanterBotSports.Integrations.ApiFootball;
 using BanterBotSports.Integrations.Hosted;
 using BanterBotSports.Integrations.Telegram;
 using BanterBotSports.Web.Hubs;
+using BanterBotSports.Web.Services;
 using BanterBotSports.Web.Telegram;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,8 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<AppUser>, AppUserClaimsPrincipalFactory>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -58,6 +61,9 @@ builder.Services.AddScoped<IPartidoService, PartidoService>();
 builder.Services.AddScoped<IJornadaService, JornadaService>();
 builder.Services.AddScoped<ITelegramVinculacionService, TelegramVinculacionService>();
 
+// ─── In-Memory Cache (used by ApiFootballSyncService for search results) ─────
+builder.Services.AddMemoryCache();
+
 // ─── Named HttpClients ───────────────────────────────────────────────────────
 builder.Services.AddHttpClient("ApiFootball");
 builder.Services.AddHttpClient("Anthropic");
@@ -65,7 +71,23 @@ builder.Services.AddHttpClient("Whisper");
 builder.Services.AddHttpClient("TelegramBot");
 
 // ─── Integration Services ────────────────────────────────────────────────────
-builder.Services.AddScoped<IApiFootballClient, ApiFootballClient>();
+var apiFootballKey = builder.Configuration["ApiFootball:ApiKey"];
+var apiFootballConfigured = !string.IsNullOrWhiteSpace(apiFootballKey)
+    && apiFootballKey != "REPLACE_WITH_API_KEY";
+
+if (apiFootballConfigured)
+{
+    // ApiFootballClient uses IHttpClientFactory internally (named client "ApiFootball"),
+    // so we register it as a scoped service — not as a typed HttpClient.
+    builder.Services.AddScoped<IApiFootballClient, ApiFootballClient>();
+    builder.Services.AddScoped<IApiFootballSyncService, ApiFootballSyncService>();
+}
+else
+{
+    builder.Services.AddSingleton<IApiFootballClient, NullApiFootballClient>();
+    builder.Services.AddSingleton<IApiFootballSyncService, NullApiFootballSyncService>();
+}
+
 builder.Services.AddScoped<IWhisperService, WhisperService>();
 var telegramToken = builder.Configuration["Telegram:BotToken"];
 if (string.IsNullOrWhiteSpace(telegramToken))
@@ -109,6 +131,7 @@ using (var scope = app.Services.CreateScope())
 // UseExceptionHandler is always active so DB/internal errors never expose stack
 // traces to the browser — not even in Development when run outside a debugger.
 app.UseExceptionHandler("/Home/Error");
+app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
 
 if (!app.Environment.IsDevelopment())
 {
@@ -128,6 +151,14 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 app.MapHub<TorneoHub>("/torneoHub");
+
+// ─── API-Football null-mode warning ─────────────────────────────────────────
+if (!apiFootballConfigured)
+{
+    app.Logger.LogWarning(
+        "API-Football: ApiKey not configured or is placeholder — running in null mode. " +
+        "Set ApiFootball:ApiKey in appsettings to enable live scores.");
+}
 
 // ─── Telegram webhook setup ──────────────────────────────────────────────────
 var webhookUrl = builder.Configuration["Telegram:WebhookUrl"];

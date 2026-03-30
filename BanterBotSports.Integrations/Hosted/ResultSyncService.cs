@@ -74,7 +74,7 @@ public class ResultSyncService : IHostedService, IAsyncDisposable
             await using var scope = _scopeFactory.CreateAsyncScope();
             var partidoRepository = scope.ServiceProvider.GetRequiredService<IPartidoRepository>();
             var partidoService = scope.ServiceProvider.GetRequiredService<IPartidoService>();
-            var apiFootballClient = scope.ServiceProvider.GetRequiredService<IApiFootballClient>();
+            var apiFootballSyncService = scope.ServiceProvider.GetRequiredService<IApiFootballSyncService>();
 
             var activeMatches = await partidoRepository.GetByEstadoAsync(EstadoPartido.EnCurso);
 
@@ -92,7 +92,7 @@ public class ResultSyncService : IHostedService, IAsyncDisposable
 
                 try
                 {
-                    var liveScore = await apiFootballClient.GetLiveScoreAsync(externalId);
+                    var liveScore = await apiFootballSyncService.GetLiveScoreAsync(externalId);
 
                     if (liveScore is null)
                         continue;

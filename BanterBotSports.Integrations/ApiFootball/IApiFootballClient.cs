@@ -6,4 +6,5 @@ public interface IApiFootballClient
 {
     Task<IReadOnlyList<PartidoDto>> GetMatchesAsync(int competitionId, DateOnly from, DateOnly to);
     Task<PartidoDto?> GetLiveScoreAsync(int externalId);
+    Task<PartidoDto?> GetFixtureByIdAsync(int externalId, CancellationToken ct = default);
 }

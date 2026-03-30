@@ -148,11 +148,52 @@ public class AccountController : Controller
 
         var vm = new ProfileViewModel
         {
-            NombreDisplay = user.NombreDisplay,
-            Email         = user.Email,
+            NombreDisplay  = user.NombreDisplay,
+            Email          = user.Email,
             TelegramChatId = user.PhoneNumber
         };
 
+        ViewData["EditModel"] = new ProfileEditViewModel { NombreDisplay = user.NombreDisplay ?? "" };
+
         return View(vm);
+    }
+
+    // POST /Account/Profile
+    [HttpPost]
+    [Authorize]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Profile(ProfileEditViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null) return RedirectToAction(nameof(Login));
+
+            var profileModel = new ProfileViewModel
+            {
+                Email          = currentUser.Email,
+                NombreDisplay  = currentUser.NombreDisplay,
+                TelegramChatId = currentUser.PhoneNumber
+            };
+            ViewData["EditModel"] = model;
+            return View(profileModel);
+        }
+
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return RedirectToAction(nameof(Login));
+
+        user.NombreDisplay = model.NombreDisplay;
+        var result = await _userManager.UpdateAsync(user);
+        if (result.Succeeded)
+        {
+            await _signInManager.RefreshSignInAsync(user);
+            TempData[TempDataKeys.Success] = "Nombre de jugador actualizado correctamente";
+        }
+        else
+        {
+            TempData[TempDataKeys.Error] = "No se pudo actualizar el nombre. Intentá de nuevo.";
+        }
+
+        return RedirectToAction(nameof(Profile));
     }
 }

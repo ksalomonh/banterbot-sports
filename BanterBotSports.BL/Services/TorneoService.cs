@@ -152,7 +152,7 @@ public class TorneoService : ITorneoService
             .Select(p => new
             {
                 p.Id,
-                Display = users.GetValueOrDefault(p.UserId, p.UserId),
+                Display = users.GetValueOrDefault(p.UserId, "Jugador"),
                 Pts = puntosPorParticipante.GetValueOrDefault(p.Id, 0)
             })
             .OrderByDescending(x => x.Pts)
