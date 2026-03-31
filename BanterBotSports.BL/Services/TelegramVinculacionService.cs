@@ -82,23 +82,37 @@ public class TelegramVinculacionService : ITelegramVinculacionService
     /// <inheritdoc />
     public async Task<(Jornada jornada, Participante participante)?> GetJornadaAbiertaParaUsuarioAsync(string userId)
     {
-        // Find participations for this user — filtered at the DB level
+        // Find ALL participations for this user across all torneos
         var participaciones = await _participanteRepository.GetByUserIdAsync(userId);
-        var miParticipacion = participaciones.FirstOrDefault();
 
-        if (miParticipacion is null)
+        if (participaciones.Count == 0)
             return null;
 
-        var jornada = await _jornadaRepository.GetByTorneoAndEstadoAsync(miParticipacion.TorneoId, EstadoJornada.Abierta);
+        // Query open jornada for each torneo and pick the most recent (highest Id)
+        Jornada? bestJornada = null;
+        Participante? bestParticipante = null;
 
-        if (jornada is null)
+        foreach (var participacion in participaciones)
+        {
+            var jornada = await _jornadaRepository.GetByTorneoAndEstadoAsync(participacion.TorneoId, EstadoJornada.Abierta);
+            if (jornada is null)
+                continue;
+
+            if (bestJornada is null || jornada.Id > bestJornada.Id)
+            {
+                bestJornada = jornada;
+                bestParticipante = participacion;
+            }
+        }
+
+        if (bestJornada is null || bestParticipante is null)
             return null;
 
         // Load with partidos included
-        var jornadaDetallada = await _jornadaRepository.GetByIdWithDetailsAsync(jornada.Id);
+        var jornadaDetallada = await _jornadaRepository.GetByIdWithDetailsAsync(bestJornada.Id);
         if (jornadaDetallada is null)
             return null;
 
-        return (jornadaDetallada, miParticipacion);
+        return (jornadaDetallada, bestParticipante);
     }
 }

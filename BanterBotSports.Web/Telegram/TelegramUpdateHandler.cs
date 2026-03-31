@@ -139,6 +139,13 @@ public class TelegramUpdateHandler : ITelegramUpdateHandler
 
     private async Task HandleTextMessageAsync(Message message, long chatId, CancellationToken cancellationToken)
     {
+        // Handle /mis_predicciones command before prediction processing
+        if (message.Text!.StartsWith("/mis_predicciones", StringComparison.OrdinalIgnoreCase))
+        {
+            await HandleMisPrediccionesAsync(message, chatId);
+            return;
+        }
+
         var telegramUserId = message.From?.Id ?? chatId;
         var usuarioTelegram = await _vinculacionService.GetByTelegramIdAsync(telegramUserId);
         if (usuarioTelegram is null)
@@ -149,6 +156,48 @@ public class TelegramUpdateHandler : ITelegramUpdateHandler
         }
 
         await ProcessPredictionTextAsync(message.Text!, usuarioTelegram.UserId, chatId, FuentePrediccion.Telegram, cancellationToken);
+    }
+
+    private async Task HandleMisPrediccionesAsync(Message message, long chatId)
+    {
+        var telegramUserId = message.From?.Id ?? chatId;
+        var usuarioTelegram = await _vinculacionService.GetByTelegramIdAsync(telegramUserId);
+        if (usuarioTelegram is null)
+        {
+            await SafeSendAsync(chatId,
+                "Primero tenés que vincular tu cuenta. Usá el link de invitación desde la app web.");
+            return;
+        }
+
+        var context = await _vinculacionService.GetJornadaAbiertaParaUsuarioAsync(usuarioTelegram.UserId);
+        if (context is null)
+        {
+            await SafeSendAsync(chatId, "No hay jornada abierta en tu torneo en este momento.");
+            return;
+        }
+
+        var (jornada, participante) = context.Value;
+        var predicciones = await _prediccionService.GetPorJornadaYParticipanteAsync(jornada.Id, participante.Id);
+
+        if (predicciones.Count == 0)
+        {
+            await SafeSendAsync(chatId, "No tenés predicciones cargadas para esta jornada.");
+            return;
+        }
+
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"Tus predicciones para la Jornada {jornada.Numero}:");
+        sb.AppendLine();
+
+        foreach (var partido in jornada.Partidos)
+        {
+            if (predicciones.TryGetValue(partido.Id, out var pred))
+                sb.AppendLine($"• {partido.Equipo1} {pred.GolesEquipo1} - {pred.GolesEquipo2} {partido.Equipo2}");
+            else
+                sb.AppendLine($"• {partido.Equipo1} vs {partido.Equipo2}: sin predicción");
+        }
+
+        await SafeSendAsync(chatId, sb.ToString().TrimEnd());
     }
 
     private async Task ProcessPredictionTextAsync(
