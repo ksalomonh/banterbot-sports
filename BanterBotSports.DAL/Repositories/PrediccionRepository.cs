@@ -98,4 +98,17 @@ public class PrediccionRepository : IPrediccionRepository
         _context.PrediccionesJornada.Update(prediccion);
         return Task.CompletedTask;
     }
+
+    public async Task DeleteByParticipanteIdAsync(int participanteId)
+    {
+        var prediccionesPartido = await _context.PrediccionesPartido
+            .Where(pp => pp.ParticipanteId == participanteId)
+            .ToListAsync();
+        _context.PrediccionesPartido.RemoveRange(prediccionesPartido);
+
+        var prediccionesJornada = await _context.PrediccionesJornada
+            .Where(pj => pj.ParticipanteId == participanteId)
+            .ToListAsync();
+        _context.PrediccionesJornada.RemoveRange(prediccionesJornada);
+    }
 }

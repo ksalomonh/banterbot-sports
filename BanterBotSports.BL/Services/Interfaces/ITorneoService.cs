@@ -43,4 +43,23 @@ public interface ITorneoService
     /// Requires torneo.Participantes to be loaded.
     /// </summary>
     Task<IReadOnlyList<RankingParticipante>> BuildRankingAsync(Torneo torneo);
+
+    /// <summary>
+    /// Confirms payment for a participant. Only the organizer can call this.
+    /// Idempotent: if already paid, does nothing.
+    /// </summary>
+    Task ConfirmarPagoAsync(int torneoId, int participanteId, string organizadorId);
+
+    /// <summary>
+    /// Revokes payment for a participant. Only the organizer can call this.
+    /// Cannot revoke the organizer's own payment (Rol=Ambos).
+    /// </summary>
+    Task RevocarPagoAsync(int torneoId, int participanteId, string organizadorId);
+
+    /// <summary>
+    /// Removes all unpaid participants from the torneo and deletes their predictions.
+    /// The organizer (Rol=Ambos) is never removed.
+    /// Returns the number of participants removed.
+    /// </summary>
+    Task<int> DarDeBajaImpagosAsync(int torneoId);
 }

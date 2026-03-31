@@ -142,6 +142,62 @@ public class TorneoController : Controller
         return View(vm);
     }
 
+    // POST /torneo/{id}/confirmar-pago
+    [HttpPost("/torneo/{id:int}/confirmar-pago")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ConfirmarPago(int id, [FromForm] int participanteId)
+    {
+        var torneo = await _torneoService.GetByIdAsync(id);
+        if (torneo is null)
+            return NotFound();
+
+        var userId = _userManager.GetUserId(User)!;
+        if (torneo.OrganizadorId != userId)
+            return Forbid();
+
+        try
+        {
+            await _torneoService.ConfirmarPagoAsync(id, participanteId, userId);
+            TempData[TempDataKeys.Success] = "Pago confirmado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning(ex, "Failed to confirm payment for participante {ParticipanteId} in torneo {TorneoId}", participanteId, id);
+            TempData[TempDataKeys.Error] = "No se pudo confirmar el pago.";
+        }
+
+        return RedirectToAction(nameof(Dashboard), new { id });
+    }
+
+    // POST /torneo/{id}/revocar-pago
+    [HttpPost("/torneo/{id:int}/revocar-pago")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RevocarPago(int id, [FromForm] int participanteId)
+    {
+        var torneo = await _torneoService.GetByIdAsync(id);
+        if (torneo is null)
+            return NotFound();
+
+        var userId = _userManager.GetUserId(User)!;
+        if (torneo.OrganizadorId != userId)
+            return Forbid();
+
+        try
+        {
+            await _torneoService.RevocarPagoAsync(id, participanteId, userId);
+            TempData[TempDataKeys.Success] = "Pago revocado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning(ex, "Failed to revoke payment for participante {ParticipanteId} in torneo {TorneoId}", participanteId, id);
+            TempData[TempDataKeys.Error] = ex.Message.Contains("organizador")
+                ? "No se puede revocar el pago del organizador."
+                : "No se pudo revocar el pago.";
+        }
+
+        return RedirectToAction(nameof(Dashboard), new { id });
+    }
+
     // POST /torneo/{id}/unirse?token=X
     [HttpPost("/torneo/{id:int}/unirse")]
     [ValidateAntiForgeryToken]
