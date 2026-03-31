@@ -69,6 +69,10 @@ public class TelegramVinculacionService : ITelegramVinculacionService
     }
 
     /// <inheritdoc />
+    public Task<UsuarioTelegram?> GetByUserIdAsync(string userId)
+        => _usuarioTelegramRepository.GetByUserIdAsync(userId);
+
+    /// <inheritdoc />
     public Task<UsuarioTelegram?> GetByTelegramIdAsync(long telegramUserId)
         => _usuarioTelegramRepository.GetByTelegramUserIdAsync(telegramUserId);
 
