@@ -2,11 +2,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BanterBotSports.Entities.ViewModels;
 
-public class LoginViewModel
+public record LoginViewModel
 {
-    [Required]
-    [EmailAddress]
-    public string Email { get; set; } = string.Empty;
+    [Required(ErrorMessage = "El teléfono es obligatorio.")]
+    [Phone(ErrorMessage = "Formato de teléfono inválido.")]
+    [Display(Name = "Teléfono")]
+    public string Telefono { get; set; } = string.Empty;
 
     [Required]
     [DataType(DataType.Password)]

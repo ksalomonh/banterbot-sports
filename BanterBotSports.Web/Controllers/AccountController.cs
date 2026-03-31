@@ -51,15 +51,15 @@ public class AccountController : Controller
             return View(model);
 
         var result = await _signInManager.PasswordSignInAsync(
-            model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+            model.Telefono, model.Password, model.RememberMe, lockoutOnFailure: false);
 
         if (result.Succeeded)
         {
-            _logger.LogInformation("User {Email} logged in.", model.Email);
+            _logger.LogInformation("User {Telefono} logged in.", model.Telefono);
             return LocalRedirect(returnUrl ?? "/");
         }
 
-        ModelState.AddModelError(string.Empty, "Email o contraseña incorrectos.");
+        ModelState.AddModelError(string.Empty, "Teléfono o contraseña incorrectos.");
         return View(model);
     }
 
@@ -95,8 +95,9 @@ public class AccountController : Controller
 
         var user = new AppUser
         {
-            UserName = model.Email,
+            UserName = model.Telefono,
             Email = model.Email,
+            PhoneNumber = model.Telefono,
             NombreDisplay = model.NombreDisplay
         };
 
@@ -104,7 +105,7 @@ public class AccountController : Controller
 
         if (result.Succeeded)
         {
-            _logger.LogInformation("New user registered: {Email}", model.Email);
+            _logger.LogInformation("New user registered: {Telefono}", model.Telefono);
             await _signInManager.SignInAsync(user, isPersistent: false);
             return RedirectToAction("Index", "Home");
         }
@@ -150,7 +151,8 @@ public class AccountController : Controller
         {
             NombreDisplay  = user.NombreDisplay,
             Email          = user.Email,
-            TelegramChatId = user.PhoneNumber
+            Telefono       = user.PhoneNumber,
+            TelegramChatId = user.TelegramChatId
         };
 
         ViewData["EditModel"] = new ProfileEditViewModel { NombreDisplay = user.NombreDisplay ?? "" };
@@ -173,7 +175,8 @@ public class AccountController : Controller
             {
                 Email          = currentUser.Email,
                 NombreDisplay  = currentUser.NombreDisplay,
-                TelegramChatId = currentUser.PhoneNumber
+                Telefono       = currentUser.PhoneNumber,
+                TelegramChatId = currentUser.TelegramChatId
             };
             ViewData["EditModel"] = model;
             return View(profileModel);

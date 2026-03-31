@@ -144,11 +144,25 @@
                         <span asp-validation-for="NombreDisplay" class="text-xs text-error ml-1"></span>
                     </div>
 
+                    @* Teléfono *@
+                    <div class="space-y-2">
+                        <label asp-for="Telefono"
+                               class="text-xs font-bold uppercase tracking-widest text-on-surface-variant px-1">
+                            Teléfono
+                        </label>
+                        <input asp-for="Telefono"
+                               type="tel"
+                               class="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline-variant/60 transition-all"
+                               autocomplete="tel"
+                               placeholder="+54 9 11 XXXX-XXXX" />
+                        <span asp-validation-for="Telefono" class="text-xs text-error ml-1"></span>
+                    </div>
+
                     @* Email *@
                     <div class="space-y-2">
                         <label asp-for="Email"
                                class="text-xs font-bold uppercase tracking-widest text-on-surface-variant px-1">
-                            Email
+                            Email <span class="normal-case tracking-normal font-medium text-on-surface-variant/70">— solo para recuperación de contraseña</span>
                         </label>
                         <input asp-for="Email"
                                class="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline-variant/60 transition-all"
