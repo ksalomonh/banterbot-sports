@@ -84,20 +84,21 @@
                          class="p-4 bg-error/10 rounded-xl border-l-4 border-error text-sm text-on-surface"
                          role="alert"></div>
 
-                    @* Email field *@
+                    @* Teléfono field *@
                     <div class="space-y-2">
-                        <label asp-for="Email"
+                        <label asp-for="Telefono"
                                class="text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
-                            Email
+                            Teléfono
                         </label>
                         <div class="relative group">
-                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">alternate_email</span>
-                            <input asp-for="Email"
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">smartphone</span>
+                            <input asp-for="Telefono"
+                                   type="tel"
                                    class="w-full bg-surface-container-highest border-none text-on-surface rounded-xl py-4 pl-12 pr-4 focus:ring-1 focus:ring-primary/40 transition-all placeholder:text-outline/50"
-                                   autocomplete="email"
-                                   placeholder="jugador@arena.com" />
+                                   autocomplete="tel"
+                                   placeholder="+54 9 11 XXXX-XXXX" />
                         </div>
-                        <span asp-validation-for="Email" class="text-xs text-error ml-1"></span>
+                        <span asp-validation-for="Telefono" class="text-xs text-error ml-1"></span>
                     </div>
 
                     @* Password field *@
