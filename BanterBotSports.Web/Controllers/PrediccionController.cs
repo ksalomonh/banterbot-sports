@@ -65,6 +65,28 @@ public class PrediccionController : Controller
         return View(jornada);
     }
 
+    // GET /prediccion/{jornadaId}/publicas
+    [AllowAnonymous]
+    [HttpGet("/prediccion/{jornadaId:int}/publicas")]
+    public async Task<IActionResult> Publicas(int jornadaId)
+    {
+        var jornada = await _jornadaService.GetDetalleAsync(jornadaId);
+        if (jornada is null)
+            return NotFound();
+
+        // Only reveal predictions after the deadline has passed
+        var pastDeadline = jornada.DeadlineUtc.HasValue &&
+                           DateTimeOffset.UtcNow > jornada.DeadlineUtc.Value;
+        if (!pastDeadline)
+            return StatusCode(403);
+
+        var resumen = await _jornadaService.GetResumenJornadaAsync(jornadaId);
+        if (resumen is null)
+            return NotFound();
+
+        return View(resumen);
+    }
+
     // POST /prediccion/{jornadaId}
     [HttpPost("/prediccion/{jornadaId:int}")]
     [ValidateAntiForgeryToken]

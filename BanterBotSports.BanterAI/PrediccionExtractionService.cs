@@ -7,6 +7,7 @@ using BanterBotSports.Entities.DTOs;
 using BanterBotSports.Entities.Enums;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace BanterBotSports.BanterAI;
 
@@ -14,9 +15,9 @@ public class PrediccionExtractionService : IPrediccionExtractionService
 {
     private readonly AnthropicClient _client;
     private readonly ILogger<PrediccionExtractionService> _logger;
+    private readonly BanterAIOptions _options;
 
     private const string ModelId = "claude-haiku-4-5-20251001";
-    private const double MinConfidence = 0.75;
 
     private static readonly ExtractionResult CannotParse = new(
         Success: false,
@@ -62,13 +63,17 @@ public class PrediccionExtractionService : IPrediccionExtractionService
     private const string HttpClientName = "Anthropic";
 
     public PrediccionExtractionService(
+        IOptions<BanterAIOptions> options,
         IConfiguration configuration,
         IHttpClientFactory httpClientFactory,
         ILogger<PrediccionExtractionService> logger)
     {
+        ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(httpClientFactory);
         ArgumentNullException.ThrowIfNull(logger);
+
+        _options = options.Value;
 
         var apiKey = configuration["Anthropic:ApiKey"]
             ?? throw new InvalidOperationException("Anthropic:ApiKey configuration is required.");
@@ -147,7 +152,7 @@ public class PrediccionExtractionService : IPrediccionExtractionService
             if (parsed is null)
                 return CannotParse;
 
-            if (parsed.Confidence < MinConfidence)
+            if (parsed.Confidence < _options.MinConfidence)
                 return LowConfidence(parsed.Confidence);
 
             var validMatchIds = partidos.Select(p => p.Id).ToHashSet();

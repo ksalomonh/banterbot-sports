@@ -101,6 +101,9 @@ else
 }
 builder.Services.AddSingleton<JornadaAbiertaNotifier>();
 
+// ─── BanterAI Options ────────────────────────────────────────────────────────
+builder.Services.Configure<BanterAIOptions>(builder.Configuration.GetSection("BanterAI"));
+
 // ─── BanterAI Services (Scoped) ──────────────────────────────────────────────
 builder.Services.AddScoped<IPrediccionExtractionService, PrediccionExtractionService>();
 builder.Services.AddScoped<IBanterEngine, BanterEngine>();
