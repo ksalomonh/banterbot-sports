@@ -1,4 +1,5 @@
 using BanterBotSports.BL.Services;
+using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL;
 using BanterBotSports.DAL.Repositories;
 using BanterBotSports.DAL.Repositories.Interfaces;
@@ -74,6 +75,7 @@ public class JornadaAbiertaNotifierIntegrationTests : IAsyncLifetime
             jornadaRepo,
             partidoRepo,
             participanteRepo,
+            new Mock<ITorneoService>().Object,
             uow,
             NullLogger<JornadaService>.Instance);
 

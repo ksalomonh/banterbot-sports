@@ -19,4 +19,10 @@ public interface IPrediccionRepository
     Task<IReadOnlyList<PrediccionJornada>> GetPrediccionesJornadaByJornadaAsync(int jornadaId);
     Task<PrediccionJornada> AddPrediccionJornadaAsync(PrediccionJornada prediccion);
     Task UpdatePrediccionJornadaAsync(PrediccionJornada prediccion);
+
+    /// <summary>
+    /// Deletes all PrediccionPartido and PrediccionJornada records for the given participant.
+    /// Used during auto-baja of unpaid players.
+    /// </summary>
+    Task DeleteByParticipanteIdAsync(int participanteId);
 }

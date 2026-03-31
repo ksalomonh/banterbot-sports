@@ -18,6 +18,7 @@ public class JornadaService : IJornadaService
     private readonly IJornadaRepository _jornadaRepository;
     private readonly IPartidoRepository _partidoRepository;
     private readonly IParticipanteRepository _participanteRepository;
+    private readonly ITorneoService _torneoService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<JornadaService> _logger;
 
@@ -37,18 +38,21 @@ public class JornadaService : IJornadaService
         IJornadaRepository jornadaRepository,
         IPartidoRepository partidoRepository,
         IParticipanteRepository participanteRepository,
+        ITorneoService torneoService,
         IUnitOfWork unitOfWork,
         ILogger<JornadaService> logger)
     {
         ArgumentNullException.ThrowIfNull(jornadaRepository);
         ArgumentNullException.ThrowIfNull(partidoRepository);
         ArgumentNullException.ThrowIfNull(participanteRepository);
+        ArgumentNullException.ThrowIfNull(torneoService);
         ArgumentNullException.ThrowIfNull(unitOfWork);
         ArgumentNullException.ThrowIfNull(logger);
 
         _jornadaRepository = jornadaRepository;
         _partidoRepository = partidoRepository;
         _participanteRepository = participanteRepository;
+        _torneoService = torneoService;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
@@ -71,6 +75,15 @@ public class JornadaService : IJornadaService
         {
             throw new InvalidOperationException(
                 $"La jornada {jornada.Numero} no puede abrirse desde el estado '{jornada.Estado}'.");
+        }
+
+        // Auto-baja: remove unpaid participants BEFORE opening predictions
+        var removidos = await _torneoService.DarDeBajaImpagosAsync(jornada.TorneoId);
+        if (removidos > 0)
+        {
+            _logger.LogInformation(
+                "Auto-baja: {Removidos} unpaid participant(s) removed from torneo {TorneoId} before opening jornada {JornadaId}.",
+                removidos, jornada.TorneoId, jornada.Id);
         }
 
         // Load partidos to set DeadlineUtc and validate that at least one exists

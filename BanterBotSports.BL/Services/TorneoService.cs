@@ -134,6 +134,76 @@ public class TorneoService : ITorneoService
     }
 
     /// <inheritdoc />
+    public async Task ConfirmarPagoAsync(int torneoId, int participanteId, string organizadorId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(organizadorId);
+
+        var torneo = await _torneoRepository.GetByIdAsync(torneoId)
+            ?? throw new InvalidOperationException($"Torneo {torneoId} no encontrado.");
+
+        if (torneo.OrganizadorId != organizadorId)
+            throw new UnauthorizedAccessException("Solo el organizador puede confirmar pagos.");
+
+        var participante = await _participanteRepository.GetByIdAsync(participanteId)
+            ?? throw new InvalidOperationException($"Participante {participanteId} no encontrado.");
+
+        if (participante.TorneoId != torneoId)
+            throw new InvalidOperationException("El participante no pertenece a este torneo.");
+
+        if (participante.Pago)
+            return; // already paid — idempotent
+
+        participante.Pago = true;
+        await _participanteRepository.UpdateAsync(participante);
+        await _unitOfWork.SaveAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task RevocarPagoAsync(int torneoId, int participanteId, string organizadorId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(organizadorId);
+
+        var torneo = await _torneoRepository.GetByIdAsync(torneoId)
+            ?? throw new InvalidOperationException($"Torneo {torneoId} no encontrado.");
+
+        if (torneo.OrganizadorId != organizadorId)
+            throw new UnauthorizedAccessException("Solo el organizador puede revocar pagos.");
+
+        var participante = await _participanteRepository.GetByIdAsync(participanteId)
+            ?? throw new InvalidOperationException($"Participante {participanteId} no encontrado.");
+
+        if (participante.TorneoId != torneoId)
+            throw new InvalidOperationException("El participante no pertenece a este torneo.");
+
+        if (participante.Rol == RolParticipante.Ambos)
+            throw new InvalidOperationException("No se puede revocar el pago del organizador.");
+
+        participante.Pago = false;
+        await _participanteRepository.UpdateAsync(participante);
+        await _unitOfWork.SaveAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task<int> DarDeBajaImpagosAsync(int torneoId)
+    {
+        var participantes = await _participanteRepository.GetByTorneoIdAsync(torneoId);
+        var impagos = participantes
+            .Where(p => !p.Pago && p.Rol != RolParticipante.Ambos)
+            .ToList();
+
+        foreach (var impago in impagos)
+        {
+            await _prediccionRepository.DeleteByParticipanteIdAsync(impago.Id);
+            await _participanteRepository.DeleteAsync(impago);
+        }
+
+        if (impagos.Count > 0)
+            await _unitOfWork.SaveAsync();
+
+        return impagos.Count;
+    }
+
+    /// <inheritdoc />
     public async Task<IReadOnlyList<RankingParticipante>> BuildRankingAsync(Torneo torneo)
     {
         ArgumentNullException.ThrowIfNull(torneo);

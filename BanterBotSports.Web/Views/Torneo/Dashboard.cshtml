@@ -236,6 +236,83 @@
                 </div>
             }
         </section>
+
+        <!-- Player Payment Management (Organizer only) -->
+        @if (esOrganizador && Model.Participantes != null)
+        {
+            <section class="bg-[#0d1323] rounded-3xl overflow-hidden">
+                <div class="p-6 flex justify-between items-center">
+                    <h3 class="text-lg font-bold uppercase italic tracking-tight">Gestión de Pagos</h3>
+                    @{
+                        var pagados = Model.Participantes.Count(p => p.Pago);
+                        var totalJugadores = Model.Participantes.Count;
+                    }
+                    <span class="text-[10px] font-black uppercase text-[#a6aabf] tracking-[0.2em]">
+                        @pagados / @totalJugadores pagados
+                    </span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-[10px] text-[#a6aabf] uppercase tracking-[0.2em] font-black bg-[#181f33]/30">
+                                <th class="px-6 py-4">Jugador</th>
+                                <th class="px-4 py-4">Rol</th>
+                                <th class="px-4 py-4 text-center">Estado</th>
+                                <th class="px-4 py-4 text-right">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var participante in Model.Participantes)
+                            {
+                                var displayName = ranking.FirstOrDefault(r => r.ParticipanteId == participante.Id)?.NombreDisplay ?? "Jugador";
+                                var isOrg = participante.Rol == RolParticipante.Ambos;
+                                var pagoClass = participante.Pago
+                                    ? "bg-[#2ff801]/10 text-[#2ff801]"
+                                    : "bg-red-500/10 text-red-400";
+                                <tr class="hover:bg-[#242b43]/20 transition-colors">
+                                    <td class="px-6 py-4 font-bold text-sm">@displayName</td>
+                                    <td class="px-4 py-4 text-xs text-[#a6aabf]">@participante.Rol</td>
+                                    <td class="px-4 py-4 text-center">
+                                        <span class="text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest @pagoClass">
+                                            @(participante.Pago ? "Pagado" : "Pendiente")
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-4 text-right">
+                                        @if (!isOrg)
+                                        {
+                                            @if (!participante.Pago)
+                                            {
+                                                <form method="post" asp-action="ConfirmarPago" asp-route-id="@Model.Id" class="inline">
+                                                    <input type="hidden" name="participanteId" value="@participante.Id" />
+                                                    <button type="submit"
+                                                            class="px-3 py-1.5 bg-[#2ff801]/20 text-[#2ff801] rounded-lg text-[10px] font-black uppercase hover:bg-[#2ff801]/30 transition-colors">
+                                                        Confirmar
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <form method="post" asp-action="RevocarPago" asp-route-id="@Model.Id" class="inline">
+                                                    <input type="hidden" name="participanteId" value="@participante.Id" />
+                                                    <button type="submit"
+                                                            class="px-3 py-1.5 bg-red-500/20 text-red-400 rounded-lg text-[10px] font-black uppercase hover:bg-red-500/30 transition-colors">
+                                                        Revocar
+                                                    </button>
+                                                </form>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-[10px] text-[#a6aabf]">Organizador</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        }
     </div>
 
     <!-- Sidebar: Prizes + Scoring — stacked below on mobile, sidebar on lg -->

@@ -1,4 +1,5 @@
 using BanterBotSports.BL.Services;
+using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL;
 using BanterBotSports.DAL.Repositories;
 using BanterBotSports.Entities;
@@ -6,6 +7,7 @@ using BanterBotSports.Entities.Enums;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using Testcontainers.PostgreSql;
 
 namespace BanterBotSports.Tests.Integration;
@@ -49,6 +51,7 @@ public class JornadaServiceIntegrationTests : IAsyncLifetime
             jornadaRepo,
             partidoRepo,
             participanteRepo,
+            new Mock<ITorneoService>().Object,
             uow,
             NullLogger<JornadaService>.Instance);
     }
