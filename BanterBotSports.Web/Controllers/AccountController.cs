@@ -151,6 +151,7 @@ public class AccountController : Controller
         {
             NombreDisplay  = user.NombreDisplay,
             Email          = user.Email,
+            Telefono       = user.PhoneNumber,
             TelegramChatId = user.TelegramChatId
         };
 
@@ -174,6 +175,7 @@ public class AccountController : Controller
             {
                 Email          = currentUser.Email,
                 NombreDisplay  = currentUser.NombreDisplay,
+                Telefono       = currentUser.PhoneNumber,
                 TelegramChatId = currentUser.TelegramChatId
             };
             ViewData["EditModel"] = model;

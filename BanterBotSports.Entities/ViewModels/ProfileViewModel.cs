@@ -8,6 +8,8 @@ public record ProfileViewModel
 {
     public required string? NombreDisplay { get; init; }
     public required string? Email { get; init; }
-    /// <summary>Telegram Chat ID stored in PhoneNumber field of AppUser.</summary>
+    /// <summary>User's phone number (login identifier), mapped from AppUser.PhoneNumber.</summary>
+    public string? Telefono { get; init; }
+    /// <summary>Telegram Chat ID, mapped from AppUser.TelegramChatId (dedicated column).</summary>
     public string? TelegramChatId { get; init; }
 }
