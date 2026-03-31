@@ -127,4 +127,27 @@ public class AccountControllerTests
             Times.Once,
             "Profile() must resolve the current user via UserManager.GetUserAsync exactly once");
     }
+
+    [Fact]
+    public async Task Profile_MapsTegramChatIdFromNewColumn_NotFromPhoneNumber()
+    {
+        // Arrange: AppUser has TelegramChatId in the new column and a real phone in PhoneNumber (SCENARIO-7c, SCENARIO-9a)
+        var appUser = new AppUser
+        {
+            Id = "user-tg",
+            UserName = "+5491112345678",
+            Email = "tg@test.com",
+            PhoneNumber = "+5491112345678",
+            TelegramChatId = "123"
+        };
+        var (sut, _) = BuildSut(userToReturn: appUser);
+
+        // Act
+        var result = await sut.Profile();
+
+        // Assert: TelegramChatId comes from AppUser.TelegramChatId, not PhoneNumber
+        var vm = (ProfileViewModel)((ViewResult)result).Model!;
+        vm.TelegramChatId.Should().Be("123", "TelegramChatId must be mapped from AppUser.TelegramChatId (dedicated column)");
+        vm.TelegramChatId.Should().NotBe(appUser.PhoneNumber, "TelegramChatId must NOT come from PhoneNumber — that column is now the login identifier");
+    }
 }
