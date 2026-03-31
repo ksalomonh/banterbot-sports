@@ -1,9 +1,12 @@
+using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL;
+using BanterBotSports.Entities;
 using BanterBotSports.Entities.ViewModels;
 using BanterBotSports.Web.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace BanterBotSports.Web.Controllers;
 
@@ -12,19 +15,27 @@ public class AccountController : Controller
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
     private readonly ILogger<AccountController> _logger;
+    private readonly ITelegramVinculacionService _telegramService;
+    private readonly IConfiguration _configuration;
 
     public AccountController(
         UserManager<AppUser> userManager,
         SignInManager<AppUser> signInManager,
-        ILogger<AccountController> logger)
+        ILogger<AccountController> logger,
+        ITelegramVinculacionService telegramService,
+        IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(userManager);
         ArgumentNullException.ThrowIfNull(signInManager);
         ArgumentNullException.ThrowIfNull(logger);
+        ArgumentNullException.ThrowIfNull(telegramService);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         _userManager = userManager;
         _signInManager = signInManager;
         _logger = logger;
+        _telegramService = telegramService;
+        _configuration = configuration;
     }
 
     // GET /Account/Login
@@ -147,13 +158,8 @@ public class AccountController : Controller
         if (user is null)
             return NotFound();
 
-        var vm = new ProfileViewModel
-        {
-            NombreDisplay  = user.NombreDisplay,
-            Email          = user.Email,
-            Telefono       = user.PhoneNumber,
-            TelegramChatId = user.TelegramChatId
-        };
+        var telegramLink = await _telegramService.GetByUserIdAsync(user.Id);
+        var vm = BuildProfileViewModel(user, telegramLink);
 
         ViewData["EditModel"] = new ProfileEditViewModel { NombreDisplay = user.NombreDisplay ?? "" };
 
@@ -171,13 +177,8 @@ public class AccountController : Controller
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser == null) return RedirectToAction(nameof(Login));
 
-            var profileModel = new ProfileViewModel
-            {
-                Email          = currentUser.Email,
-                NombreDisplay  = currentUser.NombreDisplay,
-                Telefono       = currentUser.PhoneNumber,
-                TelegramChatId = currentUser.TelegramChatId
-            };
+            var telegramLink = await _telegramService.GetByUserIdAsync(currentUser.Id);
+            var profileModel = BuildProfileViewModel(currentUser, telegramLink);
             ViewData["EditModel"] = model;
             return View(profileModel);
         }
@@ -198,5 +199,34 @@ public class AccountController : Controller
         }
 
         return RedirectToAction(nameof(Profile));
+    }
+
+    // ---------------------------------------------------------------------------
+    // Private helpers
+    // ---------------------------------------------------------------------------
+
+    private string BuildTelegramDeepLink(string userId)
+    {
+        var botUsername = _configuration["Telegram:BotUsername"];
+        return $"https://t.me/{botUsername}?start={userId}";
+    }
+
+    private ProfileViewModel BuildProfileViewModel(AppUser user, UsuarioTelegram? telegramLink)
+    {
+        string? telegramUsername = null;
+        if (telegramLink is not null)
+        {
+            // Scenario 1c fallback: if username is null, show numeric user ID
+            telegramUsername = telegramLink.TelegramUsername ?? telegramLink.TelegramUserId.ToString();
+        }
+
+        return new ProfileViewModel
+        {
+            NombreDisplay   = user.NombreDisplay,
+            Email           = user.Email,
+            Telefono        = user.PhoneNumber,
+            TelegramUsername = telegramUsername,
+            TelegramDeepLink = BuildTelegramDeepLink(user.Id)
+        };
     }
 }

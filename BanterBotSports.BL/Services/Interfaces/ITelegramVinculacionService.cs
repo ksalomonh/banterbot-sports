@@ -20,6 +20,12 @@ public interface ITelegramVinculacionService
     Task<UsuarioTelegram?> GetByTelegramIdAsync(long telegramUserId);
 
     /// <summary>
+    /// Finds the UsuarioTelegram record for a given app user ID.
+    /// Returns null if the user has not linked a Telegram account.
+    /// </summary>
+    Task<UsuarioTelegram?> GetByUserIdAsync(string userId);
+
+    /// <summary>
     /// Returns the display name for an app user by their ID.
     /// Falls back to username if no display name is set. Returns null if user not found.
     /// </summary>

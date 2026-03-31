@@ -1,10 +1,13 @@
+using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL;
+using BanterBotSports.Entities;
 using BanterBotSports.Entities.ViewModels;
 using BanterBotSports.Web.Controllers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System.Security.Claims;
@@ -16,6 +19,7 @@ namespace BanterBotSports.Tests.Unit;
 /// - Authenticated user → ViewResult with ProfileViewModel model
 /// - UserManager returns null → NotFoundResult (defensive guard)
 /// - GetUserAsync is called exactly once per request
+/// - Telegram link state comes from ITelegramVinculacionService, not AppUser.PhoneNumber
 /// </summary>
 public class AccountControllerTests
 {
@@ -23,8 +27,14 @@ public class AccountControllerTests
     // Helpers
     // ---------------------------------------------------------------------------
 
-    private static (AccountController Sut, Mock<UserManager<AppUser>> UserManagerMock) BuildSut(
-        AppUser? userToReturn)
+    private static (
+        AccountController Sut,
+        Mock<UserManager<AppUser>> UserManagerMock,
+        Mock<ITelegramVinculacionService> TelegramServiceMock
+    ) BuildSut(
+        AppUser? userToReturn,
+        UsuarioTelegram? telegramRecord = null,
+        string botUsername = "BanterBotSports_bot")
     {
         // UserManager<AppUser>: mock with minimal surface — standard pattern (see TorneoControllerTests).
 #pragma warning disable CS8625
@@ -47,10 +57,24 @@ public class AccountControllerTests
             null, null, null, null);
 #pragma warning restore CS8625
 
+        // ITelegramVinculacionService: mock GetByUserIdAsync to return the provided record.
+        var telegramServiceMock = new Mock<ITelegramVinculacionService>();
+        telegramServiceMock
+            .Setup(ts => ts.GetByUserIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(telegramRecord);
+
+        // IConfiguration: provide Telegram:BotUsername key.
+        var configMock = new Mock<IConfiguration>();
+        configMock
+            .Setup(c => c["Telegram:BotUsername"])
+            .Returns(botUsername);
+
         var controller = new AccountController(
             userManagerMock.Object,
             signInManagerMock.Object,
-            NullLogger<AccountController>.Instance);
+            NullLogger<AccountController>.Instance,
+            telegramServiceMock.Object,
+            configMock.Object);
 
         // Authenticated user identity so [Authorize] semantics are satisfied at the controller level.
         var identity = new ClaimsIdentity(
@@ -62,11 +86,11 @@ public class AccountControllerTests
             HttpContext = new DefaultHttpContext { User = claimsPrincipal }
         };
 
-        return (controller, userManagerMock);
+        return (controller, userManagerMock, telegramServiceMock);
     }
 
     // ---------------------------------------------------------------------------
-    // Tests
+    // Existing tests (updated to use new BuildSut signature)
     // ---------------------------------------------------------------------------
 
     [Fact]
@@ -81,7 +105,7 @@ public class AccountControllerTests
             NombreDisplay = "Jugador Test"
         };
 
-        var (sut, _) = BuildSut(userToReturn: appUser);
+        var (sut, _, _) = BuildSut(userToReturn: appUser);
 
         // Act
         var result = await sut.Profile();
@@ -102,7 +126,7 @@ public class AccountControllerTests
     public async Task Profile_UserManagerReturnsNull_ReturnsNotFound()
     {
         // Arrange: UserManager returns null (defensive — should not happen with [Authorize]).
-        var (sut, _) = BuildSut(userToReturn: null);
+        var (sut, _, _) = BuildSut(userToReturn: null);
 
         // Act
         var result = await sut.Profile();
@@ -116,7 +140,7 @@ public class AccountControllerTests
     {
         // Arrange
         var appUser = new AppUser { Id = "u-42", UserName = "player@arena.com", Email = "player@arena.com" };
-        var (sut, userManagerMock) = BuildSut(userToReturn: appUser);
+        var (sut, userManagerMock, _) = BuildSut(userToReturn: appUser);
 
         // Act
         await sut.Profile();
@@ -128,27 +152,123 @@ public class AccountControllerTests
             "Profile() must resolve the current user via UserManager.GetUserAsync exactly once");
     }
 
+    // ---------------------------------------------------------------------------
+    // Telegram link state tests — Scenario 1a, 1b, 1c, 2a (REQ-01, REQ-02, REQ-07)
+    // ---------------------------------------------------------------------------
+
     [Fact]
-    public async Task Profile_MapsTegramChatIdFromNewColumn_NotFromPhoneNumber()
+    public async Task Profile_LinkedTelegram_VmHasTelegramUsernamePopulated()
     {
-        // Arrange: AppUser has TelegramChatId in the new column and a real phone in PhoneNumber (SCENARIO-7c, SCENARIO-9a)
-        var appUser = new AppUser
+        // Arrange (Scenario 1a): user has a UsuarioTelegram record with username.
+        var appUser = new AppUser { Id = "user-linked", UserName = "+5491112345678", Email = "linked@test.com" };
+        var telegramRecord = new UsuarioTelegram
         {
-            Id = "user-tg",
-            UserName = "+5491112345678",
-            Email = "tg@test.com",
-            PhoneNumber = "+5491112345678",
-            TelegramChatId = "123"
+            UserId = "user-linked",
+            TelegramUserId = 999888777,
+            TelegramUsername = "@john_doe",
+            FechaVinculacion = DateTimeOffset.UtcNow
         };
-        var (sut, _) = BuildSut(userToReturn: appUser);
+        var (sut, _, telegramServiceMock) = BuildSut(userToReturn: appUser, telegramRecord: telegramRecord);
 
         // Act
         var result = await sut.Profile();
 
-        // Assert: TelegramChatId comes from AppUser.TelegramChatId, not PhoneNumber
+        // Assert: TelegramUsername populated, GetByUserIdAsync called once
         var vm = (ProfileViewModel)((ViewResult)result).Model!;
-        vm.TelegramChatId.Should().Be("123", "TelegramChatId must be mapped from AppUser.TelegramChatId (dedicated column)");
-        vm.TelegramChatId.Should().NotBe(appUser.PhoneNumber, "TelegramChatId must NOT come from PhoneNumber — that column is now the login identifier");
+        vm.TelegramUsername.Should().Be("@john_doe", "Profile must show Telegram username when linked");
+        telegramServiceMock.Verify(
+            ts => ts.GetByUserIdAsync("user-linked"),
+            Times.Once,
+            "GetByUserIdAsync must be called exactly once per Profile GET");
+    }
+
+    [Fact]
+    public async Task Profile_NoTelegramLink_VmHasNullUsernameAndPopulatedDeepLink()
+    {
+        // Arrange (Scenario 1b): no UsuarioTelegram record exists.
+        var appUser = new AppUser { Id = "user-unlinked", UserName = "+5491112345678", Email = "unlinked@test.com" };
+        var (sut, _, _) = BuildSut(userToReturn: appUser, telegramRecord: null, botUsername: "BanterBotSports_bot");
+
+        // Act
+        var result = await sut.Profile();
+
+        // Assert: TelegramUsername null, deep link correctly formed (Scenario 2a)
+        var vm = (ProfileViewModel)((ViewResult)result).Model!;
+        vm.TelegramUsername.Should().BeNull("no Telegram link → TelegramUsername must be null");
+        vm.TelegramDeepLink.Should().Be(
+            "https://t.me/BanterBotSports_bot?start=user-unlinked",
+            "deep link must include BotUsername from config and userId as start param");
+    }
+
+    [Fact]
+    public async Task Profile_LinkedTelegramNoUsername_VmShowsTelegramUserIdFallback()
+    {
+        // Arrange (Scenario 1c): linked but no username — show TelegramUserId as fallback.
+        var appUser = new AppUser { Id = "user-nousername", UserName = "+5491112345678", Email = "nousername@test.com" };
+        var telegramRecord = new UsuarioTelegram
+        {
+            UserId = "user-nousername",
+            TelegramUserId = 123456789,
+            TelegramUsername = null,
+            FechaVinculacion = DateTimeOffset.UtcNow
+        };
+        var (sut, _, _) = BuildSut(userToReturn: appUser, telegramRecord: telegramRecord);
+
+        // Act
+        var result = await sut.Profile();
+
+        // Assert: TelegramUsername shows numeric user ID as fallback string
+        var vm = (ProfileViewModel)((ViewResult)result).Model!;
+        vm.TelegramUsername.Should().Be("123456789",
+            "when TelegramUsername is null, controller must fall back to TelegramUserId as string");
+    }
+
+    [Fact]
+    public async Task Profile_DeepLink_UsesConfiguredBotUsername()
+    {
+        // Arrange (Scenario 3a): different bot username from config.
+        var appUser = new AppUser { Id = "user-abc-123", UserName = "+5491112345678", Email = "config@test.com" };
+        var (sut, _, _) = BuildSut(userToReturn: appUser, telegramRecord: null, botUsername: "MyTestBot");
+
+        // Act
+        var result = await sut.Profile();
+
+        // Assert: deep link uses MyTestBot, not hardcoded value
+        var vm = (ProfileViewModel)((ViewResult)result).Model!;
+        vm.TelegramDeepLink.Should().Be(
+            "https://t.me/MyTestBot?start=user-abc-123",
+            "deep link must use Telegram:BotUsername from configuration, not a hardcoded value");
+    }
+
+    [Fact]
+    public async Task Profile_POST_ValidationFailure_PreservesTelegramState()
+    {
+        // Arrange (REQ-06): POST returns view on validation failure — Telegram state must be populated.
+        var appUser = new AppUser { Id = "user-postfail", UserName = "+5491112345678", Email = "postfail@test.com" };
+        var telegramRecord = new UsuarioTelegram
+        {
+            UserId = "user-postfail",
+            TelegramUserId = 555444333,
+            TelegramUsername = "@postfail_user",
+            FechaVinculacion = DateTimeOffset.UtcNow
+        };
+        var (sut, _, telegramServiceMock) = BuildSut(userToReturn: appUser, telegramRecord: telegramRecord);
+
+        // Simulate validation failure
+        sut.ModelState.AddModelError("NombreDisplay", "Required");
+
+        // Act
+        var result = await sut.Profile(new ProfileEditViewModel { NombreDisplay = "" });
+
+        // Assert: view returned with Telegram state preserved
+        result.Should().BeOfType<ViewResult>();
+        var vm = (ProfileViewModel)((ViewResult)result).Model!;
+        vm.TelegramUsername.Should().Be("@postfail_user",
+            "Profile POST validation failure must preserve Telegram state same as GET");
+        telegramServiceMock.Verify(
+            ts => ts.GetByUserIdAsync("user-postfail"),
+            Times.Once,
+            "GetByUserIdAsync must be called once in POST validation failure path");
     }
 
     // ---------------------------------------------------------------------------
@@ -181,10 +301,16 @@ public class AccountControllerTests
             .Setup(sm => sm.SignInAsync(It.IsAny<AppUser>(), It.IsAny<bool>(), null))
             .Returns(Task.CompletedTask);
 
+        var telegramServiceMock = new Mock<ITelegramVinculacionService>();
+        var configMock = new Mock<IConfiguration>();
+        configMock.Setup(c => c["Telegram:BotUsername"]).Returns("BanterBotSports_bot");
+
         var controller = new AccountController(
             userManagerMock.Object,
             signInManagerMock.Object,
-            NullLogger<AccountController>.Instance);
+            NullLogger<AccountController>.Instance,
+            telegramServiceMock.Object,
+            configMock.Object);
 
         controller.ControllerContext = new ControllerContext
         {
@@ -251,10 +377,16 @@ public class AccountControllerTests
                 It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
             .ReturnsAsync(signInResult);
 
+        var telegramServiceMock = new Mock<ITelegramVinculacionService>();
+        var configMock = new Mock<IConfiguration>();
+        configMock.Setup(c => c["Telegram:BotUsername"]).Returns("BanterBotSports_bot");
+
         var controller = new AccountController(
             userManagerMock.Object,
             signInManagerMock.Object,
-            NullLogger<AccountController>.Instance);
+            NullLogger<AccountController>.Instance,
+            telegramServiceMock.Object,
+            configMock.Object);
 
         controller.ControllerContext = new ControllerContext
         {

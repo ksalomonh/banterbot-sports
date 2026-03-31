@@ -10,6 +10,14 @@ public record ProfileViewModel
     public required string? Email { get; init; }
     /// <summary>User's phone number (login identifier), mapped from AppUser.PhoneNumber.</summary>
     public string? Telefono { get; init; }
-    /// <summary>Telegram Chat ID, mapped from AppUser.TelegramChatId (dedicated column).</summary>
-    public string? TelegramChatId { get; init; }
+    /// <summary>
+    /// Telegram display name (username or user ID fallback) from the UsuarioTelegram table.
+    /// Null when the user has not linked a Telegram account.
+    /// </summary>
+    public string? TelegramUsername { get; init; }
+    /// <summary>
+    /// Pre-built Telegram deep link: https://t.me/{BotUsername}?start={userId}.
+    /// Always populated so the view can use it directly in the CTA button.
+    /// </summary>
+    public required string TelegramDeepLink { get; init; }
 }
