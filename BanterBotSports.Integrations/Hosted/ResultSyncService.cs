@@ -80,6 +80,8 @@ public class ResultSyncService : IHostedService, IAsyncDisposable
             var torneoService = scope.ServiceProvider.GetRequiredService<ITorneoService>();
             var rankingBroadcaster = scope.ServiceProvider.GetRequiredService<IRankingBroadcaster>();
 
+            var chatBanterService = scope.ServiceProvider.GetRequiredService<IChatBanterService>();
+
             var activeMatches = await partidoRepository.GetByEstadoAsync(EstadoPartido.EnCurso);
 
             if (activeMatches.Count == 0)
@@ -143,6 +145,30 @@ public class ResultSyncService : IHostedService, IAsyncDisposable
                         _logger.LogError(ex,
                             "Error broadcasting ranking for partido {PartidoId} (jornada {JornadaId}).",
                             partido.Id, partido.JornadaId);
+                    }
+
+                    // Post BanterBot score commentary to chat
+                    if (scoresChanged)
+                    {
+                        try
+                        {
+                            var jornada = await jornadaService.GetDetalleAsync(partido.JornadaId);
+                            if (jornada is not null)
+                            {
+                                await chatBanterService.OnScoreUpdatedAsync(
+                                    torneoId: jornada.TorneoId,
+                                    partidoId: partido.Id,
+                                    goles1: goles1,
+                                    goles2: goles2,
+                                    equipo1: partido.Equipo1,
+                                    equipo2: partido.Equipo2);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex,
+                                "Error posting banter for partido {PartidoId}.", partido.Id);
+                        }
                     }
                 }
                 catch (Exception ex)

@@ -53,6 +53,7 @@ builder.Services.AddScoped<IPartidoRepository, PartidoRepository>();
 builder.Services.AddScoped<IParticipanteRepository, ParticipanteRepository>();
 builder.Services.AddScoped<IPrediccionRepository, PrediccionRepository>();
 builder.Services.AddScoped<IUsuarioTelegramRepository, UsuarioTelegramRepository>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
 
 // ─── BL Services (Scoped) ────────────────────────────────────────────────────
 builder.Services.AddScoped<ITorneoService, TorneoService>();
@@ -62,6 +63,7 @@ builder.Services.AddScoped<IPrediccionService, PrediccionService>();
 builder.Services.AddScoped<IPartidoService, PartidoService>();
 builder.Services.AddScoped<IJornadaService, JornadaService>();
 builder.Services.AddScoped<ITelegramVinculacionService, TelegramVinculacionService>();
+builder.Services.AddScoped<IChatService, ChatService>();
 
 // ─── In-Memory Cache (used by ApiFootballSyncService for search results) ─────
 builder.Services.AddMemoryCache();
@@ -109,6 +111,7 @@ builder.Services.Configure<BanterAIOptions>(builder.Configuration.GetSection("Ba
 builder.Services.AddScoped<IPrediccionExtractionService, PrediccionExtractionService>();
 builder.Services.AddScoped<IBanterEngine, BanterEngine>();
 builder.Services.AddScoped<IBanterDispatchService, BanterDispatchService>();
+builder.Services.AddScoped<IChatBanterService, ChatBanterService>();
 
 // ─── Telegram Update Handler + Background Queue ──────────────────────────────
 builder.Services.AddScoped<ITelegramUpdateHandler, TelegramUpdateHandler>();
@@ -121,6 +124,10 @@ builder.Services.AddHostedService<ResultSyncService>();
 
 // ─── SignalR Infrastructure ──────────────────────────────────────────────────
 builder.Services.AddScoped<IRankingBroadcaster, SignalRRankingBroadcaster>();
+builder.Services.AddScoped<IChatBroadcaster, SignalRChatBroadcaster>();
+
+// ─── Chat Notifiers ──────────────────────────────────────────────────────────
+builder.Services.AddSingleton<ChatJornadaNotifier>();
 
 // ─── MVC + SignalR ───────────────────────────────────────────────────────────
 builder.Services.AddControllersWithViews();
@@ -159,6 +166,7 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 app.MapHub<TorneoHub>("/torneoHub");
+app.MapHub<ChatHub>("/chatHub");
 
 // ─── API-Football null-mode warning ─────────────────────────────────────────
 if (!apiFootballConfigured)

@@ -95,6 +95,7 @@ public class ResultSyncServiceTests
         var jornadaServiceMock = new Mock<IJornadaService>();
         var torneoServiceMock = new Mock<ITorneoService>();
         var broadcasterMock = new Mock<IRankingBroadcaster>();
+        var chatBanterMock = new Mock<IChatBanterService>();
 
         // Setup defaults
         partidoRepoMock
@@ -133,6 +134,12 @@ public class ResultSyncServiceTests
             .Setup(b => b.BroadcastRankingAsync(It.IsAny<int>(), It.IsAny<IReadOnlyList<RankingParticipante>>()))
             .Returns(Task.CompletedTask);
 
+        chatBanterMock
+            .Setup(s => s.OnScoreUpdatedAsync(
+                It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<string>(), It.IsAny<string>()))
+            .Returns(Task.CompletedTask);
+
         // Wire up service scope factory
         var services = new ServiceCollection();
         services.AddSingleton(partidoRepoMock.Object);
@@ -141,6 +148,7 @@ public class ResultSyncServiceTests
         services.AddSingleton(jornadaServiceMock.Object);
         services.AddSingleton(torneoServiceMock.Object);
         services.AddSingleton(broadcasterMock.Object);
+        services.AddSingleton(chatBanterMock.Object);
 
         var serviceProvider = services.BuildServiceProvider();
         var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
@@ -253,6 +261,12 @@ public class ResultSyncServiceTests
             .ThrowsAsync(new InvalidOperationException("SignalR failure"))
             .Returns(Task.CompletedTask);
 
+        var chatBanterMock1 = new Mock<IChatBanterService>();
+        chatBanterMock1
+            .Setup(s => s.OnScoreUpdatedAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<string>(), It.IsAny<string>()))
+            .Returns(Task.CompletedTask);
+
         var services = new ServiceCollection();
         services.AddSingleton(partidoRepoMock.Object);
         services.AddSingleton(partidoServiceMock.Object);
@@ -260,6 +274,7 @@ public class ResultSyncServiceTests
         services.AddSingleton(jornadaServiceMock.Object);
         services.AddSingleton(torneoServiceMock.Object);
         services.AddSingleton(broadcasterMock.Object);
+        services.AddSingleton(chatBanterMock1.Object);
 
         var serviceProvider = services.BuildServiceProvider();
         var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
@@ -316,6 +331,12 @@ public class ResultSyncServiceTests
             .Setup(b => b.BroadcastRankingAsync(It.IsAny<int>(), It.IsAny<IReadOnlyList<RankingParticipante>>()))
             .Returns(Task.CompletedTask);
 
+        var chatBanterMock2 = new Mock<IChatBanterService>();
+        chatBanterMock2
+            .Setup(s => s.OnScoreUpdatedAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<string>(), It.IsAny<string>()))
+            .Returns(Task.CompletedTask);
+
         var services = new ServiceCollection();
         services.AddSingleton(partidoRepoMock.Object);
         services.AddSingleton(partidoServiceMock.Object);
@@ -323,6 +344,7 @@ public class ResultSyncServiceTests
         services.AddSingleton(jornadaServiceMock.Object);
         services.AddSingleton(torneoServiceMock.Object);
         services.AddSingleton(broadcasterMock.Object);
+        services.AddSingleton(chatBanterMock2.Object);
 
         var serviceProvider = services.BuildServiceProvider();
         var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
