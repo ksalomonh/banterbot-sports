@@ -75,3 +75,4 @@ Layered architecture inherited from legacy app:
 | `cert-mobile` | Mobile app testing toolbox — Appium + UIAutomator2/XCUITest, emulator, element interaction | [SKILL.md](~/.claude/skills/cert-mobile/SKILL.md) |
 | `cert-service` | Service/API testing toolbox — curl, httpie, grpcurl, response validation | [SKILL.md](~/.claude/skills/cert-service/SKILL.md) |
 | `cert-console` | Console/CLI testing toolbox — stdin/stdout/exit codes, workers, log validation | [SKILL.md](~/.claude/skills/cert-console/SKILL.md) |
+| `ss-continue` | Session-safe continue — audits git worktrees + engram after a session cut, reconciles both sources, identifies continuation point without duplicating work | [SKILL.md](~/.claude/skills/ss-continue/SKILL.md) |
