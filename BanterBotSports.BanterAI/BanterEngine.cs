@@ -94,6 +94,58 @@ public class BanterEngine : IBanterEngine
         }
     }
 
+    public async Task<string> GenerateChatReplyAsync(string playerMessage, string playerName, Torneo torneo)
+    {
+        ArgumentNullException.ThrowIfNull(playerMessage);
+        ArgumentNullException.ThrowIfNull(playerName);
+        ArgumentNullException.ThrowIfNull(torneo);
+
+        try
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+            var userMessage = $"Torneo: {torneo.Nombre}\nJugador: {playerName}\nMensaje: {playerMessage}\n\n" +
+                              "Respondé al jugador con un comentario de banter divertido en Rioplatense. Máximo 280 caracteres.";
+
+            var parameters = new MessageParameters
+            {
+                Model = ModelId,
+                MaxTokens = 300,
+                System = new List<SystemMessage>
+                {
+                    new SystemMessage(SystemPrompt)
+                },
+                Messages = new List<Message>
+                {
+                    new Message
+                    {
+                        Role = RoleType.User,
+                        Content = new List<ContentBase>
+                        {
+                            new TextContent { Text = userMessage }
+                        }
+                    }
+                }
+            };
+
+            var response = await _client.Messages.GetClaudeMessageAsync(parameters, cts.Token);
+            var reply = response.Content.OfType<TextContent>().FirstOrDefault()?.Text ?? string.Empty;
+
+            if (string.IsNullOrWhiteSpace(reply))
+                return string.Empty;
+
+            if (reply.Length > MaxBanterLength)
+                reply = reply[..MaxBanterLength].TrimEnd();
+
+            return reply;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error generating chat reply for player {PlayerName}", playerName);
+            return string.Empty;
+        }
+    }
+
     private static string BuildUserMessage(ParticipanteStats stats, Torneo torneo)
     {
         var sb = new StringBuilder();
