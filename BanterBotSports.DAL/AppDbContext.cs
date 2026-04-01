@@ -16,6 +16,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
     public DbSet<UsuarioTelegram> UsuariosTelegram => Set<UsuarioTelegram>();
     public DbSet<PrediccionPartido> PrediccionesPartido => Set<PrediccionPartido>();
     public DbSet<PrediccionJornada> PrediccionesJornada => Set<PrediccionJornada>();
+    public DbSet<MensajeChat> MensajesChat => Set<MensajeChat>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -49,5 +50,13 @@ public class AppDbContext : IdentityDbContext<AppUser>
         builder.Entity<PrediccionJornada>()
             .HasIndex(pj => new { pj.JornadaId, pj.ParticipanteId })
             .IsUnique();
+
+        // MensajeChat: max 500 chars on Contenido, composite index for pagination
+        builder.Entity<MensajeChat>()
+            .Property(m => m.Contenido)
+            .HasMaxLength(500);
+
+        builder.Entity<MensajeChat>()
+            .HasIndex(m => new { m.TorneoId, m.FechaUtc });
     }
 }
