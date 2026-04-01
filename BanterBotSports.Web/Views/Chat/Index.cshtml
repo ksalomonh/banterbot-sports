@@ -1,0 +1,155 @@
+@{
+    ViewData["Title"] = "Chat";
+    var torneoId = (int)ViewBag.TorneoId;
+}
+
+<div class="max-w-2xl mx-auto px-4 py-6 flex flex-col h-screen-minus-nav">
+    <h1 class="text-2xl font-bold text-primary mb-4">Chat de la Quiniela</h1>
+
+    <!-- Message list -->
+    <div id="chat-messages"
+         class="flex-1 overflow-y-auto bg-surface rounded-xl p-4 space-y-3 mb-4"
+         style="max-height: 60vh;">
+        <p class="text-on-surface-muted text-sm text-center">Cargando mensajes...</p>
+    </div>
+
+    <!-- Input area -->
+    <div class="flex gap-2">
+        <input id="chat-input"
+               type="text"
+               maxlength="500"
+               placeholder="Escribí tu mensaje... (@@banterbot para invocar al bot)"
+               class="flex-1 rounded-lg bg-surface border border-border px-4 py-2 text-on-surface placeholder-on-surface-muted focus:outline-none focus:ring-2 focus:ring-primary" />
+        <button id="chat-send"
+                class="btn-primary px-5 py-2 rounded-lg font-semibold">
+            Enviar
+        </button>
+    </div>
+    <p class="text-xs text-on-surface-muted mt-1">
+        Antes del cierre de la jornada solo ves tus propios mensajes y los de BanterBot.
+    </p>
+</div>
+
+@section Scripts {
+<script src="~/lib/microsoft-signalr/dist/browser/signalr.min.js"></script>
+<script>
+    (function () {
+        const torneoId = @torneoId;
+        const messagesDiv = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('chat-send');
+        let oldestId = null;
+
+        // ── Render helpers ─────────────────────────────────────────────────
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.appendChild(document.createTextNode(text));
+            return div.innerHTML;
+        }
+
+        function buildMessageHtml(msg) {
+            const isBot = msg.tipoMensaje !== 'Normal';
+            const nameClass = isBot ? 'text-accent font-bold' : 'text-primary font-semibold';
+            const bubbleClass = isBot
+                ? 'bg-accent/10 border border-accent/30'
+                : 'bg-surface-alt';
+            const fecha = new Date(msg.fechaUtc).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+
+            return `
+                <div class="flex flex-col gap-0.5">
+                    <div class="flex items-baseline gap-2">
+                        <span class="${nameClass} text-sm">${escapeHtml(msg.nombreDisplay)}</span>
+                        <span class="text-xs text-on-surface-muted">${fecha}</span>
+                    </div>
+                    <div class="${bubbleClass} rounded-lg px-3 py-2 text-sm text-on-surface">
+                        ${escapeHtml(msg.contenido)}
+                    </div>
+                </div>`;
+        }
+
+        function prependMessage(msg) {
+            const div = document.createElement('div');
+            div.innerHTML = buildMessageHtml(msg);
+            messagesDiv.prepend(div.firstElementChild);
+        }
+
+        function appendMessage(msg) {
+            const div = document.createElement('div');
+            div.innerHTML = buildMessageHtml(msg);
+            messagesDiv.appendChild(div.firstElementChild);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // ── Load history ──────────────────────────────────────────────────
+
+        async function loadHistory(beforeId) {
+            const url = `/Chat/History?torneoId=${torneoId}` + (beforeId ? `&beforeId=${beforeId}` : '');
+            const res = await fetch(url);
+            if (!res.ok) return;
+
+            const messages = await res.json();
+
+            if (beforeId === undefined) {
+                // Initial load — clear placeholder
+                messagesDiv.innerHTML = '';
+            }
+
+            // Messages arrive newest-first from server — display them oldest-first
+            const reversed = [...messages].reverse();
+            for (const msg of reversed) {
+                appendMessage(msg);
+            }
+
+            if (messages.length > 0) {
+                oldestId = messages[messages.length - 1].id;
+            }
+        }
+
+        // ── SignalR connection ────────────────────────────────────────────
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl(`/chatHub?torneoId=${torneoId}`)
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on('NuevoMensaje', function (msg) {
+            appendMessage(msg);
+        });
+
+        connection.start()
+            .then(() => loadHistory())
+            .catch(err => console.error('ChatHub connection error:', err));
+
+        // ── Send message ──────────────────────────────────────────────────
+
+        async function sendMessage() {
+            const contenido = chatInput.value.trim();
+            if (!contenido) return;
+
+            chatInput.value = '';
+            chatInput.disabled = true;
+            sendBtn.disabled = true;
+
+            try {
+                await connection.invoke('SendMessage', torneoId, contenido);
+            } catch (err) {
+                console.error('SendMessage error:', err);
+                chatInput.value = contenido; // restore on failure
+            } finally {
+                chatInput.disabled = false;
+                sendBtn.disabled = false;
+                chatInput.focus();
+            }
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    })();
+</script>
+}

@@ -7,6 +7,7 @@ using BanterBotSports.Entities.ViewModels;
 using BanterBotSports.Integrations.ApiFootball;
 using BanterBotSports.Integrations.Telegram;
 using BanterBotSports.Web.Controllers;
+using BanterBotSports.Web.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +38,14 @@ public class JornadaControllerTests
             NullLogger<JornadaAbiertaNotifier>.Instance);
     }
 
+    private static ChatJornadaNotifier BuildChatNotifier()
+    {
+        var scopeFactory = new Mock<IServiceScopeFactory>();
+        return new ChatJornadaNotifier(
+            scopeFactory.Object,
+            NullLogger<ChatJornadaNotifier>.Instance);
+    }
+
     private static JornadaController BuildSut(
         Mock<IJornadaService>? jornadaServiceMock = null,
         Mock<IPartidoService>? partidoServiceMock = null,
@@ -61,8 +70,9 @@ public class JornadaControllerTests
             .Setup(um => um.GetUserId(It.IsAny<System.Security.Claims.ClaimsPrincipal>()))
             .Returns("test-user-id");
 
-        // JornadaAbiertaNotifier is sealed — instantiate a real one with no-op deps
+        // JornadaAbiertaNotifier and ChatJornadaNotifier are sealed — instantiate with no-op deps
         var notifier = BuildNotifier();
+        var chatNotifier = BuildChatNotifier();
 
         var controller = new JornadaController(
             jornadaSvc.Object,
@@ -73,7 +83,8 @@ public class JornadaControllerTests
             userManager.Object,
             NullLogger<JornadaController>.Instance,
             notifier,
-            banterDispatch.Object);
+            banterDispatch.Object,
+            chatNotifier);
 
         controller.ControllerContext = new ControllerContext
         {
