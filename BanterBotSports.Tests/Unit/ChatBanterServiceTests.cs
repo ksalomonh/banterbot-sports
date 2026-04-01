@@ -35,12 +35,14 @@ public class ChatBanterServiceTests
     private static (ChatBanterService sut,
         Mock<IBanterEngine> banterEngineMock,
         Mock<IChatService> chatServiceMock,
-        Mock<ITorneoRepository> torneoRepoMock)
+        Mock<ITorneoRepository> torneoRepoMock,
+        Mock<IChatBroadcaster> broadcasterMock)
         BuildSut(Torneo? torneo = null, string? banterReply = "¡Golazo, loco!")
     {
         var banterEngineMock = new Mock<IBanterEngine>();
         var chatServiceMock = new Mock<IChatService>();
         var torneoRepoMock = new Mock<ITorneoRepository>();
+        var broadcasterMock = new Mock<IChatBroadcaster>();
 
         torneoRepoMock
             .Setup(r => r.GetByIdAsync(TorneoId))
@@ -63,9 +65,10 @@ public class ChatBanterServiceTests
             banterEngineMock.Object,
             chatServiceMock.Object,
             torneoRepoMock.Object,
+            broadcasterMock.Object,
             NullLogger<ChatBanterService>.Instance);
 
-        return (sut, banterEngineMock, chatServiceMock, torneoRepoMock);
+        return (sut, banterEngineMock, chatServiceMock, torneoRepoMock, broadcasterMock);
     }
 
     [Fact]
@@ -73,7 +76,7 @@ public class ChatBanterServiceTests
     {
         // Arrange
         var torneo = BuildTorneo();
-        var (sut, banterEngineMock, chatServiceMock, _) = BuildSut(torneo);
+        var (sut, banterEngineMock, chatServiceMock, _, _) = BuildSut(torneo);
 
         banterEngineMock
             .Setup(e => e.GenerateChatReplyAsync(It.IsAny<string>(), It.IsAny<string>(), torneo))
@@ -92,7 +95,7 @@ public class ChatBanterServiceTests
     public async Task OnScoreUpdatedAsync_WhenTorneoNotFound_SkipsGracefully()
     {
         // Arrange — torneo = null
-        var (sut, _, chatServiceMock, _) = BuildSut(torneo: null);
+        var (sut, _, chatServiceMock, _, _) = BuildSut(torneo: null);
 
         // Act — must not throw
         var act = async () => await sut.OnScoreUpdatedAsync(TorneoId, PartidoId, 1, 0, "River", "Boca");
@@ -112,6 +115,7 @@ public class ChatBanterServiceTests
         var banterEngineMock = new Mock<IBanterEngine>();
         var chatServiceMock = new Mock<IChatService>();
         var torneoRepoMock = new Mock<ITorneoRepository>();
+        var broadcasterMock = new Mock<IChatBroadcaster>();
 
         torneoRepoMock.Setup(r => r.GetByIdAsync(TorneoId)).ReturnsAsync(torneo);
 
@@ -124,6 +128,7 @@ public class ChatBanterServiceTests
             banterEngineMock.Object,
             chatServiceMock.Object,
             torneoRepoMock.Object,
+            broadcasterMock.Object,
             NullLogger<ChatBanterService>.Instance);
 
         // Act — must not throw
@@ -144,6 +149,7 @@ public class ChatBanterServiceTests
         var banterEngineMock = new Mock<IBanterEngine>();
         var chatServiceMock = new Mock<IChatService>();
         var torneoRepoMock = new Mock<ITorneoRepository>();
+        var broadcasterMock = new Mock<IChatBroadcaster>();
 
         torneoRepoMock.Setup(r => r.GetByIdAsync(TorneoId)).ReturnsAsync(torneo);
 
@@ -155,6 +161,7 @@ public class ChatBanterServiceTests
             banterEngineMock.Object,
             chatServiceMock.Object,
             torneoRepoMock.Object,
+            broadcasterMock.Object,
             NullLogger<ChatBanterService>.Instance);
 
         // Act
@@ -163,6 +170,77 @@ public class ChatBanterServiceTests
         // Assert — no empty message saved
         chatServiceMock.Verify(
             s => s.SaveBanterBotMessageAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<TipoMensajeChat>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task OnScoreUpdatedAsync_ValidScore_BroadcastCalledWithSavedMessage()
+    {
+        // Arrange
+        var torneo = BuildTorneo();
+        var savedMessage = new MensajeChat { Id = 99, Contenido = "¡Golazo de River, loco!" };
+
+        var banterEngineMock = new Mock<IBanterEngine>();
+        var chatServiceMock = new Mock<IChatService>();
+        var torneoRepoMock = new Mock<ITorneoRepository>();
+        var broadcasterMock = new Mock<IChatBroadcaster>();
+
+        torneoRepoMock.Setup(r => r.GetByIdAsync(TorneoId)).ReturnsAsync(torneo);
+
+        banterEngineMock
+            .Setup(e => e.GenerateChatReplyAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Torneo>()))
+            .ReturnsAsync("¡Golazo de River, loco!");
+
+        chatServiceMock
+            .Setup(s => s.SaveBanterBotMessageAsync(TorneoId, It.IsAny<string>(), TipoMensajeChat.ResultadoBanter))
+            .ReturnsAsync(savedMessage);
+
+        var sut = new ChatBanterService(
+            banterEngineMock.Object,
+            chatServiceMock.Object,
+            torneoRepoMock.Object,
+            broadcasterMock.Object,
+            NullLogger<ChatBanterService>.Instance);
+
+        // Act
+        await sut.OnScoreUpdatedAsync(TorneoId, PartidoId, 1, 0, "River", "Boca");
+
+        // Assert — broadcaster called with the exact persisted message
+        broadcasterMock.Verify(
+            b => b.BroadcastMessageAsync(TorneoId, savedMessage),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task OnScoreUpdatedAsync_ClaudeApiUnreachable_BroadcastNotCalled()
+    {
+        // Arrange
+        var torneo = BuildTorneo();
+        var banterEngineMock = new Mock<IBanterEngine>();
+        var chatServiceMock = new Mock<IChatService>();
+        var torneoRepoMock = new Mock<ITorneoRepository>();
+        var broadcasterMock = new Mock<IChatBroadcaster>();
+
+        torneoRepoMock.Setup(r => r.GetByIdAsync(TorneoId)).ReturnsAsync(torneo);
+
+        banterEngineMock
+            .Setup(e => e.GenerateChatReplyAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Torneo>()))
+            .ThrowsAsync(new HttpRequestException("Claude API unreachable"));
+
+        var sut = new ChatBanterService(
+            banterEngineMock.Object,
+            chatServiceMock.Object,
+            torneoRepoMock.Object,
+            broadcasterMock.Object,
+            NullLogger<ChatBanterService>.Instance);
+
+        // Act — must not throw
+        var act = async () => await sut.OnScoreUpdatedAsync(TorneoId, PartidoId, 1, 0, "River", "Boca");
+        await act.Should().NotThrowAsync();
+
+        // Assert — broadcaster never called when AI fails
+        broadcasterMock.Verify(
+            b => b.BroadcastMessageAsync(It.IsAny<int>(), It.IsAny<MensajeChat>()),
             Times.Never);
     }
 }

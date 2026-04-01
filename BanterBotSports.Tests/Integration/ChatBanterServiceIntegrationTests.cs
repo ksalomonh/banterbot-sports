@@ -1,5 +1,6 @@
 using BanterBotSports.BanterAI;
 using BanterBotSports.BL.Services;
+using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL;
 using BanterBotSports.DAL.Repositories;
 using BanterBotSports.Entities;
@@ -61,10 +62,13 @@ public class ChatBanterServiceIntegrationTests : IAsyncLifetime
 
         var torneoRepo = new TorneoRepository(_context);
 
+        var broadcasterMock = new Mock<IChatBroadcaster>(MockBehavior.Loose);
+
         _chatBanterService = new ChatBanterService(
             _banterEngineMock.Object,
             chatService,
             torneoRepo,
+            broadcasterMock.Object,
             NullLogger<ChatBanterService>.Instance);
     }
 

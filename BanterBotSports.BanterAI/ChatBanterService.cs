@@ -14,22 +14,26 @@ public class ChatBanterService : IChatBanterService
     private readonly IBanterEngine _banterEngine;
     private readonly IChatService _chatService;
     private readonly ITorneoRepository _torneoRepository;
+    private readonly IChatBroadcaster _broadcaster;
     private readonly ILogger<ChatBanterService> _logger;
 
     public ChatBanterService(
         IBanterEngine banterEngine,
         IChatService chatService,
         ITorneoRepository torneoRepository,
+        IChatBroadcaster broadcaster,
         ILogger<ChatBanterService> logger)
     {
         ArgumentNullException.ThrowIfNull(banterEngine);
         ArgumentNullException.ThrowIfNull(chatService);
         ArgumentNullException.ThrowIfNull(torneoRepository);
+        ArgumentNullException.ThrowIfNull(broadcaster);
         ArgumentNullException.ThrowIfNull(logger);
 
         _banterEngine = banterEngine;
         _chatService = chatService;
         _torneoRepository = torneoRepository;
+        _broadcaster = broadcaster;
         _logger = logger;
     }
 
@@ -60,7 +64,9 @@ public class ChatBanterService : IChatBanterService
                 return;
             }
 
-            await _chatService.SaveBanterBotMessageAsync(torneoId, banter, TipoMensajeChat.ResultadoBanter);
+            var mensaje = await _chatService.SaveBanterBotMessageAsync(torneoId, banter, TipoMensajeChat.ResultadoBanter);
+
+            await _broadcaster.BroadcastMessageAsync(torneoId, mensaje);
 
             _logger.LogInformation(
                 "ChatBanterService: banter posted for partido {PartidoId} ({Equipo1} {G1}-{G2} {Equipo2}).",
