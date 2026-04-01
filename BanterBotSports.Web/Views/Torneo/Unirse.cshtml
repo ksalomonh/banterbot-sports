@@ -1,0 +1,45 @@
+@using BanterBotSports.Entities
+@model Torneo
+@{
+    ViewData["Title"] = $"Unirte a {Model.Nombre}";
+    var token = Context.Request.Query["token"].ToString();
+}
+
+<div class="max-w-lg mx-auto">
+
+    <!-- Header -->
+    <div class="rounded-3xl bg-[#0d1323] p-8 mb-6 shadow-[0_0_40px_rgba(105,218,255,0.05)]">
+        <p class="text-[#69daff] font-black uppercase tracking-widest text-xs mb-2">Invitación</p>
+        <h1 class="text-2xl font-black text-white mb-1">Te invitaron a unirte</h1>
+        <p class="text-[#a6aabf] text-sm">Vas a participar en el siguiente torneo:</p>
+
+        <div class="mt-6 p-4 bg-[#181f33] rounded-2xl border border-[#69daff]/10">
+            <p class="text-[#a6aabf] text-xs uppercase tracking-widest font-bold mb-1">Torneo</p>
+            <p class="text-white font-black text-xl">@Model.Nombre</p>
+        </div>
+    </div>
+
+    <!-- Action -->
+    <div class="rounded-3xl bg-[#0d1323] p-8 shadow-[0_0_40px_rgba(105,218,255,0.05)]">
+        <p class="text-[#a6aabf] text-sm mb-6">
+            Al confirmar, quedás registrado como participante en <strong class="text-white">@Model.Nombre</strong>.
+            Podés cancelar y volver al inicio si querés pensarlo.
+        </p>
+
+        <form asp-action="Unirse" asp-controller="Torneo" asp-route-id="@Model.Id"
+              asp-route-token="@token" method="post">
+            @Html.AntiForgeryToken()
+            <div class="flex flex-col gap-3">
+                <button type="submit"
+                        class="w-full py-3 px-6 bg-[#69daff] text-[#090e1c] font-black uppercase tracking-widest text-sm rounded-2xl hover:bg-[#69daff]/90 transition-all shadow-[0_0_20px_rgba(105,218,255,0.2)]">
+                    Confirmar y unirme
+                </button>
+                <a href="/"
+                   class="w-full py-3 px-6 text-center text-[#a6aabf] font-bold uppercase tracking-widest text-sm rounded-2xl border border-[#a6aabf]/20 hover:border-[#a6aabf]/40 hover:text-white transition-all">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+
+</div>

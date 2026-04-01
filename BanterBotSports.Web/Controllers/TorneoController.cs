@@ -13,7 +13,10 @@ namespace BanterBotSports.Web.Controllers;
 [Authorize]
 public class TorneoController : Controller
 {
-    private const string InviteProtectorPurpose = "TorneoInvite";
+    /// <summary>
+    /// Data protection purpose for invite tokens. Public so tests can reference it without duplicating the string.
+    /// </summary>
+    public const string InviteProtectorPurpose = "TorneoInvite";
 
     private readonly ITorneoService _torneoService;
     private readonly IJornadaService _jornadaService;
@@ -198,33 +201,48 @@ public class TorneoController : Controller
         return RedirectToAction(nameof(Dashboard), new { id });
     }
 
-    // POST /torneo/{id}/unirse?token=X
-    [HttpPost("/torneo/{id:int}/unirse")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Unirse(int id, [FromQuery] string token)
+    // GET /torneo/{id}/unirse?token=X
+    // AllowAnonymous so unauthenticated users can land here and be redirected to Login
+    // with the full returnUrl (including token) preserved — fixing the broken invite flow.
+    [AllowAnonymous]
+    [HttpGet("/torneo/{id:int}/unirse")]
+    public async Task<IActionResult> Unirse(int id, [FromQuery] string? token)
     {
         var torneo = await _torneoService.GetByIdAsync(id);
         if (torneo is null)
             return NotFound();
 
-        try
+        if (!TryValidateInviteToken(token, id))
         {
-            var payload = _protector.Unprotect(token);
-            var parts = payload.Split(':');
-            if (parts.Length < 2
-                || !int.TryParse(parts[0], out var tokenTorneoId)
-                || tokenTorneoId != id
-                || !long.TryParse(parts[1], out var expiresUnix)
-                || DateTimeOffset.UtcNow.ToUnixTimeSeconds() > expiresUnix)
-            {
-                TempData[TempDataKeys.Error] = "Link de invitación inválido o expirado.";
-                return RedirectToAction(nameof(Index));
-            }
+            TempData[TempDataKeys.Error] = "Link de invitación inválido o expirado.";
+            return RedirectToAction(nameof(Index));
         }
-        catch (Exception ex)
+
+        // Unauthenticated user: redirect to Login preserving the full URL (token included).
+        if (!User.Identity?.IsAuthenticated ?? true)
         {
-            _logger.LogWarning(ex, "Failed to validate invite token for torneo {TorneoId}", id);
-            TempData[TempDataKeys.Error] = "Link de invitación inválido.";
+            var returnUrl = Url.Action(nameof(Unirse), "Torneo", new { id, token });
+            return RedirectToAction("Login", "Account", new { returnUrl });
+        }
+
+        return View(torneo);
+    }
+
+    // POST /torneo/{id}/unirse?token=X
+    // Renamed to UnirsePost with [ActionName("Unirse")] so GET and POST can coexist without
+    // C# method name collision while still routing to /torneo/{id}/unirse.
+    [HttpPost("/torneo/{id:int}/unirse")]
+    [ValidateAntiForgeryToken]
+    [ActionName("Unirse")]
+    public async Task<IActionResult> UnirsePost(int id, [FromQuery] string? token)
+    {
+        var torneo = await _torneoService.GetByIdAsync(id);
+        if (torneo is null)
+            return NotFound();
+
+        if (!TryValidateInviteToken(token, id))
+        {
+            TempData[TempDataKeys.Error] = "Link de invitación inválido o expirado.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -233,5 +251,40 @@ public class TorneoController : Controller
 
         TempData[TempDataKeys.Success] = $"Te uniste al torneo {torneo.Nombre}.";
         return RedirectToAction(nameof(Dashboard), new { id });
+    }
+
+    // ---------------------------------------------------------------------------
+    // Private helpers
+    // ---------------------------------------------------------------------------
+
+    /// <summary>
+    /// Validates the invite token: decrypts the payload, verifies the torneo ID matches,
+    /// and checks that the token has not expired.
+    /// </summary>
+    private bool TryValidateInviteToken(string? token, int torneoId)
+    {
+        if (string.IsNullOrEmpty(token))
+            return false;
+
+        try
+        {
+            var payload = _protector.Unprotect(token);
+            var parts = payload.Split(':');
+            if (parts.Length < 2
+                || !int.TryParse(parts[0], out var tokenTorneoId)
+                || tokenTorneoId != torneoId
+                || !long.TryParse(parts[1], out var expiresUnix)
+                || DateTimeOffset.UtcNow.ToUnixTimeSeconds() > expiresUnix)
+            {
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to validate invite token for torneo {TorneoId}", torneoId);
+            return false;
+        }
     }
 }
