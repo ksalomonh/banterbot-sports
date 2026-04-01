@@ -1,3 +1,4 @@
+using BanterBotSports.BL.Models;
 using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL.Repositories.Interfaces;
 using BanterBotSports.Entities.Enums;
@@ -75,6 +76,9 @@ public class ResultSyncService : IHostedService, IAsyncDisposable
             var partidoRepository = scope.ServiceProvider.GetRequiredService<IPartidoRepository>();
             var partidoService = scope.ServiceProvider.GetRequiredService<IPartidoService>();
             var apiFootballSyncService = scope.ServiceProvider.GetRequiredService<IApiFootballSyncService>();
+            var jornadaService = scope.ServiceProvider.GetRequiredService<IJornadaService>();
+            var torneoService = scope.ServiceProvider.GetRequiredService<ITorneoService>();
+            var rankingBroadcaster = scope.ServiceProvider.GetRequiredService<IRankingBroadcaster>();
 
             var activeMatches = await partidoRepository.GetByEstadoAsync(EstadoPartido.EnCurso);
 
@@ -119,6 +123,27 @@ public class ResultSyncService : IHostedService, IAsyncDisposable
                     _logger.LogInformation(
                         "Updated partido {PartidoId} ({Equipo1} vs {Equipo2}): {G1}-{G2} [{Estado}]",
                         partido.Id, partido.Equipo1, partido.Equipo2, goles1, goles2, liveScore.Estado);
+
+                    // Broadcast updated ranking to connected clients
+                    try
+                    {
+                        var jornada = await jornadaService.GetDetalleAsync(partido.JornadaId);
+                        if (jornada is not null)
+                        {
+                            var torneo = await torneoService.GetByIdWithDetailsAsync(jornada.TorneoId);
+                            if (torneo is not null)
+                            {
+                                var ranking = await torneoService.BuildRankingAsync(torneo);
+                                await rankingBroadcaster.BroadcastRankingAsync(jornada.TorneoId, ranking);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex,
+                            "Error broadcasting ranking for partido {PartidoId} (jornada {JornadaId}).",
+                            partido.Id, partido.JornadaId);
+                    }
                 }
                 catch (Exception ex)
                 {

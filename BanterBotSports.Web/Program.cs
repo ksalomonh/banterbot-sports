@@ -9,6 +9,7 @@ using BanterBotSports.Integrations.ApiFootball;
 using BanterBotSports.Integrations.Hosted;
 using BanterBotSports.Integrations.Telegram;
 using BanterBotSports.Web.Hubs;
+using BanterBotSports.Web.Infrastructure;
 using BanterBotSports.Web.Services;
 using BanterBotSports.Web.Telegram;
 using Microsoft.AspNetCore.Identity;
@@ -117,6 +118,9 @@ builder.Services.AddSingleton<TelegramUpdateQueue>();
 builder.Services.AddHostedService<TelegramUpdateWorker>();
 builder.Services.AddHostedService<DeadlineEnforcerService>();
 builder.Services.AddHostedService<ResultSyncService>();
+
+// ─── SignalR Infrastructure ──────────────────────────────────────────────────
+builder.Services.AddScoped<IRankingBroadcaster, SignalRRankingBroadcaster>();
 
 // ─── MVC + SignalR ───────────────────────────────────────────────────────────
 builder.Services.AddControllersWithViews();
