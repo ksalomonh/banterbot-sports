@@ -25,6 +25,7 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ConnectionStrings__DefaultConnection: >-
         Host=db;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       Telegram__BotToken: ${TELEGRAM_BOT_TOKEN}
