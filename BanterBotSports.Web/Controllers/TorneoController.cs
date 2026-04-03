@@ -1,6 +1,7 @@
 using BanterBotSports.BL.Models;
 using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.Entities.ViewModels;
+using BanterBotSports.Integrations.ApiFootball;
 using BanterBotSports.Web.Infrastructure;
 using BanterBotSports.Web.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -20,6 +21,7 @@ public class TorneoController : Controller
 
     private readonly ITorneoService _torneoService;
     private readonly IJornadaService _jornadaService;
+    private readonly IApiFootballSyncService _apiFootballSyncService;
     private readonly IDataProtector _protector;
     private readonly UserManager<DAL.AppUser> _userManager;
     private readonly ILogger<TorneoController> _logger;
@@ -27,18 +29,21 @@ public class TorneoController : Controller
     public TorneoController(
         ITorneoService torneoService,
         IJornadaService jornadaService,
+        IApiFootballSyncService apiFootballSyncService,
         IDataProtectionProvider dataProtectionProvider,
         UserManager<DAL.AppUser> userManager,
         ILogger<TorneoController> logger)
     {
         ArgumentNullException.ThrowIfNull(torneoService);
         ArgumentNullException.ThrowIfNull(jornadaService);
+        ArgumentNullException.ThrowIfNull(apiFootballSyncService);
         ArgumentNullException.ThrowIfNull(dataProtectionProvider);
         ArgumentNullException.ThrowIfNull(userManager);
         ArgumentNullException.ThrowIfNull(logger);
 
         _torneoService = torneoService;
         _jornadaService = jornadaService;
+        _apiFootballSyncService = apiFootballSyncService;
         _protector = dataProtectionProvider.CreateProtector(InviteProtectorPurpose);
         _userManager = userManager;
         _logger = logger;
@@ -57,6 +62,7 @@ public class TorneoController : Controller
     [HttpGet("/torneo/nuevo")]
     public IActionResult Nuevo()
     {
+        ViewBag.Ligas = LeagueCatalog.Leagues;
         return View(new TorneoCreateViewModel());
     }
 
@@ -251,6 +257,19 @@ public class TorneoController : Controller
 
         TempData[TempDataKeys.Success] = $"Te uniste al torneo {torneo.Nombre}.";
         return RedirectToAction(nameof(Dashboard), new { id });
+    }
+
+    // GET /torneo/buscar-partidos?liga={ligaId}
+    [HttpGet("/torneo/buscar-partidos")]
+    public async Task<IActionResult> BuscarPartidos(int liga)
+    {
+        if (!LeagueCatalog.ValidIds.Contains(liga))
+            return BadRequest("Liga no válida.");
+
+        var from = DateOnly.FromDateTime(DateTime.UtcNow);
+        var to = from.AddDays(35);
+        var partidos = await _apiFootballSyncService.GetMatchesAsync(liga, from, to);
+        return Json(partidos);
     }
 
     // ---------------------------------------------------------------------------
