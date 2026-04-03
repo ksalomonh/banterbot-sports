@@ -60,7 +60,7 @@
         <div class="flex items-center gap-4">
             @if (User.Identity?.IsAuthenticated == true)
             {
-                <span class="text-on-surface-variant text-sm font-medium">@(User.FindFirstValue("NombreDisplay") ?? User.Identity?.Name)</span>
+                <span class="text-on-surface-variant text-sm font-medium">@(User.FindFirstValue(AppClaimTypes.NombreDisplay) ?? User.Identity?.Name)</span>
                 <form asp-controller="Account" asp-action="Logout" method="post" class="inline">
                     <button type="submit"
                             class="px-4 py-2 rounded-xl bg-surface-container-high hover:bg-surface-bright text-on-surface text-sm font-bold transition-colors">
