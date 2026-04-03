@@ -1,8 +1,10 @@
 @model IEnumerable<BanterBotSports.Entities.Torneo>
 @using BanterBotSports.Entities.Enums
+@using BanterBotSports.Web.Infrastructure
 @{
     ViewData["Title"] = "Mis Torneos";
-    var nombre = User.Identity?.Name ?? "Jugador";
+    var nombreCompleto = User.FindFirst(AppClaimTypes.NombreDisplay)?.Value ?? User.Identity?.Name ?? "Jugador";
+    var nombre = nombreCompleto.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "Jugador";
     var activos = Model.Where(t => t.Estado == EstadoTorneo.Activo).ToList();
     var total = Model.Count();
 }
