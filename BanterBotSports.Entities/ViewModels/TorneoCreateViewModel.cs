@@ -29,6 +29,8 @@ public class TorneoCreateViewModel
     public int PtosGolesJornada { get; set; }
 
     public IList<ConfiguracionPremioViewModel> ConfiguracionPremios { get; set; } = new List<ConfiguracionPremioViewModel>();
+
+    public IList<string> PartidosSeleccionados { get; set; } = new List<string>();
 }
 
 public class ConfiguracionPremioViewModel
