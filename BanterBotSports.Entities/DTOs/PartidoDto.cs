@@ -10,5 +10,7 @@ public record PartidoDto(
     DateTimeOffset KickOffUtc,
     int? GolesEquipo1,
     int? GolesEquipo2,
-    EstadoPartido Estado
+    EstadoPartido Estado,
+    string? LogoUrlEquipo1 = null,
+    string? LogoUrlEquipo2 = null
 );

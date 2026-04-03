@@ -126,7 +126,9 @@ public class ApiFootballClient : IApiFootballClient
             KickOffUtc: kickOff,
             GolesEquipo1: fixture.Goals?.Home,
             GolesEquipo2: fixture.Goals?.Away,
-            Estado: estado
+            Estado: estado,
+            LogoUrlEquipo1: fixture.Teams?.Home?.Logo,
+            LogoUrlEquipo2: fixture.Teams?.Away?.Logo
         );
     }
 
@@ -191,6 +193,9 @@ public class ApiFootballClient : IApiFootballClient
     {
         [JsonPropertyName("name")]
         public string? Name { get; set; }
+
+        [JsonPropertyName("logo")]
+        public string? Logo { get; set; }
     }
 
     private sealed class ApiGoals
