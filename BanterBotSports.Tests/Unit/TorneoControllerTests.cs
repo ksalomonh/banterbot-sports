@@ -3,6 +3,7 @@ using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL;
 using BanterBotSports.Entities;
 using BanterBotSports.Entities.ViewModels;
+using BanterBotSports.Integrations.ApiFootball;
 using BanterBotSports.Web.Controllers;
 using BanterBotSports.Web.Models;
 using FluentAssertions;
@@ -29,10 +30,14 @@ public class TorneoControllerTests
 
     private static TorneoController BuildSut(
         Mock<ITorneoService>? torneoServiceMock = null,
-        Mock<IJornadaService>? jornadaServiceMock = null)
+        Mock<IJornadaService>? jornadaServiceMock = null,
+        Mock<IApiFootballSyncService>? apiFootballSyncServiceMock = null,
+        Mock<IPartidoService>? partidoServiceMock = null)
     {
         var torneoSvc = torneoServiceMock ?? new Mock<ITorneoService>();
         var jornadaSvc = jornadaServiceMock ?? new Mock<IJornadaService>();
+        var apiFootballSyncSvc = apiFootballSyncServiceMock ?? new Mock<IApiFootballSyncService>();
+        var partidoSvc = partidoServiceMock ?? new Mock<IPartidoService>();
 
         // DataProtectionProvider: use ephemeral (in-memory) keys for unit tests
         var dataProtectionProvider = new EphemeralDataProtectionProvider();
@@ -53,6 +58,8 @@ public class TorneoControllerTests
         var controller = new TorneoController(
             torneoSvc.Object,
             jornadaSvc.Object,
+            apiFootballSyncSvc.Object,
+            partidoSvc.Object,
             dataProtectionProvider,
             userManager.Object,
             NullLogger<TorneoController>.Instance);
