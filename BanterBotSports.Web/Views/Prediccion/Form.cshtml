@@ -163,6 +163,20 @@
                     </div>
                 </div>
             }
+            @* Jornada total-goals prediction (read-only) *@
+            @{
+                var golesPronosticados = ViewBag.GolesPronosticados as int?;
+            }
+            @if (golesPronosticados.HasValue)
+            {
+                <div class="mt-4 bg-surface-container-low rounded-xl p-5 flex items-center justify-between" style="border-left: 4px solid #2ff801;">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Desempate — Total Goles</span>
+                        <span class="text-sm font-bold text-on-surface">Tu pronóstico de goles</span>
+                    </div>
+                    <span class="text-2xl font-black text-secondary">@golesPronosticados</span>
+                </div>
+            }
         </div>
     }
     else
@@ -170,12 +184,13 @@
         <!-- Editable prediction form -->
         <form asp-action="Form" asp-route-jornadaId="@Model.Id" method="post" id="predictions-form">
             @* Tie-breaker — inside the form so it submits with the predictions *@
-            <div class="mb-6 bg-surface-container-low rounded-xl p-5 flex items-center justify-between md:hidden" style="border-left: 4px solid #2ff801;">
+            <div class="mb-6 bg-surface-container-low rounded-xl p-5 flex items-center justify-between" style="border-left: 4px solid #2ff801;">
                 <div class="flex flex-col">
                     <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Desempate — Total Goles</span>
                     <span class="text-sm font-bold text-on-surface">Pronóstico total de goles</span>
                 </div>
                 <input id="total-goles" name="totalGoles" type="number" min="0" max="99" placeholder="00"
+                       value="@ViewBag.GolesPronosticados"
                        class="w-20 bg-surface-container-high border-none rounded-xl text-center font-black text-2xl text-secondary focus:ring-2 focus:ring-secondary/50 py-2" />
             </div>
             <div class="space-y-4 md:space-y-6">

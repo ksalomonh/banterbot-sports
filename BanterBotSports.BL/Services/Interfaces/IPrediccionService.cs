@@ -27,4 +27,14 @@ public interface IPrediccionService
     /// Must be called after official match results are entered.
     /// </summary>
     Task CalcularPuntosGolesJornadaAsync(int jornadaId);
+
+    /// <summary>
+    /// Saves (upsert) a participant's manual total-goals prediction for a jornada.
+    /// Enforces deadline: rejects non-organizer submissions after DeadlineUtc.
+    /// </summary>
+    Task GuardarPrediccionJornadaAsync(
+        int jornadaId,
+        int participanteId,
+        int golesPronosticados,
+        bool esOrganizador = false);
 }

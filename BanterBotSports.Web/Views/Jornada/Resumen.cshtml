@@ -200,6 +200,28 @@
                                 </div>
                             }
                         </div>
+
+                        @* Jornada total-goals prediction *@
+                        <div class="px-6 py-3 bg-surface-container-high/50 flex items-center justify-between border-t border-outline-variant/10">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm text-secondary">sports_soccer</span>
+                                <span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Goles Jornada</span>
+                            </div>
+                            @if (participante.GolesPronosticados.HasValue)
+                            {
+                                <div class="flex items-center gap-3">
+                                    <span class="text-sm font-black text-on-surface">@participante.GolesPronosticados goles</span>
+                                    @if (participante.PuntosGolesJornada.HasValue && participante.PuntosGolesJornada.Value > 0)
+                                    {
+                                        <span class="prediction-result-badge bg-secondary text-on-secondary">+@participante.PuntosGolesJornada pts</span>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="text-xs font-bold text-on-surface-variant/40 uppercase tracking-widest">Sin prediccion</span>
+                            }
+                        </div>
                     </div>
                 }
             }

@@ -197,7 +197,9 @@ public class JornadaService : IJornadaService
                 return new ResumenParticipanteRow(
                     NombreDisplay: nombreDisplay,
                     PuntosJornada: puntosJornada,
-                    Predicciones: predicciones);
+                    Predicciones: predicciones,
+                    GolesPronosticados: pjornada?.GolesPronosticados,
+                    PuntosGolesJornada: pjornada?.PuntosObtenidos);
             })
             .OrderByDescending(r => r.PuntosJornada)
             .ToList();

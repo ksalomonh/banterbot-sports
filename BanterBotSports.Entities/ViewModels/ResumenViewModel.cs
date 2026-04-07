@@ -28,7 +28,9 @@ public record ResumenViewModel(
 public record ResumenParticipanteRow(
     string NombreDisplay,
     int PuntosJornada,
-    IReadOnlyList<PrediccionConResultado> Predicciones);
+    IReadOnlyList<PrediccionConResultado> Predicciones,
+    int? GolesPronosticados = null,
+    int? PuntosGolesJornada = null);
 
 /// <summary>
 /// A single match prediction plus its official result.
