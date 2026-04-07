@@ -291,6 +291,86 @@ public class PrediccionServiceIntegrationTests : IAsyncLifetime
     }
 
     // ---------------------------------------------------------------------------
+    // GuardarPrediccionJornadaAsync scenarios
+    // ---------------------------------------------------------------------------
+
+    [Fact]
+    public async Task GuardarPrediccionJornadaAsync_NuevoPronóstico_PersistsInDatabase()
+    {
+        // Arrange: future deadline so the submission is accepted
+        var (_, jornada, _, participante) = await SeedBasicScenarioAsync(DateTimeOffset.UtcNow.AddHours(1));
+
+        // Act
+        await _prediccionService.GuardarPrediccionJornadaAsync(
+            jornada.Id, participante.Id, golesPronosticados: 15, esOrganizador: false);
+
+        // Assert
+        var saved = await _context.PrediccionesJornada
+            .FirstOrDefaultAsync(pj => pj.JornadaId == jornada.Id && pj.ParticipanteId == participante.Id);
+
+        saved.Should().NotBeNull();
+        saved!.GolesPronosticados.Should().Be(15);
+        saved.PuntosObtenidos.Should().Be(0, "new record must start with zero points");
+    }
+
+    [Fact]
+    public async Task GuardarPrediccionJornadaAsync_ExistingRecord_Upserts()
+    {
+        // Arrange: save 15 first, then update to 20 — only one row must exist
+        var (_, jornada, _, participante) = await SeedBasicScenarioAsync(DateTimeOffset.UtcNow.AddHours(1));
+
+        await _prediccionService.GuardarPrediccionJornadaAsync(
+            jornada.Id, participante.Id, golesPronosticados: 15);
+
+        // Act: update
+        await _prediccionService.GuardarPrediccionJornadaAsync(
+            jornada.Id, participante.Id, golesPronosticados: 20);
+
+        // Assert: only one row, with the latest value
+        var rows = await _context.PrediccionesJornada
+            .Where(pj => pj.JornadaId == jornada.Id && pj.ParticipanteId == participante.Id)
+            .ToListAsync();
+
+        rows.Should().HaveCount(1, "upsert must not duplicate rows");
+        rows[0].GolesPronosticados.Should().Be(20);
+    }
+
+    [Fact]
+    public async Task GuardarPrediccionJornadaAsync_DeadlinePassed_NonOrganizador_ThrowsInvalidOperationException()
+    {
+        // Arrange: deadline already past
+        var pastDeadline = DateTimeOffset.UtcNow.AddHours(-1);
+        var (_, jornada, _, participante) = await SeedBasicScenarioAsync(pastDeadline);
+
+        // Act
+        var act = async () => await _prediccionService.GuardarPrediccionJornadaAsync(
+            jornada.Id, participante.Id, golesPronosticados: 10, esOrganizador: false);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*cerró*");
+    }
+
+    [Fact]
+    public async Task GuardarPrediccionJornadaAsync_DeadlinePassed_Organizador_Succeeds()
+    {
+        // Arrange: deadline already past — but organizer override
+        var pastDeadline = DateTimeOffset.UtcNow.AddHours(-1);
+        var (_, jornada, _, participante) = await SeedBasicScenarioAsync(pastDeadline);
+
+        // Act & Assert: should NOT throw
+        var act = async () => await _prediccionService.GuardarPrediccionJornadaAsync(
+            jornada.Id, participante.Id, golesPronosticados: 12, esOrganizador: true);
+
+        await act.Should().NotThrowAsync();
+
+        var saved = await _context.PrediccionesJornada
+            .FirstOrDefaultAsync(pj => pj.JornadaId == jornada.Id && pj.ParticipanteId == participante.Id);
+        saved.Should().NotBeNull();
+        saved!.GolesPronosticados.Should().Be(12);
+    }
+
+    // ---------------------------------------------------------------------------
     // Goles de Jornada scoring scenarios
     // ---------------------------------------------------------------------------
 
