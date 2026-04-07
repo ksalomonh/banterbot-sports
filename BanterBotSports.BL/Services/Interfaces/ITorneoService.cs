@@ -62,4 +62,17 @@ public interface ITorneoService
     /// Returns the number of participants removed.
     /// </summary>
     Task<int> DarDeBajaImpagosAsync(int torneoId);
+
+    /// <summary>
+    /// Returns torneos owned by the same organizer with Estado Activo or Finalizado,
+    /// excluding the specified torneo.
+    /// </summary>
+    Task<IReadOnlyList<TorneoResumen>> GetTorneosClonablesAsync(int excluirTorneoId, string organizadorId);
+
+    /// <summary>
+    /// Clones Jugador-role participants from source torneo into destination torneo.
+    /// Both torneos must belong to the same organizer. Sets Pago=false on all cloned rows.
+    /// Idempotent: already-enrolled users are skipped (counted as Omitidos).
+    /// </summary>
+    Task<ClonarJugadoresResult> ClonarJugadoresAsync(int torneoDestinoId, int torneoOrigenId, string organizadorId);
 }
