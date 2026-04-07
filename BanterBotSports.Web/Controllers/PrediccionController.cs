@@ -54,6 +54,11 @@ public class PrediccionController : Controller
         var existingPredictions = await _prediccionService
             .GetPorJornadaYParticipanteAsync(jornadaId, participante.Id);
 
+        // Load existing jornada goal prediction for pre-populating the form
+        var prediccionesJornada = await _prediccionService.GetByJornadaAsync(jornadaId);
+        var prediccionJornada = prediccionesJornada.FirstOrDefault(pj => pj.ParticipanteId == participante.Id);
+        ViewBag.GolesPronosticados = prediccionJornada?.GolesPronosticados;
+
         var torneo = await _torneoService.GetByIdAsync(jornada.TorneoId);
 
         ViewBag.Participante = participante;
@@ -78,7 +83,7 @@ public class PrediccionController : Controller
         var pastDeadline = jornada.DeadlineUtc.HasValue &&
                            DateTimeOffset.UtcNow > jornada.DeadlineUtc.Value;
         if (!pastDeadline)
-            return StatusCode(403);
+            return Forbid();
 
         var resumen = await _jornadaService.GetResumenJornadaAsync(jornadaId);
         if (resumen is null)
@@ -90,7 +95,7 @@ public class PrediccionController : Controller
     // POST /prediccion/{jornadaId}
     [HttpPost("/prediccion/{jornadaId:int}")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Form(int jornadaId, [FromForm] Dictionary<int, int[]> predicciones)
+    public async Task<IActionResult> Form(int jornadaId, [FromForm] Dictionary<int, int[]> predicciones, [FromForm] int? totalGoles)
     {
         var jornada = await _jornadaService.GetDetalleAsync(jornadaId);
         if (jornada is null)
@@ -141,6 +146,20 @@ public class PrediccionController : Controller
             }
         }
 
+        // Save jornada total-goals prediction (tiebreaker)
+        if (totalGoles.HasValue && totalGoles.Value >= 0)
+        {
+            try
+            {
+                await _prediccionService.GuardarPrediccionJornadaAsync(
+                    jornadaId, participante.Id, totalGoles.Value, esOrganizador);
+            }
+            catch (InvalidOperationException ex)
+            {
+                errores.Add($"Goles de la jornada: {ex.Message}");
+            }
+        }
+
         if (errores.Count > 0)
         {
             foreach (var error in errores)
@@ -150,7 +169,9 @@ public class PrediccionController : Controller
             return View(jornada);
         }
 
-        TempData[TempDataKeys.Success] = "Predicciones guardadas correctamente.";
+        TempData[TempDataKeys.Success] = totalGoles.HasValue
+            ? "Predicciones y goles de jornada guardados correctamente."
+            : "Predicciones guardadas correctamente.";
         return RedirectToAction(nameof(Form), new { jornadaId });
     }
 
@@ -164,6 +185,11 @@ public class PrediccionController : Controller
     {
         var existingPredictions = await _prediccionService
             .GetPorJornadaYParticipanteAsync(jornadaId, participante.Id);
+
+        // Load existing jornada goal prediction for re-render after POST error
+        var prediccionesJornada = await _prediccionService.GetByJornadaAsync(jornadaId);
+        var prediccionJornada = prediccionesJornada.FirstOrDefault(pj => pj.ParticipanteId == participante.Id);
+        ViewBag.GolesPronosticados = prediccionJornada?.GolesPronosticados;
 
         ViewBag.Participante = participante;
         ViewBag.EsCerrada = esCerrada;
