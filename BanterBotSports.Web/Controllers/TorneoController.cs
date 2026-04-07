@@ -1,6 +1,8 @@
 using BanterBotSports.BL.Models;
 using BanterBotSports.BL.Services.Interfaces;
+using BanterBotSports.Entities;
 using BanterBotSports.Entities.ViewModels;
+using BanterBotSports.Integrations.ApiFootball;
 using BanterBotSports.Web.Infrastructure;
 using BanterBotSports.Web.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -20,6 +22,8 @@ public class TorneoController : Controller
 
     private readonly ITorneoService _torneoService;
     private readonly IJornadaService _jornadaService;
+    private readonly IApiFootballSyncService _apiFootballSyncService;
+    private readonly IPartidoService _partidoService;
     private readonly IDataProtector _protector;
     private readonly UserManager<DAL.AppUser> _userManager;
     private readonly ILogger<TorneoController> _logger;
@@ -27,18 +31,24 @@ public class TorneoController : Controller
     public TorneoController(
         ITorneoService torneoService,
         IJornadaService jornadaService,
+        IApiFootballSyncService apiFootballSyncService,
+        IPartidoService partidoService,
         IDataProtectionProvider dataProtectionProvider,
         UserManager<DAL.AppUser> userManager,
         ILogger<TorneoController> logger)
     {
         ArgumentNullException.ThrowIfNull(torneoService);
         ArgumentNullException.ThrowIfNull(jornadaService);
+        ArgumentNullException.ThrowIfNull(apiFootballSyncService);
+        ArgumentNullException.ThrowIfNull(partidoService);
         ArgumentNullException.ThrowIfNull(dataProtectionProvider);
         ArgumentNullException.ThrowIfNull(userManager);
         ArgumentNullException.ThrowIfNull(logger);
 
         _torneoService = torneoService;
         _jornadaService = jornadaService;
+        _apiFootballSyncService = apiFootballSyncService;
+        _partidoService = partidoService;
         _protector = dataProtectionProvider.CreateProtector(InviteProtectorPurpose);
         _userManager = userManager;
         _logger = logger;
@@ -57,6 +67,7 @@ public class TorneoController : Controller
     [HttpGet("/torneo/nuevo")]
     public IActionResult Nuevo()
     {
+        ViewBag.Ligas = LeagueCatalog.Leagues;
         return View(new TorneoCreateViewModel());
     }
 
@@ -65,19 +76,72 @@ public class TorneoController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Nuevo(TorneoCreateViewModel model)
     {
+        var sumaPremios = model.ConfiguracionPremios?.Sum(p => p.Porcentaje) ?? 0;
+        if (Math.Abs(sumaPremios - 100m) > 0.01m)
+        {
+            ModelState.AddModelError(string.Empty,
+                "Los premios deben sumar exactamente 100%. Volvé al paso Premios.");
+        }
+
         if (!ModelState.IsValid)
+        {
+            ViewBag.InitialStep = ResolveStepFromErrors(ModelState);
+            ViewBag.Ligas = LeagueCatalog.Leagues;
             return View(model);
+        }
 
         try
         {
             var userId = _userManager.GetUserId(User)!;
             var torneoCreado = await _torneoService.CrearTorneoAsync(model, userId);
+
+            // Assign selected matches to Jornada 1
+            if (model.PartidosSeleccionados?.Count > 0)
+            {
+                var jornadas = await _jornadaService.GetByTorneoIdAsync(torneoCreado.Id);
+                var primeraJornada = jornadas.MinBy(j => j.Numero);
+
+                if (primeraJornada is not null)
+                {
+                    var matchFailures = new List<string>();
+                    foreach (var externalId in model.PartidosSeleccionados)
+                    {
+                        if (!int.TryParse(externalId, out var extId)) continue;
+                        try
+                        {
+                            var partidoDto = await _apiFootballSyncService.GetFixtureByIdAsync(extId);
+                            if (partidoDto is not null)
+                            {
+                                var partido = new Partido
+                                {
+                                    JornadaId = primeraJornada.Id,
+                                    ExternalId = partidoDto.ExternalId,
+                                    Equipo1 = partidoDto.Equipo1,
+                                    Equipo2 = partidoDto.Equipo2,
+                                    KickOffUtc = partidoDto.KickOffUtc,
+                                    Estado = partidoDto.Estado
+                                };
+                                await _partidoService.AsignarPartidoAsync(primeraJornada.Id, partido);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(ex, "Failed to assign fixture {ExternalId} to jornada {JornadaId}", externalId, primeraJornada.Id);
+                            matchFailures.Add(externalId);
+                        }
+                    }
+                    if (matchFailures.Count > 0)
+                        TempData[TempDataKeys.Info] = $"No se pudieron asignar {matchFailures.Count} partido(s). Podés agregarlos manualmente.";
+                }
+            }
+
             return RedirectToAction(nameof(Dashboard), new { id = torneoCreado.Id });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating torneo for user {UserId}", _userManager.GetUserId(User));
             ModelState.AddModelError(string.Empty, "Ocurrió un error al crear el torneo. Intenta de nuevo.");
+            ViewBag.Ligas = LeagueCatalog.Leagues;
             return View(model);
         }
     }
@@ -253,9 +317,38 @@ public class TorneoController : Controller
         return RedirectToAction(nameof(Dashboard), new { id });
     }
 
+    // GET /torneo/buscar-partidos?liga={ligaId}
+    [HttpGet("/torneo/buscar-partidos")]
+    public async Task<IActionResult> BuscarPartidos(int liga)
+    {
+        if (!LeagueCatalog.ValidIds.Contains(liga))
+            return BadRequest("Liga no válida.");
+
+        var from = DateOnly.FromDateTime(DateTime.UtcNow);
+        var to = from.AddDays(35);
+        var partidos = await _apiFootballSyncService.GetMatchesAsync(liga, from, to);
+        return Json(partidos);
+    }
+
     // ---------------------------------------------------------------------------
     // Private helpers
     // ---------------------------------------------------------------------------
+
+    /// <summary>
+    /// Determines which wizard step should be shown when returning to the form after a POST error,
+    /// based on which model fields have validation errors.
+    /// </summary>
+    private static int ResolveStepFromErrors(ModelStateDictionary modelState)
+    {
+        var keys = modelState.Keys.ToHashSet();
+        if (keys.Any(k => k.StartsWith("Nombre") || k.StartsWith("NumJornadas") || k.StartsWith("MontoInscripcion")))
+            return 0;
+        if (keys.Any(k => k.StartsWith("PtosResultado") || k.StartsWith("PtosMarcador") || k.StartsWith("PtosGolesJornada")))
+            return 1;
+        if (keys.Any(k => k.StartsWith("ConfiguracionPremios") || k == string.Empty))
+            return 2;
+        return 0;
+    }
 
     /// <summary>
     /// Validates the invite token: decrypts the payload, verifies the torneo ID matches,

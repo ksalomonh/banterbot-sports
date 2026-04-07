@@ -7,7 +7,7 @@
    Steps: 1=Basics, 2=Scoring, 3=Prizes, 4=Review & Submit.
    Single POST form — all steps toggled by JS, server-side validation preserved. *@
 
-<form asp-action="Nuevo" method="post" id="nuevo-torneo-form">
+<form asp-action="Nuevo" method="post" id="nuevo-torneo-form" data-initial-step="@(ViewBag.InitialStep ?? 0)">
     @Html.AntiForgeryToken()
 
     <!-- Global validation summary (shown on POST validation error) -->
@@ -41,8 +41,14 @@
                     <span class="material-symbols-outlined step-icon">payments</span>
                     <span>Premios</span>
                 </button>
-                <!-- Step 4: Review -->
+                <!-- Step 4: Partidos -->
                 <button type="button" data-step-nav="3"
+                        class="step-nav-item flex items-center gap-3 text-[#a6aabf]/50 px-4 py-3 hover:bg-[#181f33]/30 hover:text-[#69daff] rounded-xl transition-all font-bold uppercase tracking-[0.05em] text-[0.75rem] text-left">
+                    <span class="material-symbols-outlined step-icon">sports_soccer</span>
+                    <span>Partidos</span>
+                </button>
+                <!-- Step 5: Review -->
+                <button type="button" data-step-nav="4"
                         class="step-nav-item flex items-center gap-3 text-[#a6aabf]/50 px-4 py-3 hover:bg-[#181f33]/30 hover:text-[#69daff] rounded-xl transition-all font-bold uppercase tracking-[0.05em] text-[0.75rem] text-left">
                     <span class="material-symbols-outlined step-icon">visibility</span>
                     <span>Revisar</span>
@@ -70,7 +76,7 @@
                 <div class="md:hidden flex items-center gap-3 mb-6 p-4 bg-[#0d1323] rounded-2xl">
                     <div class="flex items-center justify-center w-8 h-8 rounded-full bg-[#69daff]/20 text-[#69daff] font-black text-sm">1</div>
                     <div>
-                        <p class="font-bold text-sm">Paso 1 de 4</p>
+                        <p class="font-bold text-sm">Paso 1 de 5</p>
                         <p class="text-[10px] text-[#a6aabf] uppercase tracking-widest">Básicos del Torneo</p>
                     </div>
                 </div>
@@ -145,7 +151,7 @@
                 <div class="md:hidden flex items-center gap-3 mb-6 p-4 bg-[#0d1323] rounded-2xl">
                     <div class="flex items-center justify-center w-8 h-8 rounded-full bg-[#69daff]/20 text-[#69daff] font-black text-sm">2</div>
                     <div>
-                        <p class="font-bold text-sm">Paso 2 de 4</p>
+                        <p class="font-bold text-sm">Paso 2 de 5</p>
                         <p class="text-[10px] text-[#a6aabf] uppercase tracking-widest">Puntuación</p>
                     </div>
                 </div>
@@ -268,7 +274,7 @@
                 <div class="md:hidden flex items-center gap-3 mb-6 p-4 bg-[#0d1323] rounded-2xl">
                     <div class="flex items-center justify-center w-8 h-8 rounded-full bg-[#69daff]/20 text-[#69daff] font-black text-sm">3</div>
                     <div>
-                        <p class="font-bold text-sm">Paso 3 de 4</p>
+                        <p class="font-bold text-sm">Paso 3 de 5</p>
                         <p class="text-[10px] text-[#a6aabf] uppercase tracking-widest">Distribución de Premios</p>
                     </div>
                 </div>
@@ -345,7 +351,7 @@
                             </button>
                             <button type="button" data-next
                                     class="flex-[2] bg-gradient-to-r from-[#69daff] to-[#00cffc] text-[#004050] py-4 rounded-xl font-black uppercase tracking-widest text-sm shadow-[0_10px_30px_rgba(0,207,252,0.2)] hover:shadow-[0_15px_40px_rgba(0,207,252,0.3)] active:scale-95 transition-all">
-                                Siguiente: Revisar
+                                Siguiente: Partidos
                             </button>
                         </div>
                     </div>
@@ -373,16 +379,76 @@
             </div>
 
             <!-- ════════════════════════════════════════════════
-                 STEP 4: REVIEW & SUBMIT
-                 From: create_tournament_match_selection/code.html +
-                       mobile_mockups/create_matches_mobile/code.html
+                 STEP 4: PARTIDOS
                  ════════════════════════════════════════════════ -->
             <div data-step="3" class="hidden space-y-6">
                 <!-- Mobile step header -->
                 <div class="md:hidden flex items-center gap-3 mb-6 p-4 bg-[#0d1323] rounded-2xl">
-                    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-[#2ff801]/20 text-[#2ff801] font-black text-sm">4</div>
+                    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-[#69daff]/20 text-[#69daff] font-black text-sm">4</div>
                     <div>
-                        <p class="font-bold text-sm">Paso 4 de 4</p>
+                        <p class="font-bold text-sm">Paso 4 de 5</p>
+                        <p class="text-[10px] text-[#a6aabf] uppercase tracking-widest">Partidos</p>
+                    </div>
+                </div>
+
+                <!-- Desktop header -->
+                <div class="hidden md:block mb-8">
+                    <h2 class="text-2xl font-bold mb-2">Paso 4: Partidos</h2>
+                    <p class="text-[#a6aabf] text-sm mb-6">Seleccioná los partidos para tu torneo. Podés saltear este paso y agregarlos después.</p>
+                </div>
+
+                @* League cards grid *@
+                <div class="mb-6">
+                    <p class="text-xs font-bold uppercase tracking-widest text-[#a6aabf] mb-3">Elegí una liga</p>
+                    <div class="grid grid-cols-3 sm:grid-cols-4 gap-3" id="league-cards">
+                        @foreach (var liga in (ViewBag.Ligas as IEnumerable<BanterBotSports.Web.Infrastructure.LeagueEntry> ?? Array.Empty<BanterBotSports.Web.Infrastructure.LeagueEntry>()))
+                        {
+                            <button type="button"
+                                    data-liga-id="@liga.Id"
+                                    class="league-card flex flex-col items-center gap-2 p-3 rounded-xl bg-[#0d1323] hover:bg-[#181f33] border-2 border-transparent transition-all duration-200">
+                                <img src="@liga.LogoUrl" alt="@liga.Name" class="w-10 h-10 object-contain" onerror="this.style.display='none'">
+                                <span class="text-[0.65rem] font-bold text-center text-[#a6aabf] leading-tight">@liga.Name</span>
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                @* Match list (loaded via AJAX) *@
+                <div id="match-list-container" class="mb-4 min-h-[80px]">
+                    <p class="text-[#a6aabf] text-sm text-center py-6">Seleccioná una liga para ver los partidos disponibles.</p>
+                </div>
+
+                @* Selected matches summary *@
+                <div id="selected-matches-summary" class="hidden mt-4 p-4 bg-[#0d1323] rounded-xl">
+                    <p class="text-xs font-bold uppercase tracking-widest text-[#a6aabf] mb-2">Partidos seleccionados (<span id="selected-count">0</span>)</p>
+                    <ul id="selected-list" class="space-y-1 text-sm text-[#e1e4fa]"></ul>
+                </div>
+
+                @* Hidden inputs container for selected matches *@
+                <div id="selected-inputs"></div>
+
+                <!-- Navigation -->
+                <div class="flex gap-3 mt-6">
+                    <button type="button" data-prev
+                            class="flex-1 py-4 rounded-xl border border-[#434759]/30 text-[#a6aabf] font-bold uppercase tracking-widest text-xs hover:bg-[#242b43] transition-all flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-sm">arrow_back</span> Volver
+                    </button>
+                    <button type="button" data-next
+                            class="flex-[2] bg-gradient-to-r from-[#69daff] to-[#00cffc] text-[#004050] py-4 rounded-xl font-black uppercase tracking-widest text-sm shadow-[0_10px_30px_rgba(0,207,252,0.2)] hover:shadow-[0_15px_40px_rgba(0,207,252,0.3)] active:scale-95 transition-all">
+                        Siguiente: Revisar
+                    </button>
+                </div>
+            </div>
+
+            <!-- ════════════════════════════════════════════════
+                 STEP 5: REVIEW & SUBMIT
+                 ════════════════════════════════════════════════ -->
+            <div data-step="4" class="hidden space-y-6">
+                <!-- Mobile step header -->
+                <div class="md:hidden flex items-center gap-3 mb-6 p-4 bg-[#0d1323] rounded-2xl">
+                    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-[#2ff801]/20 text-[#2ff801] font-black text-sm">5</div>
+                    <div>
+                        <p class="font-bold text-sm">Paso 5 de 5</p>
                         <p class="text-[10px] text-[#a6aabf] uppercase tracking-widest">Revisión Final</p>
                     </div>
                 </div>
@@ -395,6 +461,8 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
                     <div class="md:col-span-8 space-y-4">
+                        <!-- Partidos summary (populated by JS) -->
+                        <div id="revisar-partidos-summary" class="mb-4"></div>
                         <!-- Review summary cards — tonal layering, No-Line rule -->
                         <!-- Basics summary -->
                         <div class="bg-[#0d1323] rounded-3xl p-6">
@@ -550,6 +618,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const steps = document.querySelectorAll('[data-step]');
             const navItems = document.querySelectorAll('[data-step-nav]');
+            const totalSteps = 5;
             let current = 0;
 
             // Review panel elements
@@ -570,6 +639,34 @@
                 if (reviewPtosResultado) reviewPtosResultado.textContent = document.querySelector('[name="PtosResultado"]')?.value || '—';
                 if (reviewPtosMarcador) reviewPtosMarcador.textContent = document.querySelector('[name="PtosMarcador"]')?.value || '—';
                 if (reviewPtosGoles) reviewPtosGoles.textContent = document.querySelector('[name="PtosGolesJornada"]')?.value || '—';
+            }
+
+            function updateRevisarPartidos() {
+                const inputs = document.querySelectorAll('#selected-inputs input');
+                const div = document.getElementById('revisar-partidos-summary');
+                if (!div) return;
+                div.innerHTML = '';
+                if (!inputs.length) {
+                    const p = document.createElement('p');
+                    p.className = 'text-[#a6aabf] text-sm italic mb-4';
+                    p.textContent = 'Sin partidos seleccionados — podés agregarlos después de crear el torneo.';
+                    div.appendChild(p);
+                    return;
+                }
+                const wrapper = document.createElement('div');
+                wrapper.className = 'p-4 bg-[#0d1323] rounded-xl mb-4';
+                const header = document.createElement('p');
+                header.className = 'text-xs font-bold uppercase tracking-widest text-[#a6aabf] mb-2';
+                header.textContent = `Partidos seleccionados (${inputs.length})`;
+                const ul = document.createElement('ul');
+                ul.className = 'space-y-1 text-sm text-[#e1e4fa]';
+                document.querySelectorAll('#selected-list li').forEach(srcLi => {
+                    const li = document.createElement('li');
+                    li.textContent = srcLi.textContent;
+                    ul.appendChild(li);
+                });
+                wrapper.append(header, ul);
+                div.appendChild(wrapper);
             }
 
             function show(index) {
@@ -603,7 +700,10 @@
                     }
                 });
                 current = index;
-                if (index === 3) updateReview();
+                if (index === totalSteps - 1) {
+                    updateReview();
+                    updateRevisarPartidos();
+                }
             }
 
             document.querySelectorAll('[data-next]').forEach(btn =>
@@ -623,7 +723,143 @@
                     if (i <= current) show(i);
                 }));
 
-            show(0);
+            // ENTER key interceptor — advance wizard instead of submitting mid-form
+            document.querySelector('form').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT') {
+                    e.preventDefault();
+                    if (current < totalSteps - 1) {
+                        const section = steps[current];
+                        const inputs = section.querySelectorAll('[required]');
+                        if ([...inputs].every(i => i.reportValidity())) show(current + 1);
+                    } else {
+                        this.requestSubmit();
+                    }
+                }
+            });
+
+            // Read initial step from data attribute (server sets this on POST validation error)
+            const form = document.querySelector('form[data-initial-step]');
+            const initialStep = form ? (parseInt(form.dataset.initialStep) || 0) : 0;
+            show(initialStep);
+
+            // League card click handlers — attached via JS to avoid inline onclick (XSS risk)
+            document.querySelectorAll('.league-card').forEach(card => {
+                card.addEventListener('click', () =>
+                    loadLeagueMatches(card.dataset.ligaId, card));
+            });
         });
+
+        // ── League match browser ──────────────────────────────────────────────
+        // Server-resolved URL — avoids magic string and stays refactor-safe.
+        const buscarPartidosUrl = '@Url.Action("BuscarPartidos", "Torneo")';
+
+        async function loadLeagueMatches(ligaId, cardEl) {
+            // Highlight selected card
+            document.querySelectorAll('.league-card').forEach(c => {
+                c.classList.remove('border-[#69daff]', 'bg-[#181f33]');
+            });
+            cardEl.classList.add('border-[#69daff]', 'bg-[#181f33]');
+
+            const container = document.getElementById('match-list-container');
+            container.innerHTML = '<p class="text-[#a6aabf] text-sm text-center py-6">Cargando partidos...</p>';
+
+            try {
+                const res = await fetch(`${buscarPartidosUrl}?liga=${encodeURIComponent(ligaId)}`);
+                if (!res.ok) {
+                    container.innerHTML = '<p class="text-[#ff7166] text-sm text-center py-4">Error al cargar partidos.</p>';
+                    return;
+                }
+                const matches = await res.json();
+                if (!matches.length) {
+                    container.innerHTML = '<p class="text-[#a6aabf] text-sm text-center py-6">No hay partidos próximos para esta liga.</p>';
+                    return;
+                }
+                renderMatches(matches, container);
+            } catch {
+                container.innerHTML = '<p class="text-[#ff7166] text-sm text-center py-4">Error de conexión.</p>';
+            }
+        }
+
+        function buildMatchLabel(m, fecha, selectedIds) {
+            // Build the match row using DOM API to avoid innerHTML + untrusted-data XSS.
+            const label = document.createElement('label');
+            label.className = 'flex items-center gap-3 p-3 rounded-xl bg-[#0d1323] hover:bg-[#181f33] cursor-pointer transition-all mb-2';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = String(m.externalId);
+            checkbox.className = 'w-4 h-4 rounded accent-primary';
+            if (selectedIds.has(String(m.externalId))) checkbox.checked = true;
+            checkbox.addEventListener('change', () =>
+                toggleMatch(checkbox, m.equipo1 ?? '', m.equipo2 ?? '', fecha));
+
+            const logoHome = document.createElement('img');
+            logoHome.setAttribute('src', m.logoUrlEquipo1 ?? '');
+            logoHome.setAttribute('onerror', 'this.style.display=\'none\'');
+            logoHome.className = 'w-6 h-6 object-contain';
+
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'font-medium text-[#e1e4fa] text-sm flex-1';
+            nameSpan.textContent = `${m.equipo1 ?? ''} vs ${m.equipo2 ?? ''}`;
+
+            const logoAway = document.createElement('img');
+            logoAway.setAttribute('src', m.logoUrlEquipo2 ?? '');
+            logoAway.setAttribute('onerror', 'this.style.display=\'none\'');
+            logoAway.className = 'w-6 h-6 object-contain';
+
+            const dateSpan = document.createElement('span');
+            dateSpan.className = 'text-xs text-[#a6aabf] ml-2';
+            dateSpan.textContent = fecha;
+
+            label.append(checkbox, logoHome, nameSpan, logoAway, dateSpan);
+            return label;
+        }
+
+        function renderMatches(matches, container) {
+            const selectedIds = new Set(
+                Array.from(document.querySelectorAll('#selected-inputs input')).map(i => i.value)
+            );
+            container.innerHTML = '';
+            matches.forEach(m => {
+                const fecha = new Date(m.kickOffUtc).toLocaleDateString('es', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+                container.appendChild(buildMatchLabel(m, fecha, selectedIds));
+            });
+        }
+
+        function toggleMatch(checkbox, equipo1, equipo2, fecha) {
+            const inputsDiv = document.getElementById('selected-inputs');
+            const id = checkbox.value;
+            if (checkbox.checked) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'PartidosSeleccionados';
+                input.value = id;
+                input.dataset.matchId = id;
+                inputsDiv.appendChild(input);
+                addToSelectedList(id, equipo1, equipo2, fecha);
+            } else {
+                inputsDiv.querySelector(`[data-match-id="${id}"]`)?.remove();
+                removeFromSelectedList(id);
+            }
+            updateSelectedSummary();
+        }
+
+        function addToSelectedList(id, eq1, eq2, fecha) {
+            const li = document.createElement('li');
+            li.dataset.matchId = id;
+            li.textContent = `${eq1} vs ${eq2} — ${fecha}`;
+            document.getElementById('selected-list').appendChild(li);
+        }
+
+        function removeFromSelectedList(id) {
+            document.getElementById('selected-list').querySelector(`[data-match-id="${id}"]`)?.remove();
+        }
+
+        function updateSelectedSummary() {
+            const count = document.getElementById('selected-inputs').children.length;
+            document.getElementById('selected-count').textContent = count;
+            const summary = document.getElementById('selected-matches-summary');
+            summary.classList.toggle('hidden', count === 0);
+        }
     </script>
 }

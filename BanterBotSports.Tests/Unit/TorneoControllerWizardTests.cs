@@ -1,0 +1,531 @@
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using BanterBotSports.BL.Services.Interfaces;
+using BanterBotSports.DAL;
+using BanterBotSports.Entities;
+using BanterBotSports.Entities.DTOs;
+using BanterBotSports.Entities.Enums;
+using BanterBotSports.Entities.ViewModels;
+using BanterBotSports.Integrations.ApiFootball;
+using BanterBotSports.Web.Controllers;
+using BanterBotSports.Web.Infrastructure;
+using FluentAssertions;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
+
+namespace BanterBotSports.Tests.Unit;
+
+/// <summary>
+/// Unit tests for cycle6 wizard features:
+/// - BuscarPartidos GET action (valid/invalid liga, date range)
+/// - POST Nuevo prize sum validation (InitialStep routing)
+/// - ApiFootballClient.MapFixtureToDto logo URL mapping (via public API + mocked HttpClient)
+/// - POST Nuevo match assignment loop (PartidosSeleccionados, per-match failure handling)
+/// </summary>
+public class TorneoControllerWizardTests
+{
+    // ---------------------------------------------------------------------------
+    // Controller factory
+    // ---------------------------------------------------------------------------
+
+    private static (TorneoController Controller, Mock<ITorneoService> TorneoSvc,
+        Mock<IJornadaService> JornadaSvc, Mock<IApiFootballSyncService> ApiSyncSvc,
+        Mock<IPartidoService> PartidoSvc)
+        BuildSut()
+    {
+        var torneoSvc = new Mock<ITorneoService>();
+        var jornadaSvc = new Mock<IJornadaService>();
+        var apiSyncSvc = new Mock<IApiFootballSyncService>();
+        var partidoSvc = new Mock<IPartidoService>();
+
+        var dataProtectionProvider = new EphemeralDataProtectionProvider();
+
+#pragma warning disable CS8625
+        var userStoreMock = new Mock<IUserStore<AppUser>>();
+        var userManager = new Mock<UserManager<AppUser>>(
+            userStoreMock.Object, null, null, null, null, null, null, null, null);
+#pragma warning restore CS8625
+
+        userManager
+            .Setup(um => um.GetUserId(It.IsAny<System.Security.Claims.ClaimsPrincipal>()))
+            .Returns("test-user-id");
+
+        var controller = new TorneoController(
+            torneoSvc.Object,
+            jornadaSvc.Object,
+            apiSyncSvc.Object,
+            partidoSvc.Object,
+            dataProtectionProvider,
+            userManager.Object,
+            NullLogger<TorneoController>.Instance);
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext()
+        };
+
+        // Wire TempData so TempData[key] = value doesn't throw
+        controller.TempData = new TempDataDictionary(
+            controller.ControllerContext.HttpContext,
+            Mock.Of<ITempDataProvider>());
+
+        return (controller, torneoSvc, jornadaSvc, apiSyncSvc, partidoSvc);
+    }
+
+    // ---------------------------------------------------------------------------
+    // 5.1 — BuscarPartidos
+    // ---------------------------------------------------------------------------
+
+    [Fact]
+    public async Task BuscarPartidos_ValidLiga_ReturnsOkWithMatches()
+    {
+        // Arrange: use a known valid liga id from LeagueCatalog
+        var validLigaId = LeagueCatalog.Leagues[0].Id; // e.g. Premier League = 39
+        var expectedMatches = new List<PartidoDto>
+        {
+            new PartidoDto(1, "1", "Real Madrid", "Barcelona",
+                DateTimeOffset.UtcNow.AddDays(3), null, null, EstadoPartido.Programado)
+        };
+
+        var (controller, _, _, apiSyncSvc, _) = BuildSut();
+        apiSyncSvc
+            .Setup(s => s.GetMatchesAsync(validLigaId, It.IsAny<DateOnly>(), It.IsAny<DateOnly>()))
+            .ReturnsAsync(expectedMatches);
+
+        // Act
+        var result = await controller.BuscarPartidos(validLigaId);
+
+        // Assert
+        result.Should().BeOfType<JsonResult>("valid liga must return OkObjectResult/JsonResult");
+        var jsonResult = (JsonResult)result;
+        jsonResult.Value.Should().BeEquivalentTo(expectedMatches);
+    }
+
+    [Fact]
+    public async Task BuscarPartidos_InvalidLiga_ReturnsBadRequest()
+    {
+        // Arrange: liga id that is NOT in LeagueCatalog
+        const int invalidLigaId = 99999;
+        invalidLigaId.Should().NotBeOneOf(LeagueCatalog.ValidIds, "test precondition: id must be invalid");
+
+        var (controller, _, _, _, _) = BuildSut();
+
+        // Act
+        var result = await controller.BuscarPartidos(invalidLigaId);
+
+        // Assert
+        result.Should().BeOfType<BadRequestObjectResult>("unknown liga must return 400 Bad Request");
+    }
+
+    [Fact]
+    public async Task BuscarPartidos_CallsService_WithTodayToTodayPlus35()
+    {
+        // Arrange
+        var validLigaId = LeagueCatalog.Leagues[0].Id;
+        DateOnly capturedFrom = default;
+        DateOnly capturedTo = default;
+
+        var (controller, _, _, apiSyncSvc, _) = BuildSut();
+        apiSyncSvc
+            .Setup(s => s.GetMatchesAsync(
+                It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<DateOnly>()))
+            .Callback<int, DateOnly, DateOnly>((_, from, to) =>
+            {
+                capturedFrom = from;
+                capturedTo = to;
+            })
+            .ReturnsAsync(Array.Empty<PartidoDto>());
+
+        // Act
+        var before = DateOnly.FromDateTime(DateTime.UtcNow);
+        await controller.BuscarPartidos(validLigaId);
+        var after = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        // Assert: "from" must be today (or very close), "to" must be from + 35
+        capturedFrom.Should().BeGreaterThanOrEqualTo(before, "from date must be today");
+        capturedFrom.Should().BeLessThanOrEqualTo(after, "from date must not be in the future");
+        capturedTo.Should().Be(capturedFrom.AddDays(35), "to date must be exactly 35 days after from");
+    }
+
+    // ---------------------------------------------------------------------------
+    // 5.2 — Prize sum validation in POST Nuevo
+    // ---------------------------------------------------------------------------
+
+    private static TorneoCreateViewModel ValidModelWithPrizeSum(decimal sum)
+    {
+        return new TorneoCreateViewModel
+        {
+            Nombre = "Test Torneo",
+            NumJornadas = 3,
+            MontoInscripcion = 100m,
+            PtosResultado = 3,
+            PtosMarcador = 5,
+            PtosGolesJornada = 2,
+            ConfiguracionPremios = new List<ConfiguracionPremioViewModel>
+            {
+                new ConfiguracionPremioViewModel { Posicion = 1, Porcentaje = sum }
+            }
+        };
+    }
+
+    [Fact]
+    public async Task Nuevo_Post_PrizeSumEquals100_DoesNotAddModelError()
+    {
+        // Arrange: prizes sum exactly 100 %
+        var (controller, torneoSvc, jornadaSvc, _, _) = BuildSut();
+
+        torneoSvc
+            .Setup(s => s.CrearTorneoAsync(It.IsAny<TorneoCreateViewModel>(), It.IsAny<string>()))
+            .ReturnsAsync(new Torneo { Id = 1 });
+
+        // GetByTorneoIdAsync returns empty list so the match assignment loop is a no-op
+        jornadaSvc
+            .Setup(s => s.GetByTorneoIdAsync(1))
+            .ReturnsAsync(new List<Jornada>());
+
+        var model = ValidModelWithPrizeSum(100m);
+
+        // Act
+        var result = await controller.Nuevo(model);
+
+        // Assert: no prize-sum error was added — valid sum must not invalidate the form
+        controller.ModelState.ContainsKey(string.Empty).Should().BeFalse(
+            "sum == 100 % must not add a prize validation error to ModelState");
+        result.Should().BeOfType<RedirectToActionResult>(
+            "valid form with prize sum == 100 % must redirect to Dashboard");
+    }
+
+    [Fact]
+    public async Task Nuevo_Post_PrizeSumLessThan100_AddsModelError_SetsInitialStep2()
+    {
+        // Arrange: prizes sum 60 % (less than 100)
+        var (controller, _, _, _, _) = BuildSut();
+        var model = ValidModelWithPrizeSum(60m);
+
+        // Act
+        var result = await controller.Nuevo(model);
+
+        // Assert
+        result.Should().BeOfType<ViewResult>("validation failure must return the form view");
+        controller.ModelState.IsValid.Should().BeFalse("prize sum < 100 must invalidate model");
+        controller.ModelState.ContainsKey(string.Empty).Should().BeTrue("error must be on empty key");
+
+        // ViewBag.InitialStep must route user to Premios step (index 2)
+        var viewResult = (ViewResult)result;
+        ((int?)viewResult.ViewData["InitialStep"]).Should().Be(2,
+            "validation error on prizes must route to Premios step (index 2)");
+    }
+
+    [Fact]
+    public async Task Nuevo_Post_PrizeSumGreaterThan100_AddsModelError_SetsInitialStep2()
+    {
+        // Arrange: prizes sum 150 % (more than 100)
+        var (controller, _, _, _, _) = BuildSut();
+        var model = ValidModelWithPrizeSum(150m);
+
+        // Act
+        var result = await controller.Nuevo(model);
+
+        // Assert
+        result.Should().BeOfType<ViewResult>("validation failure must return the form view");
+        controller.ModelState.IsValid.Should().BeFalse("prize sum > 100 must invalidate model");
+
+        var viewResult = (ViewResult)result;
+        ((int?)viewResult.ViewData["InitialStep"]).Should().Be(2,
+            "validation error on prizes must route to Premios step (index 2)");
+    }
+
+    // ---------------------------------------------------------------------------
+    // 5.3 — ApiFootballClient.MapFixtureToDto logo mapping
+    // ---------------------------------------------------------------------------
+
+    /// <summary>
+    /// Builds an <see cref="ApiFootballClient"/> backed by a fake HTTP handler that
+    /// returns the supplied JSON body for any request.
+    /// </summary>
+    private static ApiFootballClient BuildApiFootballClient(string responseJson)
+    {
+        var handlerMock = new FakeHttpMessageHandler(responseJson);
+        var httpClient = new HttpClient(handlerMock);
+
+        var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+        httpClientFactoryMock
+            .Setup(f => f.CreateClient(It.IsAny<string>()))
+            .Returns(httpClient);
+
+        var configMock = new Mock<IConfiguration>();
+        configMock
+            .Setup(c => c["ApiFootball:ApiKey"])
+            .Returns("test-key");
+
+        return new ApiFootballClient(
+            httpClientFactoryMock.Object,
+            configMock.Object,
+            NullLogger<ApiFootballClient>.Instance);
+    }
+
+    private static string BuildApiResponseJson(
+        int fixtureId,
+        long timestamp,
+        string homeTeam,
+        string awayTeam,
+        string? homeLogo,
+        string? awayLogo)
+    {
+        // Build the minimal API-Football v3 JSON response shape
+        var homePart = homeLogo is not null
+            ? $@"{{ ""name"": ""{homeTeam}"", ""logo"": ""{homeLogo}"" }}"
+            : $@"{{ ""name"": ""{homeTeam}"" }}";
+        var awayPart = awayLogo is not null
+            ? $@"{{ ""name"": ""{awayTeam}"", ""logo"": ""{awayLogo}"" }}"
+            : $@"{{ ""name"": ""{awayTeam}"" }}";
+
+        return $@"{{
+            ""response"": [
+                {{
+                    ""fixture"": {{
+                        ""id"": {fixtureId},
+                        ""timestamp"": {timestamp},
+                        ""status"": {{ ""short"": ""NS"" }}
+                    }},
+                    ""teams"": {{
+                        ""home"": {homePart},
+                        ""away"": {awayPart}
+                    }},
+                    ""goals"": {{
+                        ""home"": null,
+                        ""away"": null
+                    }}
+                }}
+            ]
+        }}";
+    }
+
+    [Fact]
+    public async Task ApiFootballClient_GetMatchesAsync_PopulatesLogoUrls()
+    {
+        // Arrange: API returns a fixture with both logos
+        const string homeLogo = "https://media.api-sports.io/football/teams/33.png";
+        const string awayLogo = "https://media.api-sports.io/football/teams/40.png";
+
+        var json = BuildApiResponseJson(
+            fixtureId: 100,
+            timestamp: DateTimeOffset.UtcNow.AddDays(3).ToUnixTimeSeconds(),
+            homeTeam: "Manchester United",
+            awayTeam: "Liverpool",
+            homeLogo: homeLogo,
+            awayLogo: awayLogo);
+
+        var client = BuildApiFootballClient(json);
+
+        // Act
+        var result = await client.GetMatchesAsync(
+            39,
+            DateOnly.FromDateTime(DateTime.UtcNow),
+            DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7)));
+
+        // Assert
+        result.Should().HaveCount(1, "one fixture in the response");
+        result[0].LogoUrlEquipo1.Should().Be(homeLogo, "home logo must map to LogoUrlEquipo1");
+        result[0].LogoUrlEquipo2.Should().Be(awayLogo, "away logo must map to LogoUrlEquipo2");
+    }
+
+    [Fact]
+    public async Task ApiFootballClient_GetMatchesAsync_NullLogo_MapsToNull()
+    {
+        // Arrange: API returns a fixture where logo fields are absent (null)
+        var json = BuildApiResponseJson(
+            fixtureId: 200,
+            timestamp: DateTimeOffset.UtcNow.AddDays(5).ToUnixTimeSeconds(),
+            homeTeam: "Team A",
+            awayTeam: "Team B",
+            homeLogo: null,
+            awayLogo: null);
+
+        var client = BuildApiFootballClient(json);
+
+        // Act
+        var result = await client.GetMatchesAsync(
+            39,
+            DateOnly.FromDateTime(DateTime.UtcNow),
+            DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7)));
+
+        // Assert
+        result.Should().HaveCount(1);
+        result[0].LogoUrlEquipo1.Should().BeNull("absent logo field must map to null");
+        result[0].LogoUrlEquipo2.Should().BeNull("absent logo field must map to null");
+    }
+
+    [Fact]
+    public async Task ApiFootballClient_GetFixtureByIdAsync_PopulatesLogoUrls()
+    {
+        // Arrange
+        const string homeLogo = "https://media.api-sports.io/football/teams/50.png";
+        const string awayLogo = "https://media.api-sports.io/football/teams/51.png";
+
+        var json = BuildApiResponseJson(
+            fixtureId: 300,
+            timestamp: DateTimeOffset.UtcNow.AddDays(2).ToUnixTimeSeconds(),
+            homeTeam: "Sevilla",
+            awayTeam: "Valencia",
+            homeLogo: homeLogo,
+            awayLogo: awayLogo);
+
+        var client = BuildApiFootballClient(json);
+
+        // Act
+        var result = await client.GetFixtureByIdAsync(300);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.LogoUrlEquipo1.Should().Be(homeLogo);
+        result!.LogoUrlEquipo2.Should().Be(awayLogo);
+    }
+
+    // ---------------------------------------------------------------------------
+    // 5.4 — POST Nuevo match assignment loop
+    // ---------------------------------------------------------------------------
+
+    private static TorneoCreateViewModel ValidModelWith100Prizes(List<string>? partidos = null)
+    {
+        return new TorneoCreateViewModel
+        {
+            Nombre = "Test Torneo",
+            NumJornadas = 3,
+            MontoInscripcion = 100m,
+            PtosResultado = 3,
+            PtosMarcador = 5,
+            PtosGolesJornada = 2,
+            ConfiguracionPremios = new List<ConfiguracionPremioViewModel>
+            {
+                new ConfiguracionPremioViewModel { Posicion = 1, Porcentaje = 100m }
+            },
+            PartidosSeleccionados = partidos ?? new List<string>()
+        };
+    }
+
+    [Fact]
+    public async Task Nuevo_Post_WithPartidosSeleccionados_TriggersAssignmentLoop()
+    {
+        // Arrange
+        var (controller, torneoSvc, jornadaSvc, apiSyncSvc, partidoSvc) = BuildSut();
+
+        var createdTorneo = new Torneo { Id = 10 };
+        torneoSvc
+            .Setup(s => s.CrearTorneoAsync(It.IsAny<TorneoCreateViewModel>(), It.IsAny<string>()))
+            .ReturnsAsync(createdTorneo);
+
+        var primeraJornada = new Jornada { Id = 1, Numero = 1 };
+        jornadaSvc
+            .Setup(s => s.GetByTorneoIdAsync(10))
+            .ReturnsAsync(new List<Jornada> { primeraJornada });
+
+        var fixture = new PartidoDto(
+            Id: 555,
+            ExternalId: "555",
+            Equipo1: "Boca Juniors",
+            Equipo2: "River Plate",
+            KickOffUtc: DateTimeOffset.UtcNow.AddDays(3),
+            GolesEquipo1: null,
+            GolesEquipo2: null,
+            Estado: EstadoPartido.Programado);
+
+        apiSyncSvc
+            .Setup(s => s.GetFixtureByIdAsync(555, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(fixture);
+
+        partidoSvc
+            .Setup(s => s.AsignarPartidoAsync(1, It.IsAny<Partido>()))
+            .Returns(Task.CompletedTask);
+
+        var model = ValidModelWith100Prizes(new List<string> { "555" });
+
+        // Act
+        var result = await controller.Nuevo(model);
+
+        // Assert: assignment was called for the selected fixture
+        partidoSvc.Verify(
+            s => s.AsignarPartidoAsync(1, It.Is<Partido>(p => p.ExternalId == "555")),
+            Times.Once,
+            "AsignarPartidoAsync must be called once for the selected fixture");
+
+        result.Should().BeOfType<RedirectToActionResult>("successful creation must redirect to Dashboard");
+    }
+
+    [Fact]
+    public async Task Nuevo_Post_PerMatchFailure_AddsTempDataWarning_TorneoStillCreated()
+    {
+        // Arrange: assignment throws for every match — torneo creation should still succeed
+        var (controller, torneoSvc, jornadaSvc, apiSyncSvc, partidoSvc) = BuildSut();
+
+        var createdTorneo = new Torneo { Id = 20 };
+        torneoSvc
+            .Setup(s => s.CrearTorneoAsync(It.IsAny<TorneoCreateViewModel>(), It.IsAny<string>()))
+            .ReturnsAsync(createdTorneo);
+
+        var primeraJornada = new Jornada { Id = 2, Numero = 1 };
+        jornadaSvc
+            .Setup(s => s.GetByTorneoIdAsync(20))
+            .ReturnsAsync(new List<Jornada> { primeraJornada });
+
+        var fixture = new PartidoDto(666, "666", "Team X", "Team Y",
+            DateTimeOffset.UtcNow.AddDays(4), null, null, EstadoPartido.Programado);
+
+        apiSyncSvc
+            .Setup(s => s.GetFixtureByIdAsync(666, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(fixture);
+
+        // Assignment throws
+        partidoSvc
+            .Setup(s => s.AsignarPartidoAsync(It.IsAny<int>(), It.IsAny<Partido>()))
+            .ThrowsAsync(new InvalidOperationException("DB error during assignment"));
+
+        var model = ValidModelWith100Prizes(new List<string> { "666" });
+
+        // Act
+        var result = await controller.Nuevo(model);
+
+        // Assert: torneo was still created (redirect to Dashboard, not an error view)
+        result.Should().BeOfType<RedirectToActionResult>("torneo creation must succeed even when match assignment fails");
+        var redirect = (RedirectToActionResult)result;
+        redirect.ActionName.Should().Be("Dashboard");
+
+        // TempData must contain an info/warning message about the failed assignment
+        controller.TempData.Keys.Should().Contain(TempDataKeys.Info,
+            "a TempData info message must be set when match assignment fails");
+        controller.TempData[TempDataKeys.Info]!.ToString().Should().Contain("partido",
+            "the message must mention partidos so the user understands what happened");
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Test helper: fake HttpMessageHandler that returns a fixed JSON response
+// ---------------------------------------------------------------------------
+
+internal sealed class FakeHttpMessageHandler : HttpMessageHandler
+{
+    private readonly string _responseJson;
+
+    public FakeHttpMessageHandler(string responseJson)
+    {
+        _responseJson = responseJson;
+    }
+
+    protected override Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken)
+    {
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(_responseJson, Encoding.UTF8, "application/json")
+        };
+        return Task.FromResult(response);
+    }
+}

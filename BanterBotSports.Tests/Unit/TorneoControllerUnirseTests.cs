@@ -1,6 +1,7 @@
 using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL;
 using BanterBotSports.Entities;
+using BanterBotSports.Integrations.ApiFootball;
 using BanterBotSports.Web.Controllers;
 using BanterBotSports.Web.Infrastructure;
 using FluentAssertions;
@@ -43,6 +44,8 @@ public class TorneoControllerUnirseTests
     {
         var torneoSvc = torneoServiceMock ?? new Mock<ITorneoService>();
         var jornadaSvc = new Mock<IJornadaService>();
+        var apiFootballSyncSvc = new Mock<IApiFootballSyncService>();
+        var partidoSvc = new Mock<IPartidoService>();
 
         // EphemeralDataProtectionProvider produces tokens that the controller can unprotect.
         var dataProtectionProvider = new EphemeralDataProtectionProvider();
@@ -63,6 +66,8 @@ public class TorneoControllerUnirseTests
         var controller = new TorneoController(
             torneoSvc.Object,
             jornadaSvc.Object,
+            apiFootballSyncSvc.Object,
+            partidoSvc.Object,
             dataProtectionProvider,
             userManager.Object,
             NullLogger<TorneoController>.Instance);
