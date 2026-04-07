@@ -37,11 +37,9 @@ public class PrediccionControllerTests
         var prediccionSvc = new Mock<IPrediccionService>();
         var torneoSvc = new Mock<ITorneoService>();
 
-#pragma warning disable CS8625
         var userStoreMock = new Mock<IUserStore<AppUser>>();
         var userManager = new Mock<UserManager<AppUser>>(
-            userStoreMock.Object, null, null, null, null, null, null, null, null);
-#pragma warning restore CS8625
+            userStoreMock.Object, null!, null!, null!, null!, null!, null!, null!, null!);
 
         userManager
             .Setup(um => um.GetUserId(It.IsAny<System.Security.Claims.ClaimsPrincipal>()))

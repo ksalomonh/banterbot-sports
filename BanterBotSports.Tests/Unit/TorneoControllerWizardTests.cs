@@ -47,11 +47,9 @@ public class TorneoControllerWizardTests
 
         var dataProtectionProvider = new EphemeralDataProtectionProvider();
 
-#pragma warning disable CS8625
         var userStoreMock = new Mock<IUserStore<AppUser>>();
         var userManager = new Mock<UserManager<AppUser>>(
-            userStoreMock.Object, null, null, null, null, null, null, null, null);
-#pragma warning restore CS8625
+            userStoreMock.Object, null!, null!, null!, null!, null!, null!, null!, null!);
 
         userManager
             .Setup(um => um.GetUserId(It.IsAny<System.Security.Claims.ClaimsPrincipal>()))
@@ -113,7 +111,7 @@ public class TorneoControllerWizardTests
     {
         // Arrange: liga id that is NOT in LeagueCatalog
         const int invalidLigaId = 99999;
-        invalidLigaId.Should().NotBeOneOf(LeagueCatalog.ValidIds, "test precondition: id must be invalid");
+        LeagueCatalog.ValidIds.Should().NotContain(invalidLigaId, "test precondition: id must be invalid");
 
         var (controller, _, _, _, _) = BuildSut();
 
@@ -149,8 +147,8 @@ public class TorneoControllerWizardTests
         var after = DateOnly.FromDateTime(DateTime.UtcNow);
 
         // Assert: "from" must be today (or very close), "to" must be from + 35
-        capturedFrom.Should().BeGreaterThanOrEqualTo(before, "from date must be today");
-        capturedFrom.Should().BeLessThanOrEqualTo(after, "from date must not be in the future");
+        capturedFrom.Should().BeOnOrAfter(before, "from date must be today");
+        capturedFrom.Should().BeOnOrBefore(after, "from date must not be in the future");
         capturedTo.Should().Be(capturedFrom.AddDays(35), "to date must be exactly 35 days after from");
     }
 
