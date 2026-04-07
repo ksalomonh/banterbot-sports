@@ -83,7 +83,7 @@ public class PrediccionController : Controller
         var pastDeadline = jornada.DeadlineUtc.HasValue &&
                            DateTimeOffset.UtcNow > jornada.DeadlineUtc.Value;
         if (!pastDeadline)
-            return Forbid();
+            return StatusCode(403);
 
         var resumen = await _jornadaService.GetResumenJornadaAsync(jornadaId);
         if (resumen is null)
