@@ -130,6 +130,51 @@ public class PrediccionService : IPrediccionService
     }
 
     /// <summary>
+    /// Upserts the participant's manual total-goals prediction for the jornada.
+    /// Mirrors GuardarPrediccionAsync deadline enforcement pattern.
+    /// </summary>
+    public async Task GuardarPrediccionJornadaAsync(
+        int jornadaId,
+        int participanteId,
+        int golesPronosticados,
+        bool esOrganizador = false)
+    {
+        var jornada = await _jornadaRepository.GetByIdWithDetailsAsync(jornadaId)
+            ?? throw new InvalidOperationException($"Jornada {jornadaId} no encontrada.");
+
+        // Enforce deadline: same pattern as GuardarPrediccionAsync
+        if (jornada.DeadlineUtc.HasValue
+            && DateTimeOffset.UtcNow >= jornada.DeadlineUtc.Value
+            && !esOrganizador)
+        {
+            throw new InvalidOperationException(
+                $"El plazo para la jornada {jornada.Numero} ya cerró. " +
+                $"Deadline: {jornada.DeadlineUtc:u}");
+        }
+
+        // Upsert via existing repository method
+        var existing = await _prediccionRepository.GetPrediccionJornadaAsync(jornadaId, participanteId);
+
+        if (existing is not null)
+        {
+            existing.GolesPronosticados = golesPronosticados;
+            await _prediccionRepository.UpdatePrediccionJornadaAsync(existing);
+        }
+        else
+        {
+            await _prediccionRepository.AddPrediccionJornadaAsync(new PrediccionJornada
+            {
+                JornadaId = jornadaId,
+                ParticipanteId = participanteId,
+                GolesPronosticados = golesPronosticados,
+                PuntosObtenidos = 0
+            });
+        }
+
+        await _unitOfWork.SaveAsync();
+    }
+
+    /// <summary>
     /// Aggregates total goals predicted by each participant across all match predictions
     /// in the jornada and persists the sum in PrediccionJornada.GolesPronosticados.
     /// </summary>
