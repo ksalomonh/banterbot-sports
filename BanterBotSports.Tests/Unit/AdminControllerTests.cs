@@ -42,7 +42,7 @@ public class AdminControllerTests
     // ─── Index ───────────────────────────────────────────────────────────────
 
     [Fact]
-    public async Task GET_Index_ReturnsView()
+    public void GET_Index_ReturnsView()
     {
         var (controller, _) = BuildSut();
         var result = controller.Index();
