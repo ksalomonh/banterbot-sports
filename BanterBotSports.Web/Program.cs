@@ -145,6 +145,32 @@ using (var scope = app.Services.CreateScope())
     await db.Database.MigrateAsync();
 }
 
+// ─── Admin provisioning ──────────────────────────────────────────────────────
+var seedAdminArg = args.SkipWhile(a => a != "--seed-admin").Skip(1).FirstOrDefault();
+if (seedAdminArg is not null)
+{
+    using var scope = app.Services.CreateScope();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+    var user = await userManager.FindByNameAsync(seedAdminArg);
+    if (user is null)
+    {
+        app.Logger.LogError("--seed-admin: no user found with phone/username '{Phone}'", seedAdminArg);
+        Environment.Exit(1);
+    }
+    await userManager.AddToRoleAsync(user, "Admin");
+    app.Logger.LogInformation("--seed-admin: user '{Phone}' assigned Admin role.", seedAdminArg);
+    Environment.Exit(0);
+}
+
+// ─── Warn if no admin user exists ────────────────────────────────────────────
+using (var warnScope = app.Services.CreateScope())
+{
+    var userManager = warnScope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+    var admins = await userManager.GetUsersInRoleAsync("Admin");
+    if (admins.Count == 0)
+        app.Logger.LogWarning("No Admin-role users exist. Run: dotnet run -- --seed-admin {phone}");
+}
+
 // ─── Middleware pipeline ─────────────────────────────────────────────────────
 // UseExceptionHandler is always active so DB/internal errors never expose stack
 // traces to the browser — not even in Development when run outside a debugger.
