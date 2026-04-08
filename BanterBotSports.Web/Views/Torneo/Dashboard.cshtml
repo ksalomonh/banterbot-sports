@@ -80,6 +80,10 @@
                    class="px-6 py-3 bg-[#242b43] text-[#e1e4fa] font-bold rounded-xl text-sm uppercase tracking-tight hover:bg-[#1e253b] transition-colors">
                     Invitar Jugadores
                 </a>
+                <a asp-action="ClonarJugadores" asp-route-id="@Model.Id"
+                   class="px-6 py-3 bg-[#242b43] text-[#e1e4fa] font-bold rounded-xl text-sm uppercase tracking-tight hover:bg-[#1e253b] transition-colors">
+                    Clonar Jugadores
+                </a>
             }
             <a asp-action="Leaderboard" asp-route-id="@Model.Id"
                class="px-6 py-3 bg-gradient-to-r from-[#69daff] to-[#00cffc] text-[#004050] font-black rounded-xl text-sm uppercase tracking-tight shadow-[0_0_20px_rgba(105,218,255,0.3)] hover:scale-105 active:scale-95 transition-all">
