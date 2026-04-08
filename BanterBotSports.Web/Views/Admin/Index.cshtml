@@ -1,0 +1,56 @@
+@{
+    ViewData["Title"] = "Panel de Administración";
+}
+
+<div class="mb-8">
+    <h1 class="text-3xl font-black tracking-tighter text-on-surface uppercase mb-2">
+        Panel de <span class="text-primary">Administración</span>
+    </h1>
+    <p class="text-on-surface-variant text-sm">Gestioná usuarios y la configuración global de la plataforma.</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+    <a asp-action="Organizadores"
+       class="group flex flex-col gap-4 p-6 bg-surface-container-low rounded-2xl border border-outline/10 hover:border-primary/40 hover:bg-surface-container transition-all">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+            <span class="material-symbols-outlined text-primary text-2xl">manage_accounts</span>
+        </div>
+        <div>
+            <h2 class="font-black text-on-surface text-lg">Organizadores</h2>
+            <p class="text-on-surface-variant text-sm mt-1">Editá, activá o desactivá cuentas de organizadores.</p>
+        </div>
+        <span class="text-primary text-sm font-bold flex items-center gap-1 mt-auto">
+            Gestionar <span class="material-symbols-outlined text-sm">arrow_forward</span>
+        </span>
+    </a>
+
+    <a asp-action="Jugadores"
+       class="group flex flex-col gap-4 p-6 bg-surface-container-low rounded-2xl border border-outline/10 hover:border-primary/40 hover:bg-surface-container transition-all">
+        <div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center group-hover:bg-secondary/20 transition-colors">
+            <span class="material-symbols-outlined text-secondary text-2xl">group</span>
+        </div>
+        <div>
+            <h2 class="font-black text-on-surface text-lg">Jugadores</h2>
+            <p class="text-on-surface-variant text-sm mt-1">Buscá y gestioná cuentas de jugadores.</p>
+        </div>
+        <span class="text-secondary text-sm font-bold flex items-center gap-1 mt-auto">
+            Gestionar <span class="material-symbols-outlined text-sm">arrow_forward</span>
+        </span>
+    </a>
+
+    <a asp-action="Configuracion"
+       class="group flex flex-col gap-4 p-6 bg-surface-container-low rounded-2xl border border-outline/10 hover:border-primary/40 hover:bg-surface-container transition-all">
+        <div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center group-hover:bg-tertiary/20 transition-colors">
+            <span class="material-symbols-outlined text-tertiary text-2xl">settings</span>
+        </div>
+        <div>
+            <h2 class="font-black text-on-surface text-lg">Configuración</h2>
+            <p class="text-on-surface-variant text-sm mt-1">Porcentajes de plataforma e inscripción mínima.</p>
+        </div>
+        <span class="text-tertiary text-sm font-bold flex items-center gap-1 mt-auto">
+            Configurar <span class="material-symbols-outlined text-sm">arrow_forward</span>
+        </span>
+    </a>
+
+</div>

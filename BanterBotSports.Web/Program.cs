@@ -2,6 +2,7 @@ using BanterBotSports.BanterAI;
 using BanterBotSports.BL.Services;
 using BanterBotSports.BL.Services.Hosted;
 using BanterBotSports.BL.Services.Interfaces;
+using BanterBotSports.Entities;
 using BanterBotSports.DAL;
 using BanterBotSports.DAL.Repositories;
 using BanterBotSports.DAL.Repositories.Interfaces;
@@ -65,6 +66,7 @@ builder.Services.AddScoped<IPartidoService, PartidoService>();
 builder.Services.AddScoped<IJornadaService, JornadaService>();
 builder.Services.AddScoped<ITelegramVinculacionService, TelegramVinculacionService>();
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 // ─── In-Memory Cache (used by ApiFootballSyncService for search results) ─────
 builder.Services.AddMemoryCache();
@@ -141,6 +143,32 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
+}
+
+// ─── Admin provisioning ──────────────────────────────────────────────────────
+var seedAdminArg = args.SkipWhile(a => a != "--seed-admin").Skip(1).FirstOrDefault();
+if (seedAdminArg is not null)
+{
+    using var scope = app.Services.CreateScope();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+    var user = await userManager.FindByNameAsync(seedAdminArg);
+    if (user is null)
+    {
+        app.Logger.LogError("--seed-admin: no user found with phone/username '{Phone}'", seedAdminArg);
+        Environment.Exit(1);
+    }
+    await userManager.AddToRoleAsync(user, "Admin");
+    app.Logger.LogInformation("--seed-admin: user '{Phone}' assigned Admin role.", seedAdminArg);
+    Environment.Exit(0);
+}
+
+// ─── Warn if no admin user exists ────────────────────────────────────────────
+using (var warnScope = app.Services.CreateScope())
+{
+    var userManager = warnScope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+    var admins = await userManager.GetUsersInRoleAsync("Admin");
+    if (admins.Count == 0)
+        app.Logger.LogWarning("No Admin-role users exist. Run: dotnet run -- --seed-admin {phone}");
 }
 
 // ─── Middleware pipeline ─────────────────────────────────────────────────────
