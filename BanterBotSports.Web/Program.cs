@@ -2,6 +2,7 @@ using BanterBotSports.BanterAI;
 using BanterBotSports.BL.Services;
 using BanterBotSports.BL.Services.Hosted;
 using BanterBotSports.BL.Services.Interfaces;
+using BanterBotSports.Entities;
 using BanterBotSports.DAL;
 using BanterBotSports.DAL.Repositories;
 using BanterBotSports.DAL.Repositories.Interfaces;
@@ -65,6 +66,7 @@ builder.Services.AddScoped<IPartidoService, PartidoService>();
 builder.Services.AddScoped<IJornadaService, JornadaService>();
 builder.Services.AddScoped<ITelegramVinculacionService, TelegramVinculacionService>();
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 // ─── In-Memory Cache (used by ApiFootballSyncService for search results) ─────
 builder.Services.AddMemoryCache();
