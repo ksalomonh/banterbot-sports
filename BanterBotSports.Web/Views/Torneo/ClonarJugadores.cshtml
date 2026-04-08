@@ -1,0 +1,69 @@
+@using BanterBotSports.BL.Models
+@model BanterBotSports.Entities.Torneo
+@{
+    ViewData["Title"] = "Clonar Jugadores";
+    var torneosClonables = ViewBag.TorneosClonables as IReadOnlyList<TorneoResumen> ?? Array.Empty<TorneoResumen>();
+}
+
+<header class="relative overflow-hidden rounded-3xl bg-[#0d1323] p-6 md:p-10 mb-8 shadow-[0_0_40px_rgba(105,218,255,0.05)]">
+    <div class="absolute top-0 right-0 w-64 h-64 bg-[#69daff]/10 blur-[100px] -mr-16 -mt-16 pointer-events-none"></div>
+    <div class="relative z-10">
+        <h1 class="text-3xl md:text-5xl font-black tracking-tighter text-[#e1e4fa] leading-none mb-2 uppercase italic">
+            Clonar Jugadores
+        </h1>
+        <p class="text-[#a6aabf] text-sm font-bold uppercase tracking-widest">
+            Quiniela destino: <span class="text-[#69daff]">@Model.Nombre</span>
+        </p>
+    </div>
+</header>
+
+<div class="bg-[#0d1323] rounded-3xl p-6 md:p-8">
+    @if (!torneosClonables.Any())
+    {
+        <div class="text-center py-12">
+            <span class="material-symbols-outlined text-[#a6aabf] text-5xl block mb-4">group_off</span>
+            <p class="text-[#a6aabf] font-bold uppercase tracking-widest text-sm">
+                No tenés quinielas anteriores con jugadores para clonar.
+            </p>
+        </div>
+    }
+    else
+    {
+        <p class="text-[#a6aabf] text-sm mb-6">
+            Seleccioná una quiniela de origen. Solo se copiarán jugadores que aún no estén inscriptos en <strong class="text-[#e1e4fa]">@Model.Nombre</strong>.
+        </p>
+
+        <form method="post" asp-action="ClonarJugadores" asp-route-id="@Model.Id">
+            @Html.AntiForgeryToken()
+
+            <div class="space-y-3 mb-8">
+                @foreach (var torneo in torneosClonables)
+                {
+                    <label class="flex items-center gap-4 p-5 bg-[#181f33] rounded-2xl border border-[#434759]/20 hover:border-[#69daff]/40 hover:bg-[#242b43] transition-all cursor-pointer has-[:checked]:border-[#69daff] has-[:checked]:bg-[#69daff]/5">
+                        <input type="radio" name="torneoOrigenId" value="@torneo.Id"
+                               class="w-4 h-4 accent-[#69daff]" required />
+                        <div class="flex-1">
+                            <span class="block font-bold text-[#e1e4fa] text-sm">@torneo.Nombre</span>
+                            <span class="text-[10px] font-black uppercase text-[#a6aabf] tracking-widest">
+                                @torneo.CantidadJugadores jugador@(torneo.CantidadJugadores != 1 ? "es" : "")
+                            </span>
+                        </div>
+                        <span class="material-symbols-outlined text-[#a6aabf] text-lg">group</span>
+                    </label>
+                }
+            </div>
+
+            <button type="submit"
+                    class="px-8 py-3 bg-gradient-to-r from-[#69daff] to-[#00cffc] text-[#004050] font-black rounded-xl text-sm uppercase tracking-tight shadow-[0_0_20px_rgba(105,218,255,0.3)] hover:scale-105 active:scale-95 transition-all">
+                Clonar Jugadores
+            </button>
+        </form>
+    }
+
+    <div class="mt-6">
+        <a asp-action="Dashboard" asp-route-id="@Model.Id"
+           class="px-6 py-3 bg-[#242b43] text-[#e1e4fa] font-bold rounded-xl text-sm uppercase tracking-tight hover:bg-[#1e253b] transition-colors inline-block">
+            Volver al Dashboard
+        </a>
+    </div>
+</div>

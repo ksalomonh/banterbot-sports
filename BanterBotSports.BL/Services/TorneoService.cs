@@ -204,6 +204,68 @@ public class TorneoService : ITorneoService
     }
 
     /// <inheritdoc />
+    public async Task<IReadOnlyList<TorneoResumen>> GetTorneosClonablesAsync(int excluirTorneoId, string organizadorId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(organizadorId);
+
+        var torneos = await _torneoRepository.GetByOrganizadorIdAsync(organizadorId);
+        var result = new List<TorneoResumen>();
+
+        foreach (var t in torneos)
+        {
+            if (t.Id == excluirTorneoId) continue;
+            if (t.Estado != EstadoTorneo.Activo && t.Estado != EstadoTorneo.Finalizado) continue;
+
+            var participantes = await _participanteRepository.GetByTorneoIdAsync(t.Id);
+            var cantJugadores = participantes.Count(p => p.Rol == RolParticipante.Jugador);
+            result.Add(new TorneoResumen(t.Id, t.Nombre, cantJugadores));
+        }
+
+        return result;
+    }
+
+    /// <inheritdoc />
+    public async Task<ClonarJugadoresResult> ClonarJugadoresAsync(int torneoDestinoId, int torneoOrigenId, string organizadorId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(organizadorId);
+
+        var torneoDestino = await _torneoRepository.GetByIdAsync(torneoDestinoId)
+            ?? throw new InvalidOperationException($"Torneo destino {torneoDestinoId} no encontrado.");
+        if (torneoDestino.OrganizadorId != organizadorId)
+            throw new UnauthorizedAccessException("Solo el organizador puede clonar jugadores en este torneo.");
+
+        var torneoOrigen = await _torneoRepository.GetByIdAsync(torneoOrigenId)
+            ?? throw new InvalidOperationException($"Torneo origen {torneoOrigenId} no encontrado.");
+        if (torneoOrigen.OrganizadorId != organizadorId)
+            throw new UnauthorizedAccessException("Ambos torneos deben pertenecer al mismo organizador.");
+
+        var participantesOrigen = await _participanteRepository.GetByTorneoIdAsync(torneoOrigenId);
+        var jugadores = participantesOrigen.Where(p => p.Rol == RolParticipante.Jugador).ToList();
+
+        var participantesDestino = await _participanteRepository.GetByTorneoIdAsync(torneoDestinoId);
+        var enrolledUserIds = participantesDestino.Select(p => p.UserId).ToHashSet();
+
+        int clonados = 0, omitidos = 0;
+        foreach (var jugador in jugadores)
+        {
+            if (enrolledUserIds.Contains(jugador.UserId)) { omitidos++; continue; }
+            await _participanteRepository.AddAsync(new Participante
+            {
+                TorneoId = torneoDestinoId,
+                UserId = jugador.UserId,
+                Rol = RolParticipante.Jugador,
+                Pago = false
+            });
+            clonados++;
+        }
+
+        if (clonados > 0)
+            await _unitOfWork.SaveAsync();
+
+        return new ClonarJugadoresResult(clonados, omitidos);
+    }
+
+    /// <inheritdoc />
     public async Task<IReadOnlyList<RankingParticipante>> BuildRankingAsync(Torneo torneo)
     {
         ArgumentNullException.ThrowIfNull(torneo);

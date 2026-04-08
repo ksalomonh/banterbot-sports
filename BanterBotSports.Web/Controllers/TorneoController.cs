@@ -318,6 +318,47 @@ public class TorneoController : Controller
         return RedirectToAction(nameof(Dashboard), new { id });
     }
 
+    // GET /torneo/{id}/clonar-jugadores
+    [HttpGet("/torneo/{id:int}/clonar-jugadores")]
+    public async Task<IActionResult> ClonarJugadores(int id)
+    {
+        var torneo = await _torneoService.GetByIdAsync(id);
+        if (torneo is null) return NotFound();
+
+        var userId = _userManager.GetUserId(User)!;
+        if (torneo.OrganizadorId != userId) return Forbid();
+
+        var torneosClonables = await _torneoService.GetTorneosClonablesAsync(id, userId);
+        ViewBag.TorneosClonables = torneosClonables;
+        return View(torneo);
+    }
+
+    // POST /torneo/{id}/clonar-jugadores
+    [HttpPost("/torneo/{id:int}/clonar-jugadores")]
+    [ValidateAntiForgeryToken]
+    [ActionName("ClonarJugadores")]
+    public async Task<IActionResult> ClonarJugadoresPost(int id, [FromForm] int torneoOrigenId)
+    {
+        var torneo = await _torneoService.GetByIdAsync(id);
+        if (torneo is null) return NotFound();
+
+        var userId = _userManager.GetUserId(User)!;
+        if (torneo.OrganizadorId != userId) return Forbid();
+
+        var result = await _torneoService.ClonarJugadoresAsync(id, torneoOrigenId, userId);
+
+        if (result.Clonados > 0 && result.Omitidos == 0)
+            TempData[TempDataKeys.Success] = $"Se clonaron {result.Clonados} jugadores correctamente.";
+        else if (result.Clonados > 0 && result.Omitidos > 0)
+            TempData[TempDataKeys.Info] = $"Se clonaron {result.Clonados} jugadores. {result.Omitidos} ya estaba(n) inscripto(s) y fue(ron) omitido(s).";
+        else if (result.Omitidos > 0)
+            TempData[TempDataKeys.Info] = "Todos los jugadores ya estaban inscritos.";
+        else
+            TempData[TempDataKeys.Info] = "El torneo origen no tiene jugadores para clonar.";
+
+        return RedirectToAction(nameof(Dashboard), new { id });
+    }
+
     // GET /torneo/buscar-partidos?liga={ligaId}
     [HttpGet("/torneo/buscar-partidos")]
     public async Task<IActionResult> BuscarPartidos(int liga)
