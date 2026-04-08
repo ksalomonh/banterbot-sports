@@ -17,6 +17,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
     public DbSet<PrediccionPartido> PrediccionesPartido => Set<PrediccionPartido>();
     public DbSet<PrediccionJornada> PrediccionesJornada => Set<PrediccionJornada>();
     public DbSet<MensajeChat> MensajesChat => Set<MensajeChat>();
+    public DbSet<ConfiguracionGlobal> ConfiguracionGlobal => Set<ConfiguracionGlobal>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -29,6 +30,22 @@ public class AppDbContext : IdentityDbContext<AppUser>
 
         builder.Entity<ConfiguracionPremio>()
             .Property(c => c.Porcentaje)
+            .HasPrecision(18, 2);
+
+        builder.Entity<ConfiguracionGlobal>()
+            .Property(c => c.PorcentajePlataforma)
+            .HasPrecision(18, 2);
+
+        builder.Entity<ConfiguracionGlobal>()
+            .Property(c => c.PorcentajeOrganizadorMin)
+            .HasPrecision(18, 2);
+
+        builder.Entity<ConfiguracionGlobal>()
+            .Property(c => c.PorcentajeOrganizadorMax)
+            .HasPrecision(18, 2);
+
+        builder.Entity<ConfiguracionGlobal>()
+            .Property(c => c.MontoInscripcionMinimo)
             .HasPrecision(18, 2);
 
         // Unique index: one Telegram account per user
