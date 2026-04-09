@@ -4,9 +4,10 @@ using BanterBotSports.DAL;
 using BanterBotSports.DAL.Repositories;
 using BanterBotSports.Entities;
 using BanterBotSports.Entities.Enums;
+using BanterBotSports.Integrations.ApiFootball;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Moq;
+using Microsoft.EntityFrameworkCore;
 using Testcontainers.PostgreSql;
 
 namespace BanterBotSports.Tests.Integration;
@@ -41,7 +42,8 @@ public class PartidoServiceIntegrationTests : IAsyncLifetime
 
         var partidoRepo = new PartidoRepository(_context);
         var jornadaRepo = new JornadaRepository(_context);
-        _partidoService = new PartidoService(partidoRepo, jornadaRepo, _context);
+        var unitOfWork = new UnitOfWork(_context);
+        _partidoService = new PartidoService(partidoRepo, jornadaRepo, unitOfWork, new NullApiFootballCatalogService());
     }
 
     public async Task DisposeAsync()

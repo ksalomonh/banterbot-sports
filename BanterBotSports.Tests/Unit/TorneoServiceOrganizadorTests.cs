@@ -8,6 +8,7 @@ using BanterBotSports.Entities.Enums;
 using BanterBotSports.Entities.ViewModels;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 
 namespace BanterBotSports.Tests.Unit;
@@ -31,6 +32,7 @@ public class TorneoServiceOrganizadorTests
     private readonly Mock<IPrediccionRepository> _prediccionRepo = new();
     private readonly Mock<IUnitOfWork> _unitOfWork = new();
     private readonly Mock<IAdminService> _adminService = new();
+    private readonly Mock<IPartidoService> _partidoService = new();
     private readonly Mock<UserManager<AppUser>> _userManager;
 
     public TorneoServiceOrganizadorTests()
@@ -65,9 +67,9 @@ public class TorneoServiceOrganizadorTests
         _torneoRepo.Setup(r => r.AddAsync(It.IsAny<Torneo>()))
             .ReturnsAsync((Torneo t) => { t.Id = 1; return t; });
         _participanteRepo.Setup(r => r.AddAsync(It.IsAny<Participante>()))
-            .Returns(Task.CompletedTask);
+            .ReturnsAsync((Participante p) => p);
         _jornadaRepo.Setup(r => r.AddAsync(It.IsAny<Jornada>()))
-            .Returns(Task.CompletedTask);
+            .ReturnsAsync((Jornada j) => j);
     }
 
     private TorneoService BuildSut() => new(
@@ -77,7 +79,9 @@ public class TorneoServiceOrganizadorTests
         _prediccionRepo.Object,
         _unitOfWork.Object,
         _adminService.Object,
-        _userManager.Object);
+        _userManager.Object,
+        _partidoService.Object,
+        NullLogger<TorneoService>.Instance);
 
     /// <summary>Builds a valid model with prizes summing to the given expected pool.</summary>
     private static TorneoCreateViewModel BuildModel(decimal? orgOverride = null, decimal prizeSum = 85m)

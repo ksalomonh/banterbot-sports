@@ -1,7 +1,6 @@
 using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL;
 using BanterBotSports.Entities;
-using BanterBotSports.Integrations.ApiFootball;
 using BanterBotSports.Web.Controllers;
 using BanterBotSports.Web.Infrastructure;
 using FluentAssertions;
@@ -44,8 +43,18 @@ public class TorneoControllerUnirseTests
     {
         var torneoSvc = torneoServiceMock ?? new Mock<ITorneoService>();
         var jornadaSvc = new Mock<IJornadaService>();
-        var apiFootballSyncSvc = new Mock<IApiFootballSyncService>();
+        var adminSvc = new Mock<IAdminService>();
         var partidoSvc = new Mock<IPartidoService>();
+
+        adminSvc.Setup(s => s.GetConfiguracionAsync())
+            .ReturnsAsync(new BanterBotSports.Entities.ConfiguracionGlobal
+            {
+                Id = 1,
+                PorcentajePlataforma = 10m,
+                PorcentajeOrganizadorMin = 5m,
+                PorcentajeOrganizadorMax = 30m,
+                MontoInscripcionMinimo = 500m
+            });
 
         // EphemeralDataProtectionProvider produces tokens that the controller can unprotect.
         var dataProtectionProvider = new EphemeralDataProtectionProvider();
@@ -63,11 +72,15 @@ public class TorneoControllerUnirseTests
             .Setup(um => um.GetUserId(It.IsAny<ClaimsPrincipal>()))
             .Returns("test-user-id");
 
+        userManager
+            .Setup(um => um.FindByIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(new AppUser { Id = "test-user-id" });
+
         var controller = new TorneoController(
             torneoSvc.Object,
             jornadaSvc.Object,
-            apiFootballSyncSvc.Object,
             partidoSvc.Object,
+            adminSvc.Object,
             dataProtectionProvider,
             userManager.Object,
             NullLogger<TorneoController>.Instance);

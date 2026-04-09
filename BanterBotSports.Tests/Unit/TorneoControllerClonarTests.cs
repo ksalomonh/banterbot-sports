@@ -2,7 +2,6 @@ using BanterBotSports.BL.Models;
 using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL;
 using BanterBotSports.Entities;
-using BanterBotSports.Integrations.ApiFootball;
 using BanterBotSports.Web.Controllers;
 using BanterBotSports.Web.Infrastructure;
 using FluentAssertions;
@@ -37,9 +36,19 @@ public class TorneoControllerClonarTests
     {
         var torneoSvc = new Mock<ITorneoService>();
         var jornadaSvc = new Mock<IJornadaService>();
-        var apiSyncSvc = new Mock<IApiFootballSyncService>();
+        var adminSvc = new Mock<IAdminService>();
         var partidoSvc = new Mock<IPartidoService>();
         var dataProtectionProvider = new EphemeralDataProtectionProvider();
+
+        adminSvc.Setup(s => s.GetConfiguracionAsync())
+            .ReturnsAsync(new BanterBotSports.Entities.ConfiguracionGlobal
+            {
+                Id = 1,
+                PorcentajePlataforma = 10m,
+                PorcentajeOrganizadorMin = 5m,
+                PorcentajeOrganizadorMax = 30m,
+                MontoInscripcionMinimo = 500m
+            });
 
         var userStoreMock = new Mock<IUserStore<AppUser>>();
         var userManager = new Mock<UserManager<AppUser>>(
@@ -49,11 +58,15 @@ public class TorneoControllerClonarTests
             .Setup(um => um.GetUserId(It.IsAny<ClaimsPrincipal>()))
             .Returns(userId);
 
+        userManager
+            .Setup(um => um.FindByIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(new AppUser { Id = userId });
+
         var controller = new TorneoController(
             torneoSvc.Object,
             jornadaSvc.Object,
-            apiSyncSvc.Object,
             partidoSvc.Object,
+            adminSvc.Object,
             dataProtectionProvider,
             userManager.Object,
             NullLogger<TorneoController>.Instance);

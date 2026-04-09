@@ -6,6 +6,7 @@ using BanterBotSports.Entities;
 using BanterBotSports.Entities.Enums;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 
 namespace BanterBotSports.Tests.Unit;
@@ -25,6 +26,7 @@ public class TorneoServicePagoTests
     private readonly Mock<IPrediccionRepository> _prediccionRepo = new();
     private readonly Mock<IUnitOfWork> _unitOfWork = new();
     private readonly Mock<IAdminService> _adminService = new();
+    private readonly Mock<IPartidoService> _partidoService = new();
     private readonly Mock<UserManager<AppUser>> _userManager;
 
     public TorneoServicePagoTests()
@@ -41,7 +43,9 @@ public class TorneoServicePagoTests
         _prediccionRepo.Object,
         _unitOfWork.Object,
         _adminService.Object,
-        _userManager.Object);
+        _userManager.Object,
+        _partidoService.Object,
+        NullLogger<TorneoService>.Instance);
 
     private Torneo BuildTorneo() => new()
     {
