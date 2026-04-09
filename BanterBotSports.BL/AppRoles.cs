@@ -8,4 +8,5 @@ public static class AppRoles
 {
     public const string Admin = "Admin";
     public const string Jugador = "Jugador";
+    public const string Organizador = "Organizador";
 }
