@@ -1,7 +1,7 @@
 using BanterBotSports.BL.Services.Interfaces;
-using BanterBotSports.DAL;
 using BanterBotSports.DAL.Repositories.Interfaces;
 using BanterBotSports.Entities;
+using BanterBotSports.Entities.DTOs;
 using BanterBotSports.Entities.Enums;
 
 namespace BanterBotSports.BL.Services;
@@ -15,16 +15,23 @@ public class PartidoService : IPartidoService
 {
     private readonly IPartidoRepository _partidoRepository;
     private readonly IJornadaRepository _jornadaRepository;
-    private readonly AppDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IPartidoCatalogService _catalogService;
 
     public PartidoService(
         IPartidoRepository partidoRepository,
         IJornadaRepository jornadaRepository,
-        AppDbContext context)
+        IUnitOfWork unitOfWork,
+        IPartidoCatalogService catalogService)
     {
+        ArgumentNullException.ThrowIfNull(partidoRepository);
+        ArgumentNullException.ThrowIfNull(jornadaRepository);
+        ArgumentNullException.ThrowIfNull(unitOfWork);
+        ArgumentNullException.ThrowIfNull(catalogService);
         _partidoRepository = partidoRepository;
         _jornadaRepository = jornadaRepository;
-        _context = context;
+        _unitOfWork = unitOfWork;
+        _catalogService = catalogService;
     }
 
     public async Task AsignarPartidoAsync(int jornadaId, Partido partido)
@@ -36,7 +43,25 @@ public class PartidoService : IPartidoService
 
         partido.JornadaId = jornada.Id;
         await _partidoRepository.AddAsync(partido);
-        await _context.SaveChangesAsync();
+        await _unitOfWork.SaveAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task AsignarPartidosAsync(int jornadaId, IReadOnlyList<Partido> partidos)
+    {
+        ArgumentNullException.ThrowIfNull(partidos);
+        if (partidos.Count == 0) return;
+
+        var jornada = await _jornadaRepository.GetByIdAsync(jornadaId)
+            ?? throw new InvalidOperationException($"Jornada {jornadaId} no encontrada.");
+
+        foreach (var partido in partidos)
+        {
+            partido.JornadaId = jornada.Id;
+            await _partidoRepository.AddAsync(partido);
+        }
+
+        await _unitOfWork.SaveAsync();
     }
 
     public async Task ActualizarResultadoAsync(
@@ -67,7 +92,7 @@ public class PartidoService : IPartidoService
         partido.Estado = nuevoEstado;
 
         await _partidoRepository.UpdateAsync(partido);
-        await _context.SaveChangesAsync();
+        await _unitOfWork.SaveAsync();
     }
 
     /// <summary>
@@ -76,4 +101,20 @@ public class PartidoService : IPartidoService
     /// </summary>
     public int ComputarGolesReglamento(int golesEquipo1, int golesEquipo2)
         => golesEquipo1 + golesEquipo2;
+
+    /// <inheritdoc />
+    public Task<IReadOnlyList<PartidoDto>> GetProximosPartidosAsync(int ligaId, DateOnly desde, DateOnly hasta)
+        => _catalogService.GetProximosPartidosAsync(ligaId, desde, hasta);
+
+    /// <inheritdoc />
+    public Task<PartidoDto?> GetFixturePorExternalIdAsync(int externalId)
+        => _catalogService.GetFixturePorExternalIdAsync(externalId);
+
+    /// <inheritdoc />
+    public bool EsLigaValida(int ligaId)
+        => _catalogService.EsLigaValida(ligaId);
+
+    /// <inheritdoc />
+    public IReadOnlyList<LigaDto> GetLigas()
+        => _catalogService.GetLigas();
 }
