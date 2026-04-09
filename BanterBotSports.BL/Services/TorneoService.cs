@@ -1,9 +1,11 @@
 using BanterBotSports.BL.Models;
 using BanterBotSports.BL.Services.Interfaces;
+using BanterBotSports.DAL;
 using BanterBotSports.DAL.Repositories.Interfaces;
 using BanterBotSports.Entities;
 using BanterBotSports.Entities.Enums;
 using BanterBotSports.Entities.ViewModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace BanterBotSports.BL.Services;
 
@@ -18,25 +20,33 @@ public class TorneoService : ITorneoService
     private readonly IJornadaRepository _jornadaRepository;
     private readonly IPrediccionRepository _prediccionRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAdminService _adminService;
+    private readonly UserManager<AppUser> _userManager;
 
     public TorneoService(
         ITorneoRepository torneoRepository,
         IParticipanteRepository participanteRepository,
         IJornadaRepository jornadaRepository,
         IPrediccionRepository prediccionRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IAdminService adminService,
+        UserManager<AppUser> userManager)
     {
         ArgumentNullException.ThrowIfNull(torneoRepository);
         ArgumentNullException.ThrowIfNull(participanteRepository);
         ArgumentNullException.ThrowIfNull(jornadaRepository);
         ArgumentNullException.ThrowIfNull(prediccionRepository);
         ArgumentNullException.ThrowIfNull(unitOfWork);
+        ArgumentNullException.ThrowIfNull(adminService);
+        ArgumentNullException.ThrowIfNull(userManager);
 
         _torneoRepository = torneoRepository;
         _participanteRepository = participanteRepository;
         _jornadaRepository = jornadaRepository;
         _prediccionRepository = prediccionRepository;
         _unitOfWork = unitOfWork;
+        _adminService = adminService;
+        _userManager = userManager;
     }
 
     /// <inheritdoc />
@@ -45,9 +55,23 @@ public class TorneoService : ITorneoService
         ArgumentNullException.ThrowIfNull(model);
         ArgumentException.ThrowIfNullOrWhiteSpace(organizadorId);
 
+        var config = await _adminService.GetConfiguracionAsync();
+        var user = await _userManager.FindByIdAsync(organizadorId)
+            ?? throw new InvalidOperationException($"Usuario '{organizadorId}' no encontrado.");
+
+        decimal resolvedPct = model.PorcentajeOrganizador
+            ?? user.PorcentajeOrganizadorGlobal
+            ?? config.PorcentajeOrganizadorMin;
+
+        if (resolvedPct < config.PorcentajeOrganizadorMin || resolvedPct > config.PorcentajeOrganizadorMax)
+            throw new InvalidOperationException(
+                $"El porcentaje del organizador debe estar entre {config.PorcentajeOrganizadorMin}% y {config.PorcentajeOrganizadorMax}%.");
+
+        decimal expectedPrizePool = 100m - config.PorcentajePlataforma - resolvedPct;
         var totalPorcentaje = model.ConfiguracionPremios.Sum(p => p.Porcentaje);
-        if (totalPorcentaje != 100)
-            throw new InvalidOperationException("Los porcentajes de premios deben sumar 100%");
+        if (Math.Abs(totalPorcentaje - expectedPrizePool) > 0.01m)
+            throw new InvalidOperationException(
+                $"Los porcentajes de premios deben sumar exactamente {expectedPrizePool}%.");
 
         var torneo = new Torneo
         {
@@ -58,6 +82,7 @@ public class TorneoService : ITorneoService
             PtosResultado = model.PtosResultado,
             PtosMarcador = model.PtosMarcador,
             PtosGolesJornada = model.PtosGolesJornada,
+            PorcentajeOrganizador = resolvedPct,
             Estado = EstadoTorneo.Pendiente
         };
 
@@ -94,6 +119,11 @@ public class TorneoService : ITorneoService
         }
 
         await _unitOfWork.SaveAsync();
+
+        // Assign Organizador role to the user if not already assigned
+        if (!await _userManager.IsInRoleAsync(user, AppRoles.Organizador))
+            await _userManager.AddToRoleAsync(user, AppRoles.Organizador);
+
         return torneoCreado;
     }
 
