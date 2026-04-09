@@ -80,6 +80,10 @@ namespace BanterBotSports.DAL.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<decimal?>("PorcentajeOrganizadorGlobal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -389,6 +393,10 @@ namespace BanterBotSports.DAL.Migrations
                     b.Property<int>("PtosResultado")
                         .HasColumnType("integer");
 
+                    b.Property<decimal?>("PorcentajeOrganizador")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Torneos");
@@ -447,6 +455,11 @@ namespace BanterBotSports.DAL.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new { Id = "a1b2c3d4-e5f6-7890-abcd-ef1234567890", Name = "Admin", NormalizedName = "ADMIN", ConcurrencyStamp = "a1b2c3d4-e5f6-7890-abcd-ef1234567890" },
+                        new { Id = "b2c3d4e5-f6a7-8901-bcde-f12345678901", Name = "Jugador", NormalizedName = "JUGADOR", ConcurrencyStamp = "b2c3d4e5-f6a7-8901-bcde-f12345678901" },
+                        new { Id = "c3d4e5f6-a7b8-9012-cdef-123456789012", Name = "Organizador", NormalizedName = "ORGANIZADOR", ConcurrencyStamp = "c3d4e5f6-a7b8-9012-cdef-123456789012" });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

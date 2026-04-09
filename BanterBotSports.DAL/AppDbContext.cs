@@ -48,6 +48,14 @@ public class AppDbContext : IdentityDbContext<AppUser>
             .Property(c => c.MontoInscripcionMinimo)
             .HasPrecision(18, 2);
 
+        builder.Entity<AppUser>()
+            .Property(u => u.PorcentajeOrganizadorGlobal)
+            .HasPrecision(18, 2);
+
+        builder.Entity<Torneo>()
+            .Property(t => t.PorcentajeOrganizador)
+            .HasPrecision(18, 2);
+
         // Unique index: one Telegram account per user
         builder.Entity<UsuarioTelegram>()
             .HasIndex(u => u.TelegramUserId)
