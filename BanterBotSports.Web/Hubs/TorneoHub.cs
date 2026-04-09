@@ -1,4 +1,4 @@
-using BanterBotSports.BL.Models;
+using BanterBotSports.Entities.DTOs;
 using Microsoft.AspNetCore.SignalR;
 
 namespace BanterBotSports.Web.Hubs;

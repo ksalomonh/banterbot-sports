@@ -1,4 +1,4 @@
-namespace BanterBotSports.BL.Models;
+namespace BanterBotSports.Entities.DTOs;
 
 /// <summary>Ranking entry used as input to prize distribution calculation.</summary>
 public record RankingParticipante(

@@ -1,6 +1,7 @@
 using BanterBotSports.BL.Models;
 using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.Entities;
+using BanterBotSports.Entities.DTOs;
 
 namespace BanterBotSports.BL.Services;
 

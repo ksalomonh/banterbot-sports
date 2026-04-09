@@ -1,4 +1,4 @@
-using BanterBotSports.BL.Models;
+using BanterBotSports.Entities.DTOs;
 
 namespace BanterBotSports.BL.Services.Interfaces;
 
