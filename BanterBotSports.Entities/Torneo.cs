@@ -12,6 +12,7 @@ public class Torneo
     public int PtosResultado { get; set; }
     public int PtosMarcador { get; set; }
     public int PtosGolesJornada { get; set; }
+    public decimal PorcentajeOrganizador { get; set; }
     public EstadoTorneo Estado { get; set; }
 
     public ICollection<ConfiguracionPremio> ConfiguracionPremios { get; set; } = new List<ConfiguracionPremio>();

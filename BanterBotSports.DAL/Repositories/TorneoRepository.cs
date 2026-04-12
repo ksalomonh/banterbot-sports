@@ -29,6 +29,7 @@ public class TorneoRepository : ITorneoRepository
 
     public async Task<IReadOnlyList<Torneo>> GetByOrganizadorIdAsync(string organizadorId)
         => await _context.Torneos
+            .Include(t => t.Participantes)
             .Where(t => t.OrganizadorId == organizadorId)
             .ToListAsync();
 

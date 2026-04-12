@@ -1,5 +1,5 @@
-using BanterBotSports.BL.Models;
 using BanterBotSports.BL.Services.Interfaces;
+using BanterBotSports.Entities.DTOs;
 using BanterBotSports.Web.Hubs;
 using Microsoft.AspNetCore.SignalR;
 

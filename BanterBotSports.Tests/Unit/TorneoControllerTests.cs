@@ -2,10 +2,9 @@ using BanterBotSports.BL.Models;
 using BanterBotSports.BL.Services.Interfaces;
 using BanterBotSports.DAL;
 using BanterBotSports.Entities;
+using BanterBotSports.Entities.DTOs;
 using BanterBotSports.Entities.ViewModels;
-using BanterBotSports.Integrations.ApiFootball;
 using BanterBotSports.Web.Controllers;
-using BanterBotSports.Web.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
@@ -31,13 +30,27 @@ public class TorneoControllerTests
     private static TorneoController BuildSut(
         Mock<ITorneoService>? torneoServiceMock = null,
         Mock<IJornadaService>? jornadaServiceMock = null,
-        Mock<IApiFootballSyncService>? apiFootballSyncServiceMock = null,
+        Mock<IAdminService>? adminServiceMock = null,
         Mock<IPartidoService>? partidoServiceMock = null)
     {
         var torneoSvc = torneoServiceMock ?? new Mock<ITorneoService>();
         var jornadaSvc = jornadaServiceMock ?? new Mock<IJornadaService>();
-        var apiFootballSyncSvc = apiFootballSyncServiceMock ?? new Mock<IApiFootballSyncService>();
+        var adminSvc = adminServiceMock ?? new Mock<IAdminService>();
         var partidoSvc = partidoServiceMock ?? new Mock<IPartidoService>();
+
+        // Default admin config so the controller doesn't throw when reading it
+        if (adminServiceMock is null)
+        {
+            adminSvc.Setup(s => s.GetConfiguracionAsync())
+                .ReturnsAsync(new ConfiguracionGlobal
+                {
+                    Id = 1,
+                    PorcentajePlataforma = 10m,
+                    PorcentajeOrganizadorMin = 5m,
+                    PorcentajeOrganizadorMax = 30m,
+                    MontoInscripcionMinimo = 500m
+                });
+        }
 
         // DataProtectionProvider: use ephemeral (in-memory) keys for unit tests
         var dataProtectionProvider = new EphemeralDataProtectionProvider();
@@ -55,11 +68,15 @@ public class TorneoControllerTests
             .Setup(um => um.GetUserId(It.IsAny<System.Security.Claims.ClaimsPrincipal>()))
             .Returns("test-user-id");
 
+        userManager
+            .Setup(um => um.FindByIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(new AppUser { Id = "test-user-id" });
+
         var controller = new TorneoController(
             torneoSvc.Object,
             jornadaSvc.Object,
-            apiFootballSyncSvc.Object,
             partidoSvc.Object,
+            adminSvc.Object,
             dataProtectionProvider,
             userManager.Object,
             NullLogger<TorneoController>.Instance);
@@ -69,6 +86,11 @@ public class TorneoControllerTests
         {
             HttpContext = new Microsoft.AspNetCore.Http.DefaultHttpContext()
         };
+
+        // Wire TempData so TempData[key] = value doesn't throw
+        controller.TempData = new Microsoft.AspNetCore.Mvc.ViewFeatures.TempDataDictionary(
+            controller.ControllerContext.HttpContext,
+            Mock.Of<Microsoft.AspNetCore.Mvc.ViewFeatures.ITempDataProvider>());
 
         return controller;
     }
@@ -127,7 +149,12 @@ public class TorneoControllerTests
             MontoInscripcion = 50m,
             PtosResultado = 3,
             PtosMarcador = 5,
-            PtosGolesJornada = 2
+            PtosGolesJornada = 2,
+            ConfiguracionPremios = new List<ConfiguracionPremioViewModel>
+            {
+                new() { Posicion = 1, Porcentaje = 50m },
+                new() { Posicion = 2, Porcentaje = 35m }
+            }
         };
 
         // Act
@@ -174,6 +201,44 @@ public class TorneoControllerTests
         // Act & Assert: the controller must catch the exception and NOT re-throw
         var act = async () => await sut.Nuevo(model);
         await act.Should().NotThrowAsync("controller must swallow service exceptions gracefully");
+    }
+
+    [Fact]
+    public async Task Nuevo_Post_OrganizadorPctAboveMax_AddsFieldError_DoesNotCallService()
+    {
+        // Arrange
+        var torneoSvcMock = new Mock<ITorneoService>(MockBehavior.Strict);
+        var sut = BuildSut(torneoServiceMock: torneoSvcMock);
+
+        var model = new TorneoCreateViewModel
+        {
+            Nombre = "Torneo con override inválido",
+            NumJornadas = 3,
+            MontoInscripcion = 100m,
+            PtosResultado = 3,
+            PtosMarcador = 5,
+            PtosGolesJornada = 2,
+            PorcentajeOrganizador = 35m,
+            ConfiguracionPremios = new List<ConfiguracionPremioViewModel>
+            {
+                new() { Posicion = 1, Porcentaje = 55m }
+            }
+        };
+
+        // Act
+        var result = await sut.Nuevo(model);
+
+        // Assert
+        result.Should().BeOfType<ViewResult>();
+        sut.ModelState.ContainsKey(nameof(TorneoCreateViewModel.PorcentajeOrganizador)).Should().BeTrue();
+        sut.ModelState[nameof(TorneoCreateViewModel.PorcentajeOrganizador)]!.Errors.Should().ContainSingle();
+        sut.ModelState[nameof(TorneoCreateViewModel.PorcentajeOrganizador)]!.Errors[0].ErrorMessage
+            .Should().Be("El porcentaje no puede superar el máximo permitido (30%)");
+        var viewResult = (ViewResult)result;
+        ((int?)viewResult.ViewData["InitialStep"]).Should().Be(0);
+        torneoSvcMock.Verify(
+            s => s.CrearTorneoAsync(It.IsAny<TorneoCreateViewModel>(), It.IsAny<string>()),
+            Times.Never);
     }
 
     // ---------------------------------------------------------------------------

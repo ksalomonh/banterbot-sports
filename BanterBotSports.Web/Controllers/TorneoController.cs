@@ -1,10 +1,7 @@
-using BanterBotSports.BL.Models;
 using BanterBotSports.BL.Services.Interfaces;
-using BanterBotSports.Entities;
+using BanterBotSports.Entities.DTOs;
 using BanterBotSports.Entities.ViewModels;
-using BanterBotSports.Integrations.ApiFootball;
 using BanterBotSports.Web.Infrastructure;
-using BanterBotSports.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
@@ -23,8 +20,8 @@ public class TorneoController : Controller
 
     private readonly ITorneoService _torneoService;
     private readonly IJornadaService _jornadaService;
-    private readonly IApiFootballSyncService _apiFootballSyncService;
     private readonly IPartidoService _partidoService;
+    private readonly IAdminService _adminService;
     private readonly IDataProtector _protector;
     private readonly UserManager<DAL.AppUser> _userManager;
     private readonly ILogger<TorneoController> _logger;
@@ -32,24 +29,24 @@ public class TorneoController : Controller
     public TorneoController(
         ITorneoService torneoService,
         IJornadaService jornadaService,
-        IApiFootballSyncService apiFootballSyncService,
         IPartidoService partidoService,
+        IAdminService adminService,
         IDataProtectionProvider dataProtectionProvider,
         UserManager<DAL.AppUser> userManager,
         ILogger<TorneoController> logger)
     {
         ArgumentNullException.ThrowIfNull(torneoService);
         ArgumentNullException.ThrowIfNull(jornadaService);
-        ArgumentNullException.ThrowIfNull(apiFootballSyncService);
         ArgumentNullException.ThrowIfNull(partidoService);
+        ArgumentNullException.ThrowIfNull(adminService);
         ArgumentNullException.ThrowIfNull(dataProtectionProvider);
         ArgumentNullException.ThrowIfNull(userManager);
         ArgumentNullException.ThrowIfNull(logger);
 
         _torneoService = torneoService;
         _jornadaService = jornadaService;
-        _apiFootballSyncService = apiFootballSyncService;
         _partidoService = partidoService;
+        _adminService = adminService;
         _protector = dataProtectionProvider.CreateProtector(InviteProtectorPurpose);
         _userManager = userManager;
         _logger = logger;
@@ -66,9 +63,18 @@ public class TorneoController : Controller
 
     // GET /torneo/nuevo
     [HttpGet("/torneo/nuevo")]
-    public IActionResult Nuevo()
+    public async Task<IActionResult> Nuevo()
     {
-        ViewBag.Ligas = LeagueCatalog.Leagues;
+        var config = await _adminService.GetConfiguracionAsync();
+        var userId = _userManager.GetUserId(User)!;
+        var user = await _userManager.FindByIdAsync(userId);
+
+        ViewBag.Ligas = _partidoService.GetLigas();
+        ViewBag.PorcentajePlataforma = config.PorcentajePlataforma;
+        ViewBag.PorcentajeOrganizadorMin = config.PorcentajeOrganizadorMin;
+        ViewBag.PorcentajeOrganizadorMax = config.PorcentajeOrganizadorMax;
+        ViewBag.PorcentajeOrganizadorDefault = user?.PorcentajeOrganizadorGlobal ?? config.PorcentajeOrganizadorMin;
+
         return View(new TorneoCreateViewModel());
     }
 
@@ -77,23 +83,71 @@ public class TorneoController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Nuevo(TorneoCreateViewModel model)
     {
-        var sumaPremios = model.ConfiguracionPremios?.Sum(p => p.Porcentaje) ?? 0;
-        if (Math.Abs(sumaPremios - 100m) > 0.01m)
-        {
-            ModelState.AddModelError(string.Empty,
-                "Los premios deben sumar exactamente 100%. Volvé al paso Premios.");
-        }
+        const string PorcentajeOrganizadorField = nameof(TorneoCreateViewModel.PorcentajeOrganizador);
+
+        var config = await _adminService.GetConfiguracionAsync();
+        var userId = _userManager.GetUserId(User)!;
+        var user = await _userManager.FindByIdAsync(userId);
 
         if (!ModelState.IsValid)
         {
             ViewBag.InitialStep = ResolveStepFromErrors(ModelState);
-            ViewBag.Ligas = LeagueCatalog.Leagues;
+            ViewBag.Ligas = _partidoService.GetLigas();
+            ViewBag.PorcentajePlataforma = config.PorcentajePlataforma;
+            ViewBag.PorcentajeOrganizadorMin = config.PorcentajeOrganizadorMin;
+            ViewBag.PorcentajeOrganizadorMax = config.PorcentajeOrganizadorMax;
+            ViewBag.PorcentajeOrganizadorDefault = user?.PorcentajeOrganizadorGlobal ?? config.PorcentajeOrganizadorMin;
+            return View(model);
+        }
+
+        // Validate prize sum against dynamic pool (100% − platform% − organizer%)
+        decimal resolvedOrgPct = model.PorcentajeOrganizador
+            ?? user?.PorcentajeOrganizadorGlobal
+            ?? config.PorcentajeOrganizadorMin;
+        decimal expectedPool = 100m - config.PorcentajePlataforma - resolvedOrgPct;
+        decimal prizeSum = model.ConfiguracionPremios?.Sum(p => p.Porcentaje) ?? 0m;
+
+        if (resolvedOrgPct < config.PorcentajeOrganizadorMin)
+        {
+            ModelState.AddModelError(PorcentajeOrganizadorField,
+                $"El porcentaje debe ser al menos el mínimo permitido ({config.PorcentajeOrganizadorMin}%)");
+            ViewBag.InitialStep = ResolveStepFromErrors(ModelState);
+            ViewBag.Ligas = _partidoService.GetLigas();
+            ViewBag.PorcentajePlataforma = config.PorcentajePlataforma;
+            ViewBag.PorcentajeOrganizadorMin = config.PorcentajeOrganizadorMin;
+            ViewBag.PorcentajeOrganizadorMax = config.PorcentajeOrganizadorMax;
+            ViewBag.PorcentajeOrganizadorDefault = user?.PorcentajeOrganizadorGlobal ?? config.PorcentajeOrganizadorMin;
+            return View(model);
+        }
+
+        if (resolvedOrgPct > config.PorcentajeOrganizadorMax)
+        {
+            ModelState.AddModelError(PorcentajeOrganizadorField,
+                $"El porcentaje no puede superar el máximo permitido ({config.PorcentajeOrganizadorMax}%)");
+            ViewBag.InitialStep = ResolveStepFromErrors(ModelState);
+            ViewBag.Ligas = _partidoService.GetLigas();
+            ViewBag.PorcentajePlataforma = config.PorcentajePlataforma;
+            ViewBag.PorcentajeOrganizadorMin = config.PorcentajeOrganizadorMin;
+            ViewBag.PorcentajeOrganizadorMax = config.PorcentajeOrganizadorMax;
+            ViewBag.PorcentajeOrganizadorDefault = user?.PorcentajeOrganizadorGlobal ?? config.PorcentajeOrganizadorMin;
+            return View(model);
+        }
+
+        if (Math.Abs(prizeSum - expectedPool) > 0.01m)
+        {
+            ModelState.AddModelError(string.Empty,
+                $"Los premios deben sumar exactamente {expectedPool}% (100% − {config.PorcentajePlataforma}% plataforma − {resolvedOrgPct}% organizador)");
+            ViewBag.InitialStep = 2;
+            ViewBag.Ligas = _partidoService.GetLigas();
+            ViewBag.PorcentajePlataforma = config.PorcentajePlataforma;
+            ViewBag.PorcentajeOrganizadorMin = config.PorcentajeOrganizadorMin;
+            ViewBag.PorcentajeOrganizadorMax = config.PorcentajeOrganizadorMax;
+            ViewBag.PorcentajeOrganizadorDefault = user?.PorcentajeOrganizadorGlobal ?? config.PorcentajeOrganizadorMin;
             return View(model);
         }
 
         try
         {
-            var userId = _userManager.GetUserId(User)!;
             var torneoCreado = await _torneoService.CrearTorneoAsync(model, userId);
 
             // Assign selected matches to Jornada 1
@@ -104,48 +158,53 @@ public class TorneoController : Controller
 
                 if (primeraJornada is not null)
                 {
-                    var matchFailures = new List<string>();
+                    // Fetch fixture DTOs via the BL service (IPartidoService proxies IPartidoCatalogService)
+                    var partidoDtos = new List<Entities.DTOs.PartidoDto>();
                     foreach (var externalId in model.PartidosSeleccionados)
                     {
                         if (!int.TryParse(externalId, out var extId)) continue;
-                        try
-                        {
-                            var partidoDto = await _apiFootballSyncService.GetFixtureByIdAsync(extId);
-                            if (partidoDto is not null)
-                            {
-                                var partido = new Partido
-                                {
-                                    JornadaId = primeraJornada.Id,
-                                    ExternalId = partidoDto.ExternalId,
-                                    Equipo1 = partidoDto.Equipo1,
-                                    Equipo2 = partidoDto.Equipo2,
-                                    KickOffUtc = partidoDto.KickOffUtc,
-                                    Estado = partidoDto.Estado
-                                };
-                                await _partidoService.AsignarPartidoAsync(primeraJornada.Id, partido);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogWarning(ex, "Failed to assign fixture {ExternalId} to jornada {JornadaId}", externalId, primeraJornada.Id);
-                            matchFailures.Add(externalId);
-                        }
+                        var dto = await _partidoService.GetFixturePorExternalIdAsync(extId);
+                        if (dto is not null)
+                            partidoDtos.Add(dto);
                     }
-                    if (matchFailures.Count > 0)
-                        TempData[TempDataKeys.Info] = $"No se pudieron asignar {matchFailures.Count} partido(s). Podés agregarlos manualmente.";
+
+                    var failures = await _torneoService.AsignarPartidosInicialesAsync(primeraJornada.Id, partidoDtos);
+                    if (failures.Count > 0)
+                        TempData[TempDataKeys.Info] = $"No se pudieron asignar {failures.Count} partido(s). Podés agregarlos manualmente.";
                 }
             }
 
             return RedirectToAction(nameof(Dashboard), new { id = torneoCreado.Id });
         }
+        catch (InvalidOperationException ex) when (IsOrganizerPercentageValidation(ex.Message))
+        {
+            _logger.LogWarning(ex, "Organizer percentage validation failed while creating torneo for user {UserId}", userId);
+            ModelState.AddModelError(PorcentajeOrganizadorField, ex.Message);
+            ViewBag.InitialStep = ResolveStepFromErrors(ModelState);
+            ViewBag.Ligas = _partidoService.GetLigas();
+            ViewBag.PorcentajePlataforma = config.PorcentajePlataforma;
+            ViewBag.PorcentajeOrganizadorMin = config.PorcentajeOrganizadorMin;
+            ViewBag.PorcentajeOrganizadorMax = config.PorcentajeOrganizadorMax;
+            ViewBag.PorcentajeOrganizadorDefault = user?.PorcentajeOrganizadorGlobal ?? config.PorcentajeOrganizadorMin;
+            return View(model);
+        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating torneo for user {UserId}", _userManager.GetUserId(User));
+            _logger.LogError(ex, "Error creating torneo for user {UserId}", userId);
             ModelState.AddModelError(string.Empty, "Ocurrió un error al crear el torneo. Intenta de nuevo.");
-            ViewBag.Ligas = LeagueCatalog.Leagues;
+            ViewBag.InitialStep = ResolveStepFromErrors(ModelState);
+            ViewBag.Ligas = _partidoService.GetLigas();
+            ViewBag.PorcentajePlataforma = config.PorcentajePlataforma;
+            ViewBag.PorcentajeOrganizadorMin = config.PorcentajeOrganizadorMin;
+            ViewBag.PorcentajeOrganizadorMax = config.PorcentajeOrganizadorMax;
+            ViewBag.PorcentajeOrganizadorDefault = user?.PorcentajeOrganizadorGlobal ?? config.PorcentajeOrganizadorMin;
             return View(model);
         }
     }
+
+    private static bool IsOrganizerPercentageValidation(string message)
+        => message.Contains("mínimo permitido", StringComparison.OrdinalIgnoreCase)
+           || message.Contains("máximo permitido", StringComparison.OrdinalIgnoreCase);
 
     // GET /torneo/{id}
     [HttpGet("/torneo/{id:int}")]
@@ -363,12 +422,12 @@ public class TorneoController : Controller
     [HttpGet("/torneo/buscar-partidos")]
     public async Task<IActionResult> BuscarPartidos(int liga)
     {
-        if (!LeagueCatalog.ValidIds.Contains(liga))
+        if (!_partidoService.EsLigaValida(liga))
             return BadRequest("Liga no válida.");
 
         var from = DateOnly.FromDateTime(DateTime.UtcNow);
         var to = from.AddDays(35);
-        var partidos = await _apiFootballSyncService.GetMatchesAsync(liga, from, to);
+        var partidos = await _partidoService.GetProximosPartidosAsync(liga, from, to);
         return Json(partidos);
     }
 
@@ -383,7 +442,7 @@ public class TorneoController : Controller
     private static int ResolveStepFromErrors(ModelStateDictionary modelState)
     {
         var keys = modelState.Keys.ToHashSet();
-        if (keys.Any(k => k.StartsWith("Nombre") || k.StartsWith("NumJornadas") || k.StartsWith("MontoInscripcion")))
+        if (keys.Any(k => k.StartsWith("Nombre") || k.StartsWith("NumJornadas") || k.StartsWith("MontoInscripcion") || k.StartsWith("PorcentajeOrganizador")))
             return 0;
         if (keys.Any(k => k.StartsWith("PtosResultado") || k.StartsWith("PtosMarcador") || k.StartsWith("PtosGolesJornada")))
             return 1;

@@ -80,6 +80,10 @@ namespace BanterBotSports.DAL.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<decimal?>("PorcentajeOrganizadorGlobal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -388,6 +392,10 @@ namespace BanterBotSports.DAL.Migrations
 
                     b.Property<int>("PtosResultado")
                         .HasColumnType("integer");
+
+                    b.Property<decimal>("PorcentajeOrganizador")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.HasKey("Id");
 

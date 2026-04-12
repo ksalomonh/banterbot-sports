@@ -1,6 +1,7 @@
 using BanterBotSports.BL.Models;
 using BanterBotSports.BL.Services;
 using BanterBotSports.Entities;
+using BanterBotSports.Entities.DTOs;
 using FluentAssertions;
 
 namespace BanterBotSports.Tests.Unit;
@@ -27,7 +28,8 @@ public class PremioServiceTests
         {
             Id = 1,
             Nombre = "Test Torneo",
-            MontoInscripcion = montoInscripcion
+            MontoInscripcion = montoInscripcion,
+            PorcentajeOrganizador = 5m
         };
 
         for (int i = 1; i <= numParticipantes; i++)

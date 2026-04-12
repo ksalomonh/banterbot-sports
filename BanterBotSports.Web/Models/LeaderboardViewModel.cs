@@ -1,8 +1,3 @@
-using BanterBotSports.BL.Models;
-
-namespace BanterBotSports.Web.Models;
-
-public record LeaderboardViewModel(
-    string TorneoNombre,
-    int TorneoId,
-    IReadOnlyList<RankingParticipante> Ranking);
+// File intentionally left empty — LeaderboardViewModel lives in BanterBotSports.Entities.ViewModels.
+// Import it directly via @using BanterBotSports.Entities.ViewModels in views,
+// or add a using statement in controller files.

@@ -1,4 +1,5 @@
 using BanterBotSports.BL.Models;
+using BanterBotSports.Entities.DTOs;
 using BanterBotSports.Web.Hubs;
 using BanterBotSports.Web.Infrastructure;
 using FluentAssertions;

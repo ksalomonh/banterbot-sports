@@ -1,6 +1,7 @@
 @using BanterBotSports.Entities
 @using BanterBotSports.Entities.Enums
 @using BanterBotSports.BL.Models
+@using BanterBotSports.BL
 @model Torneo
 @{
     ViewData["Title"] = Model.Nombre;
@@ -74,6 +75,13 @@
             </div>
         </div>
         <div class="flex flex-wrap gap-3">
+            @if (User.IsInRole(AppRoles.Organizador))
+            {
+                <a asp-controller="Organizador" asp-action="Configuracion"
+                   class="px-6 py-3 bg-[#242b43] text-[#69daff] font-bold rounded-xl text-sm uppercase tracking-tight hover:bg-[#1e253b] transition-colors">
+                    Panel Organizador
+                </a>
+            }
             @if (esOrganizador)
             {
                 <a asp-action="Invitar" asp-route-id="@Model.Id"

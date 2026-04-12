@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using BanterBotSports.BL.Models;
 
 namespace BanterBotSports.Tests.Unit;
 
@@ -36,14 +37,25 @@ public class TorneoControllerWizardTests
     // ---------------------------------------------------------------------------
 
     private static (TorneoController Controller, Mock<ITorneoService> TorneoSvc,
-        Mock<IJornadaService> JornadaSvc, Mock<IApiFootballSyncService> ApiSyncSvc,
+        Mock<IJornadaService> JornadaSvc, Mock<IAdminService> AdminSvc,
         Mock<IPartidoService> PartidoSvc)
         BuildSut()
     {
         var torneoSvc = new Mock<ITorneoService>();
         var jornadaSvc = new Mock<IJornadaService>();
-        var apiSyncSvc = new Mock<IApiFootballSyncService>();
+        var adminSvc = new Mock<IAdminService>();
         var partidoSvc = new Mock<IPartidoService>();
+
+        // Default admin config so the controller doesn't throw when reading it
+        adminSvc.Setup(s => s.GetConfiguracionAsync())
+            .ReturnsAsync(new ConfiguracionGlobal
+            {
+                Id = 1,
+                PorcentajePlataforma = 10m,
+                PorcentajeOrganizadorMin = 5m,
+                PorcentajeOrganizadorMax = 30m,
+                MontoInscripcionMinimo = 500m
+            });
 
         var dataProtectionProvider = new EphemeralDataProtectionProvider();
 
@@ -55,11 +67,15 @@ public class TorneoControllerWizardTests
             .Setup(um => um.GetUserId(It.IsAny<System.Security.Claims.ClaimsPrincipal>()))
             .Returns("test-user-id");
 
+        userManager
+            .Setup(um => um.FindByIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(new AppUser { Id = "test-user-id" });
+
         var controller = new TorneoController(
             torneoSvc.Object,
             jornadaSvc.Object,
-            apiSyncSvc.Object,
             partidoSvc.Object,
+            adminSvc.Object,
             dataProtectionProvider,
             userManager.Object,
             NullLogger<TorneoController>.Instance);
@@ -74,7 +90,7 @@ public class TorneoControllerWizardTests
             controller.ControllerContext.HttpContext,
             Mock.Of<ITempDataProvider>());
 
-        return (controller, torneoSvc, jornadaSvc, apiSyncSvc, partidoSvc);
+        return (controller, torneoSvc, jornadaSvc, adminSvc, partidoSvc);
     }
 
     // ---------------------------------------------------------------------------
@@ -92,9 +108,12 @@ public class TorneoControllerWizardTests
                 DateTimeOffset.UtcNow.AddDays(3), null, null, EstadoPartido.Programado)
         };
 
-        var (controller, _, _, apiSyncSvc, _) = BuildSut();
-        apiSyncSvc
-            .Setup(s => s.GetMatchesAsync(validLigaId, It.IsAny<DateOnly>(), It.IsAny<DateOnly>()))
+        var (controller, _, _, _, partidoSvc) = BuildSut();
+        partidoSvc
+            .Setup(s => s.EsLigaValida(validLigaId))
+            .Returns(true);
+        partidoSvc
+            .Setup(s => s.GetProximosPartidosAsync(validLigaId, It.IsAny<DateOnly>(), It.IsAny<DateOnly>()))
             .ReturnsAsync(expectedMatches);
 
         // Act
@@ -130,9 +149,12 @@ public class TorneoControllerWizardTests
         DateOnly capturedFrom = default;
         DateOnly capturedTo = default;
 
-        var (controller, _, _, apiSyncSvc, _) = BuildSut();
-        apiSyncSvc
-            .Setup(s => s.GetMatchesAsync(
+        var (controller, _, _, _, partidoSvc) = BuildSut();
+        partidoSvc
+            .Setup(s => s.EsLigaValida(validLigaId))
+            .Returns(true);
+        partidoSvc
+            .Setup(s => s.GetProximosPartidosAsync(
                 It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<DateOnly>()))
             .Callback<int, DateOnly, DateOnly>((_, from, to) =>
             {
@@ -173,10 +195,13 @@ public class TorneoControllerWizardTests
         };
     }
 
+    // Dynamic prize pool = 100 - platform(10%) - organizer(5% min from config) = 85%
+    private const decimal DynamicPool = 85m;
+
     [Fact]
-    public async Task Nuevo_Post_PrizeSumEquals100_DoesNotAddModelError()
+    public async Task Nuevo_Post_PrizeSumEqualsPool_DoesNotAddModelError()
     {
-        // Arrange: prizes sum exactly 100 %
+        // Arrange: prizes sum exactly the dynamic pool (100 - platform% - organizer%)
         var (controller, torneoSvc, jornadaSvc, _, _) = BuildSut();
 
         torneoSvc
@@ -188,22 +213,22 @@ public class TorneoControllerWizardTests
             .Setup(s => s.GetByTorneoIdAsync(1))
             .ReturnsAsync(new List<Jornada>());
 
-        var model = ValidModelWithPrizeSum(100m);
+        var model = ValidModelWithPrizeSum(DynamicPool);
 
         // Act
         var result = await controller.Nuevo(model);
 
         // Assert: no prize-sum error was added — valid sum must not invalidate the form
         controller.ModelState.ContainsKey(string.Empty).Should().BeFalse(
-            "sum == 100 % must not add a prize validation error to ModelState");
+            "sum == dynamic pool must not add a prize validation error to ModelState");
         result.Should().BeOfType<RedirectToActionResult>(
-            "valid form with prize sum == 100 % must redirect to Dashboard");
+            "valid form with prize sum == dynamic pool must redirect to Dashboard");
     }
 
     [Fact]
-    public async Task Nuevo_Post_PrizeSumLessThan100_AddsModelError_SetsInitialStep2()
+    public async Task Nuevo_Post_PrizeSumLessThanPool_AddsModelError_SetsInitialStep2()
     {
-        // Arrange: prizes sum 60 % (less than 100)
+        // Arrange: prizes sum 60 % (less than dynamic pool of 85%)
         var (controller, _, _, _, _) = BuildSut();
         var model = ValidModelWithPrizeSum(60m);
 
@@ -212,8 +237,11 @@ public class TorneoControllerWizardTests
 
         // Assert
         result.Should().BeOfType<ViewResult>("validation failure must return the form view");
-        controller.ModelState.IsValid.Should().BeFalse("prize sum < 100 must invalidate model");
+        controller.ModelState.IsValid.Should().BeFalse("prize sum < pool must invalidate model");
         controller.ModelState.ContainsKey(string.Empty).Should().BeTrue("error must be on empty key");
+        controller.ModelState[string.Empty]!.Errors.Should().ContainSingle();
+        controller.ModelState[string.Empty]!.Errors[0].ErrorMessage
+            .Should().Be("Los premios deben sumar exactamente 85% (100% − 10% plataforma − 5% organizador)");
 
         // ViewBag.InitialStep must route user to Premios step (index 2)
         var viewResult = (ViewResult)result;
@@ -222,18 +250,22 @@ public class TorneoControllerWizardTests
     }
 
     [Fact]
-    public async Task Nuevo_Post_PrizeSumGreaterThan100_AddsModelError_SetsInitialStep2()
+    public async Task Nuevo_Post_PrizeSumGreaterThanPool_AddsModelError_SetsInitialStep2()
     {
-        // Arrange: prizes sum 150 % (more than 100)
+        // Arrange: prizes sum 100 % (more than dynamic pool of 85%)
         var (controller, _, _, _, _) = BuildSut();
-        var model = ValidModelWithPrizeSum(150m);
+        var model = ValidModelWithPrizeSum(100m);
 
         // Act
         var result = await controller.Nuevo(model);
 
         // Assert
         result.Should().BeOfType<ViewResult>("validation failure must return the form view");
-        controller.ModelState.IsValid.Should().BeFalse("prize sum > 100 must invalidate model");
+        controller.ModelState.IsValid.Should().BeFalse("prize sum > pool must invalidate model");
+        controller.ModelState.ContainsKey(string.Empty).Should().BeTrue();
+        controller.ModelState[string.Empty]!.Errors.Should().ContainSingle();
+        controller.ModelState[string.Empty]!.Errors[0].ErrorMessage
+            .Should().Be("Los premios deben sumar exactamente 85% (100% − 10% plataforma − 5% organizador)");
 
         var viewResult = (ViewResult)result;
         ((int?)viewResult.ViewData["InitialStep"]).Should().Be(2,
@@ -403,7 +435,7 @@ public class TorneoControllerWizardTests
             PtosGolesJornada = 2,
             ConfiguracionPremios = new List<ConfiguracionPremioViewModel>
             {
-                new ConfiguracionPremioViewModel { Posicion = 1, Porcentaje = 100m }
+                new ConfiguracionPremioViewModel { Posicion = 1, Porcentaje = DynamicPool }
             },
             PartidosSeleccionados = partidos ?? new List<string>()
         };
@@ -413,7 +445,7 @@ public class TorneoControllerWizardTests
     public async Task Nuevo_Post_WithPartidosSeleccionados_TriggersAssignmentLoop()
     {
         // Arrange
-        var (controller, torneoSvc, jornadaSvc, apiSyncSvc, partidoSvc) = BuildSut();
+        var (controller, torneoSvc, jornadaSvc, _, partidoSvc) = BuildSut();
 
         var createdTorneo = new Torneo { Id = 10 };
         torneoSvc
@@ -435,13 +467,13 @@ public class TorneoControllerWizardTests
             GolesEquipo2: null,
             Estado: EstadoPartido.Programado);
 
-        apiSyncSvc
-            .Setup(s => s.GetFixtureByIdAsync(555, It.IsAny<CancellationToken>()))
+        partidoSvc
+            .Setup(s => s.GetFixturePorExternalIdAsync(555))
             .ReturnsAsync(fixture);
 
-        partidoSvc
-            .Setup(s => s.AsignarPartidoAsync(1, It.IsAny<Partido>()))
-            .Returns(Task.CompletedTask);
+        torneoSvc
+            .Setup(s => s.AsignarPartidosInicialesAsync(1, It.IsAny<IReadOnlyList<PartidoDto>>()))
+            .ReturnsAsync(new List<string>());
 
         var model = ValidModelWith100Prizes(new List<string> { "555" });
 
@@ -449,10 +481,10 @@ public class TorneoControllerWizardTests
         var result = await controller.Nuevo(model);
 
         // Assert: assignment was called for the selected fixture
-        partidoSvc.Verify(
-            s => s.AsignarPartidoAsync(1, It.Is<Partido>(p => p.ExternalId == "555")),
+        torneoSvc.Verify(
+            s => s.AsignarPartidosInicialesAsync(1, It.Is<IReadOnlyList<PartidoDto>>(list => list.Any(p => p.ExternalId == "555"))),
             Times.Once,
-            "AsignarPartidoAsync must be called once for the selected fixture");
+            "AsignarPartidosInicialesAsync must be called once for the selected fixture");
 
         result.Should().BeOfType<RedirectToActionResult>("successful creation must redirect to Dashboard");
     }
@@ -460,8 +492,8 @@ public class TorneoControllerWizardTests
     [Fact]
     public async Task Nuevo_Post_PerMatchFailure_AddsTempDataWarning_TorneoStillCreated()
     {
-        // Arrange: assignment throws for every match — torneo creation should still succeed
-        var (controller, torneoSvc, jornadaSvc, apiSyncSvc, partidoSvc) = BuildSut();
+        // Arrange: assignment returns failures — torneo creation should still succeed
+        var (controller, torneoSvc, jornadaSvc, _, partidoSvc) = BuildSut();
 
         var createdTorneo = new Torneo { Id = 20 };
         torneoSvc
@@ -476,14 +508,14 @@ public class TorneoControllerWizardTests
         var fixture = new PartidoDto(666, "666", "Team X", "Team Y",
             DateTimeOffset.UtcNow.AddDays(4), null, null, EstadoPartido.Programado);
 
-        apiSyncSvc
-            .Setup(s => s.GetFixtureByIdAsync(666, It.IsAny<CancellationToken>()))
+        partidoSvc
+            .Setup(s => s.GetFixturePorExternalIdAsync(666))
             .ReturnsAsync(fixture);
 
-        // Assignment throws
-        partidoSvc
-            .Setup(s => s.AsignarPartidoAsync(It.IsAny<int>(), It.IsAny<Partido>()))
-            .ThrowsAsync(new InvalidOperationException("DB error during assignment"));
+        // Assignment returns a failure list (non-empty = partial failure)
+        torneoSvc
+            .Setup(s => s.AsignarPartidosInicialesAsync(2, It.IsAny<IReadOnlyList<PartidoDto>>()))
+            .ReturnsAsync(new List<string> { "666" });
 
         var model = ValidModelWith100Prizes(new List<string> { "666" });
 

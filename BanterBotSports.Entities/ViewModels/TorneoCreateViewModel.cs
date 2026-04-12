@@ -28,6 +28,9 @@ public class TorneoCreateViewModel
     [Range(0, 100)]
     public int PtosGolesJornada { get; set; }
 
+    [Range(0, 100)]
+    public decimal? PorcentajeOrganizador { get; set; }
+
     public IList<ConfiguracionPremioViewModel> ConfiguracionPremios { get; set; } = new List<ConfiguracionPremioViewModel>();
 
     public IList<string> PartidosSeleccionados { get; set; } = new List<string>();

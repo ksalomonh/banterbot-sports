@@ -1,5 +1,6 @@
 using BanterBotSports.BL.Models;
 using BanterBotSports.Entities;
+using BanterBotSports.Entities.DTOs;
 using BanterBotSports.Entities.ViewModels;
 
 namespace BanterBotSports.BL.Services.Interfaces;
@@ -75,4 +76,11 @@ public interface ITorneoService
     /// Idempotent: already-enrolled users are skipped (counted as Omitidos).
     /// </summary>
     Task<ClonarJugadoresResult> ClonarJugadoresAsync(int torneoDestinoId, int torneoOrigenId, string organizadorId);
+
+    /// <summary>
+    /// Assigns a list of fixtures (from an external catalog) to the given jornada.
+    /// Partido entities are created from the provided DTOs.
+    /// Returns a list of external IDs that failed to be assigned.
+    /// </summary>
+    Task<IReadOnlyList<string>> AsignarPartidosInicialesAsync(int jornadaId, IReadOnlyList<PartidoDto> partidos);
 }
