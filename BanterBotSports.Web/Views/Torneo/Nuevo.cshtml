@@ -122,6 +122,20 @@
                                         <span asp-validation-for="MontoInscripcion" class="text-[#ff7166] text-xs mt-1 block"></span>
                                     </div>
                                 </div>
+
+                                <div>
+                                    <label asp-for="PorcentajeOrganizador" class="block text-xs font-black uppercase tracking-[0.1em] text-[#a6aabf] mb-3">Cuota organizador (%)</label>
+                                    <input asp-for="PorcentajeOrganizador"
+                                           type="number"
+                                           step="0.01"
+                                           min="@ViewBag.PorcentajeOrganizadorMin"
+                                           max="@ViewBag.PorcentajeOrganizadorMax"
+                                           placeholder="@ViewBag.PorcentajeOrganizadorDefault"
+                                           class="w-full bg-[#1e253b] rounded-xl px-6 py-4 text-[#e1e4fa] focus:ring-2 focus:ring-[#69daff]/20 transition-all border-0 outline-none"
+                                           data-organizador-input />
+                                    <p class="text-[0.7rem] text-[#a6aabf] mt-2">Opcional. Si lo dejás vacío, se usa tu porcentaje global o el mínimo permitido (@ViewBag.PorcentajeOrganizadorMin%).</p>
+                                    <span asp-validation-for="PorcentajeOrganizador" class="text-[#ff7166] text-xs mt-1 block"></span>
+                                </div>
                             </div>
                         </section>
                     </div>
@@ -298,8 +312,24 @@
                                 </button>
                             </div>
                             <p class="text-[#a6aabf] text-xs mb-5">
-                                Configurá el porcentaje del pozo premiado para cada posición. La suma debe ser 100%.
+                                Configurá el porcentaje del pozo premiado para cada posición. La suma debe coincidir con la bolsa disponible.
                             </p>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+                                <div class="bg-[#1e253b] rounded-xl p-3">
+                                    <p class="text-[10px] font-black text-[#a6aabf] uppercase tracking-widest mb-1">Cuota plataforma</p>
+                                    <p class="text-lg font-black text-[#69daff]"><span id="platform-pct">@ViewBag.PorcentajePlataforma</span>%</p>
+                                </div>
+                                <div class="bg-[#1e253b] rounded-xl p-3">
+                                    <p class="text-[10px] font-black text-[#a6aabf] uppercase tracking-widest mb-1">Cuota organizador</p>
+                                    <p class="text-lg font-black text-[#ffb247]"><span id="organizer-pct">@ViewBag.PorcentajeOrganizadorDefault</span>%</p>
+                                </div>
+                                <div class="bg-[#1e253b] rounded-xl p-3">
+                                    <p class="text-[10px] font-black text-[#a6aabf] uppercase tracking-widest mb-1">Bolsa de premios</p>
+                                    <p class="text-lg font-black text-[#2ff801]"><span id="prize-pool-pct">0</span>%</p>
+                                </div>
+                            </div>
+
                             <div id="premios-container" class="space-y-3">
                                 @for (int i = 0; i < Model.ConfiguracionPremios.Count; i++)
                                 {
@@ -335,9 +365,9 @@
                                 <div class="flex items-center gap-2">
                                     <span class="text-lg font-black" id="total-porcentaje">0</span>
                                     <span class="text-[#a6aabf] font-bold">%</span>
-                                    <span id="total-warning" class="text-[#ff7166] text-xs font-bold hidden">⚠ Debe sumar 100%</span>
+                                    <span id="total-warning" class="text-[#ff7166] text-xs font-bold hidden">⚠ Debe sumar <span id="expected-total">0</span>%</span>
                                     <span id="total-ok" class="text-[#2ff801] text-xs font-bold hidden flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-xs">verified</span> 100% asignado
+                                        <span class="material-symbols-outlined text-xs">verified</span> Bolsa asignada correctamente
                                     </span>
                                 </div>
                             </div>
@@ -558,13 +588,41 @@
         const totalSpan = document.getElementById("total-porcentaje");
         const warningSpan = document.getElementById("total-warning");
         const okSpan = document.getElementById("total-ok");
+        const platformPct = parseFloat('@(((decimal?)ViewBag.PorcentajePlataforma ?? 0m).ToString(System.Globalization.CultureInfo.InvariantCulture))') || 0;
+        const organizerDefaultPct = parseFloat('@(((decimal?)ViewBag.PorcentajeOrganizadorDefault ?? 0m).ToString(System.Globalization.CultureInfo.InvariantCulture))') || 0;
+        const organizerMinPct = parseFloat('@(((decimal?)ViewBag.PorcentajeOrganizadorMin ?? 0m).ToString(System.Globalization.CultureInfo.InvariantCulture))') || 0;
+        const organizerInput = document.querySelector('[data-organizador-input]');
+        const organizerPctSpan = document.getElementById('organizer-pct');
+        const prizePoolPctSpan = document.getElementById('prize-pool-pct');
+        const expectedTotalSpan = document.getElementById('expected-total');
+
+        function resolveOrganizerPct() {
+            const parsed = organizerInput ? parseFloat(organizerInput.value) : NaN;
+            if (!Number.isNaN(parsed)) return parsed;
+            if (organizerDefaultPct > 0) return organizerDefaultPct;
+            return organizerMinPct;
+        }
+
+        function expectedPrizePool() {
+            return 100 - platformPct - resolveOrganizerPct();
+        }
+
+        function updateBreakdown() {
+            const organizer = resolveOrganizerPct();
+            const expected = expectedPrizePool();
+
+            if (organizerPctSpan) organizerPctSpan.textContent = organizer.toFixed(2);
+            if (prizePoolPctSpan) prizePoolPctSpan.textContent = expected.toFixed(2);
+            if (expectedTotalSpan) expectedTotalSpan.textContent = expected.toFixed(2);
+        }
 
         function calcTotal() {
             const inputs = container.querySelectorAll(".porcentaje-input");
             let total = 0;
             inputs.forEach(i => total += parseFloat(i.value) || 0);
             totalSpan.textContent = total.toFixed(2);
-            const isOk = Math.abs(total - 100) <= 0.01;
+            const expected = expectedPrizePool();
+            const isOk = Math.abs(total - expected) <= 0.01;
             warningSpan.classList.toggle('hidden', isOk || total === 0);
             okSpan.classList.toggle('hidden', !isOk);
             totalSpan.className = isOk ? 'text-lg font-black text-[#2ff801]'
@@ -612,6 +670,14 @@
             }
         });
 
+        if (organizerInput) {
+            organizerInput.addEventListener('input', () => {
+                updateBreakdown();
+                calcTotal();
+            });
+        }
+
+        updateBreakdown();
         calcTotal();
 
         // ── Wizard step navigation ────────────────────────────────────────────
@@ -706,11 +772,28 @@
                 }
             }
 
+            function canAdvanceCurrentStep() {
+                if (current !== 2) {
+                    return true;
+                }
+
+                const total = parseFloat(totalSpan.textContent || '0') || 0;
+                const expected = expectedPrizePool();
+                const isOk = Math.abs(total - expected) <= 0.01;
+
+                if (!isOk) {
+                    warningSpan.classList.remove('hidden');
+                    return false;
+                }
+
+                return true;
+            }
+
             document.querySelectorAll('[data-next]').forEach(btn =>
                 btn.addEventListener('click', () => {
                     const section = steps[current];
                     const inputs = section.querySelectorAll('[required]');
-                    if ([...inputs].every(i => i.reportValidity())) show(current + 1);
+                    if ([...inputs].every(i => i.reportValidity()) && canAdvanceCurrentStep()) show(current + 1);
                 }));
 
             document.querySelectorAll('[data-prev]').forEach(btn =>
@@ -730,7 +813,7 @@
                     if (current < totalSteps - 1) {
                         const section = steps[current];
                         const inputs = section.querySelectorAll('[required]');
-                        if ([...inputs].every(i => i.reportValidity())) show(current + 1);
+                        if ([...inputs].every(i => i.reportValidity()) && canAdvanceCurrentStep()) show(current + 1);
                     } else {
                         this.requestSubmit();
                     }

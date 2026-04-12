@@ -83,6 +83,8 @@ public class TorneoController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Nuevo(TorneoCreateViewModel model)
     {
+        const string PorcentajeOrganizadorField = nameof(TorneoCreateViewModel.PorcentajeOrganizador);
+
         var config = await _adminService.GetConfiguracionAsync();
         var userId = _userManager.GetUserId(User)!;
         var user = await _userManager.FindByIdAsync(userId);
@@ -105,10 +107,36 @@ public class TorneoController : Controller
         decimal expectedPool = 100m - config.PorcentajePlataforma - resolvedOrgPct;
         decimal prizeSum = model.ConfiguracionPremios?.Sum(p => p.Porcentaje) ?? 0m;
 
+        if (resolvedOrgPct < config.PorcentajeOrganizadorMin)
+        {
+            ModelState.AddModelError(PorcentajeOrganizadorField,
+                $"El porcentaje debe ser al menos el mínimo permitido ({config.PorcentajeOrganizadorMin}%)");
+            ViewBag.InitialStep = ResolveStepFromErrors(ModelState);
+            ViewBag.Ligas = _partidoService.GetLigas();
+            ViewBag.PorcentajePlataforma = config.PorcentajePlataforma;
+            ViewBag.PorcentajeOrganizadorMin = config.PorcentajeOrganizadorMin;
+            ViewBag.PorcentajeOrganizadorMax = config.PorcentajeOrganizadorMax;
+            ViewBag.PorcentajeOrganizadorDefault = user?.PorcentajeOrganizadorGlobal ?? config.PorcentajeOrganizadorMin;
+            return View(model);
+        }
+
+        if (resolvedOrgPct > config.PorcentajeOrganizadorMax)
+        {
+            ModelState.AddModelError(PorcentajeOrganizadorField,
+                $"El porcentaje no puede superar el máximo permitido ({config.PorcentajeOrganizadorMax}%)");
+            ViewBag.InitialStep = ResolveStepFromErrors(ModelState);
+            ViewBag.Ligas = _partidoService.GetLigas();
+            ViewBag.PorcentajePlataforma = config.PorcentajePlataforma;
+            ViewBag.PorcentajeOrganizadorMin = config.PorcentajeOrganizadorMin;
+            ViewBag.PorcentajeOrganizadorMax = config.PorcentajeOrganizadorMax;
+            ViewBag.PorcentajeOrganizadorDefault = user?.PorcentajeOrganizadorGlobal ?? config.PorcentajeOrganizadorMin;
+            return View(model);
+        }
+
         if (Math.Abs(prizeSum - expectedPool) > 0.01m)
         {
             ModelState.AddModelError(string.Empty,
-                $"Los porcentajes de premios deben sumar exactamente {expectedPool}%.");
+                $"Los premios deben sumar exactamente {expectedPool}% (100% − {config.PorcentajePlataforma}% plataforma − {resolvedOrgPct}% organizador)");
             ViewBag.InitialStep = 2;
             ViewBag.Ligas = _partidoService.GetLigas();
             ViewBag.PorcentajePlataforma = config.PorcentajePlataforma;
@@ -148,6 +176,18 @@ public class TorneoController : Controller
 
             return RedirectToAction(nameof(Dashboard), new { id = torneoCreado.Id });
         }
+        catch (InvalidOperationException ex) when (IsOrganizerPercentageValidation(ex.Message))
+        {
+            _logger.LogWarning(ex, "Organizer percentage validation failed while creating torneo for user {UserId}", userId);
+            ModelState.AddModelError(PorcentajeOrganizadorField, ex.Message);
+            ViewBag.InitialStep = ResolveStepFromErrors(ModelState);
+            ViewBag.Ligas = _partidoService.GetLigas();
+            ViewBag.PorcentajePlataforma = config.PorcentajePlataforma;
+            ViewBag.PorcentajeOrganizadorMin = config.PorcentajeOrganizadorMin;
+            ViewBag.PorcentajeOrganizadorMax = config.PorcentajeOrganizadorMax;
+            ViewBag.PorcentajeOrganizadorDefault = user?.PorcentajeOrganizadorGlobal ?? config.PorcentajeOrganizadorMin;
+            return View(model);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating torneo for user {UserId}", userId);
@@ -161,6 +201,10 @@ public class TorneoController : Controller
             return View(model);
         }
     }
+
+    private static bool IsOrganizerPercentageValidation(string message)
+        => message.Contains("mínimo permitido", StringComparison.OrdinalIgnoreCase)
+           || message.Contains("máximo permitido", StringComparison.OrdinalIgnoreCase);
 
     // GET /torneo/{id}
     [HttpGet("/torneo/{id:int}")]
@@ -398,7 +442,7 @@ public class TorneoController : Controller
     private static int ResolveStepFromErrors(ModelStateDictionary modelState)
     {
         var keys = modelState.Keys.ToHashSet();
-        if (keys.Any(k => k.StartsWith("Nombre") || k.StartsWith("NumJornadas") || k.StartsWith("MontoInscripcion")))
+        if (keys.Any(k => k.StartsWith("Nombre") || k.StartsWith("NumJornadas") || k.StartsWith("MontoInscripcion") || k.StartsWith("PorcentajeOrganizador")))
             return 0;
         if (keys.Any(k => k.StartsWith("PtosResultado") || k.StartsWith("PtosMarcador") || k.StartsWith("PtosGolesJornada")))
             return 1;

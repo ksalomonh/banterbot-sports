@@ -149,7 +149,12 @@ public class TorneoControllerTests
             MontoInscripcion = 50m,
             PtosResultado = 3,
             PtosMarcador = 5,
-            PtosGolesJornada = 2
+            PtosGolesJornada = 2,
+            ConfiguracionPremios = new List<ConfiguracionPremioViewModel>
+            {
+                new() { Posicion = 1, Porcentaje = 50m },
+                new() { Posicion = 2, Porcentaje = 35m }
+            }
         };
 
         // Act
@@ -196,6 +201,44 @@ public class TorneoControllerTests
         // Act & Assert: the controller must catch the exception and NOT re-throw
         var act = async () => await sut.Nuevo(model);
         await act.Should().NotThrowAsync("controller must swallow service exceptions gracefully");
+    }
+
+    [Fact]
+    public async Task Nuevo_Post_OrganizadorPctAboveMax_AddsFieldError_DoesNotCallService()
+    {
+        // Arrange
+        var torneoSvcMock = new Mock<ITorneoService>(MockBehavior.Strict);
+        var sut = BuildSut(torneoServiceMock: torneoSvcMock);
+
+        var model = new TorneoCreateViewModel
+        {
+            Nombre = "Torneo con override inválido",
+            NumJornadas = 3,
+            MontoInscripcion = 100m,
+            PtosResultado = 3,
+            PtosMarcador = 5,
+            PtosGolesJornada = 2,
+            PorcentajeOrganizador = 35m,
+            ConfiguracionPremios = new List<ConfiguracionPremioViewModel>
+            {
+                new() { Posicion = 1, Porcentaje = 55m }
+            }
+        };
+
+        // Act
+        var result = await sut.Nuevo(model);
+
+        // Assert
+        result.Should().BeOfType<ViewResult>();
+        sut.ModelState.ContainsKey(nameof(TorneoCreateViewModel.PorcentajeOrganizador)).Should().BeTrue();
+        sut.ModelState[nameof(TorneoCreateViewModel.PorcentajeOrganizador)]!.Errors.Should().ContainSingle();
+        sut.ModelState[nameof(TorneoCreateViewModel.PorcentajeOrganizador)]!.Errors[0].ErrorMessage
+            .Should().Be("El porcentaje no puede superar el máximo permitido (30%)");
+        var viewResult = (ViewResult)result;
+        ((int?)viewResult.ViewData["InitialStep"]).Should().Be(0);
+        torneoSvcMock.Verify(
+            s => s.CrearTorneoAsync(It.IsAny<TorneoCreateViewModel>(), It.IsAny<string>()),
+            Times.Never);
     }
 
     // ---------------------------------------------------------------------------

@@ -239,6 +239,9 @@ public class TorneoControllerWizardTests
         result.Should().BeOfType<ViewResult>("validation failure must return the form view");
         controller.ModelState.IsValid.Should().BeFalse("prize sum < pool must invalidate model");
         controller.ModelState.ContainsKey(string.Empty).Should().BeTrue("error must be on empty key");
+        controller.ModelState[string.Empty]!.Errors.Should().ContainSingle();
+        controller.ModelState[string.Empty]!.Errors[0].ErrorMessage
+            .Should().Be("Los premios deben sumar exactamente 85% (100% − 10% plataforma − 5% organizador)");
 
         // ViewBag.InitialStep must route user to Premios step (index 2)
         var viewResult = (ViewResult)result;
@@ -259,6 +262,10 @@ public class TorneoControllerWizardTests
         // Assert
         result.Should().BeOfType<ViewResult>("validation failure must return the form view");
         controller.ModelState.IsValid.Should().BeFalse("prize sum > pool must invalidate model");
+        controller.ModelState.ContainsKey(string.Empty).Should().BeTrue();
+        controller.ModelState[string.Empty]!.Errors.Should().ContainSingle();
+        controller.ModelState[string.Empty]!.Errors[0].ErrorMessage
+            .Should().Be("Los premios deben sumar exactamente 85% (100% − 10% plataforma − 5% organizador)");
 
         var viewResult = (ViewResult)result;
         ((int?)viewResult.ViewData["InitialStep"]).Should().Be(2,
