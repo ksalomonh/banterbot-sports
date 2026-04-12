@@ -67,6 +67,7 @@ builder.Services.AddScoped<IJornadaService, JornadaService>();
 builder.Services.AddScoped<ITelegramVinculacionService, TelegramVinculacionService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IOrganizadorService, OrganizadorService>();
 
 // ─── In-Memory Cache (used by ApiFootballSyncService for search results) ─────
 builder.Services.AddMemoryCache();
