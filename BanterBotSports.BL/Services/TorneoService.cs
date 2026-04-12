@@ -73,15 +73,19 @@ public class TorneoService : ITorneoService
             ?? user.PorcentajeOrganizadorGlobal
             ?? config.PorcentajeOrganizadorMin;
 
-        if (resolvedPct < config.PorcentajeOrganizadorMin || resolvedPct > config.PorcentajeOrganizadorMax)
+        if (resolvedPct < config.PorcentajeOrganizadorMin)
             throw new InvalidOperationException(
-                $"El porcentaje del organizador debe estar entre {config.PorcentajeOrganizadorMin}% y {config.PorcentajeOrganizadorMax}%.");
+                $"El porcentaje debe ser al menos el mínimo permitido ({config.PorcentajeOrganizadorMin}%)");
+
+        if (resolvedPct > config.PorcentajeOrganizadorMax)
+            throw new InvalidOperationException(
+                $"El porcentaje no puede superar el máximo permitido ({config.PorcentajeOrganizadorMax}%)");
 
         decimal expectedPrizePool = 100m - config.PorcentajePlataforma - resolvedPct;
         var totalPorcentaje = model.ConfiguracionPremios.Sum(p => p.Porcentaje);
         if (Math.Abs(totalPorcentaje - expectedPrizePool) > 0.01m)
             throw new InvalidOperationException(
-                $"Los porcentajes de premios deben sumar exactamente {expectedPrizePool}%.");
+                $"Los premios deben sumar exactamente {expectedPrizePool}% (100% − {config.PorcentajePlataforma}% plataforma − {resolvedPct}% organizador)");
 
         var torneo = new Torneo
         {

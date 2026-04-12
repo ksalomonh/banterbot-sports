@@ -151,7 +151,7 @@ public class TorneoServiceOrganizadorTests
         var act = () => sut.CrearTorneoAsync(model, OrganizadorId);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*porcentaje*");
+            .WithMessage("El porcentaje no puede superar el máximo permitido (30%)");
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class TorneoServiceOrganizadorTests
         var act = () => sut.CrearTorneoAsync(model, OrganizadorId);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*porcentaje*");
+            .WithMessage("El porcentaje debe ser al menos el mínimo permitido (5%)");
     }
 
     // ─── Prize sum validation against dynamic pool ───────────────────────────
@@ -179,7 +179,7 @@ public class TorneoServiceOrganizadorTests
         var act = () => sut.CrearTorneoAsync(model, OrganizadorId);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*85%*");
+            .WithMessage("Los premios deben sumar exactamente 85% (100% − 10% plataforma − 5% organizador)");
     }
 
     // ─── Role assignment ─────────────────────────────────────────────────────

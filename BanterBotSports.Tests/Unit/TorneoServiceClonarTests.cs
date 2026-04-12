@@ -281,8 +281,9 @@ public class TorneoServiceClonarTests
             BuildParticipante(4, 2, "userOrg", RolParticipante.Organizador)
         };
 
+        torneos[0].Participantes = participantes;
+
         _torneoRepo.Setup(r => r.GetByOrganizadorIdAsync(OrganizadorId)).ReturnsAsync(torneos);
-        _participanteRepo.Setup(r => r.GetByTorneoIdAsync(2)).ReturnsAsync(participantes);
 
         var sut = BuildSut();
         var result = await sut.GetTorneosClonablesAsync(excluirTorneoId: 99, OrganizadorId);
