@@ -16,7 +16,8 @@ namespace BanterBotSports.DAL.Migrations
                 type: "numeric(18,2)",
                 precision: 18,
                 scale: 2,
-                nullable: true);
+                nullable: false,
+                defaultValue: 5m);
 
             migrationBuilder.AddColumn<decimal>(
                 name: "PorcentajeOrganizadorGlobal",

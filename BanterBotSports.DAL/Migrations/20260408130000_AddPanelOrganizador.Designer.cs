@@ -125,7 +125,7 @@ namespace BanterBotSports.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal?>("PorcentajeOrganizador")
+                    b.Property<decimal>("PorcentajeOrganizador")
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
 
@@ -141,6 +141,32 @@ namespace BanterBotSports.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Torneos");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("AspNetRoles", (string)null);
                 });
 #pragma warning restore 612, 618
         }
