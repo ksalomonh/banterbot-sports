@@ -144,7 +144,7 @@ public class OrganizadorServiceTests
 
         // Assert
         await act.Should().ThrowAsync<ArgumentException>()
-            .WithMessage("*5%*");
+            .WithMessage("El porcentaje debe ser al menos el mínimo permitido (5%)");
     }
 
     [Fact]
@@ -161,7 +161,7 @@ public class OrganizadorServiceTests
 
         // Assert
         await act.Should().ThrowAsync<ArgumentException>()
-            .WithMessage("*30%*");
+            .WithMessage("El porcentaje no puede superar el máximo permitido (30%)");
     }
 
     [Fact]

@@ -48,10 +48,10 @@ public class OrganizadorService : IOrganizadorService
         var config = await _adminService.GetConfiguracionAsync();
 
         if (porcentaje < config.PorcentajeOrganizadorMin)
-            throw new ArgumentException($"El porcentaje debe ser al menos {config.PorcentajeOrganizadorMin}%.");
+            throw new ArgumentException($"El porcentaje debe ser al menos el mínimo permitido ({config.PorcentajeOrganizadorMin}%)");
 
         if (porcentaje > config.PorcentajeOrganizadorMax)
-            throw new ArgumentException($"El porcentaje no puede superar {config.PorcentajeOrganizadorMax}%.");
+            throw new ArgumentException($"El porcentaje no puede superar el máximo permitido ({config.PorcentajeOrganizadorMax}%)");
 
         var user = await _userManager.FindByIdAsync(userId)
             ?? throw new InvalidOperationException($"Usuario '{userId}' no encontrado.");

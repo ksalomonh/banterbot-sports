@@ -44,10 +44,16 @@ public class OrganizadorController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Configuracion(ConfiguracionOrganizadorViewModel model)
     {
-        if (!ModelState.IsValid)
-            return View(model);
-
         var userId = _userManager.GetUserId(User)!;
+
+        if (!ModelState.IsValid)
+        {
+            var current = await _organizadorService.GetConfiguracionAsync(userId);
+            model.PorcentajeMinimo = current.PorcentajeMinimo;
+            model.PorcentajeMaximo = current.PorcentajeMaximo;
+            model.PorcentajePlataforma = current.PorcentajePlataforma;
+            return View(model);
+        }
 
         try
         {
@@ -57,7 +63,11 @@ public class OrganizadorController : Controller
         }
         catch (ArgumentException ex)
         {
-            ModelState.AddModelError(string.Empty, ex.Message);
+            ModelState.AddModelError(nameof(model.PorcentajeOrganizadorGlobal), ex.Message);
+            var current = await _organizadorService.GetConfiguracionAsync(userId);
+            model.PorcentajeMinimo = current.PorcentajeMinimo;
+            model.PorcentajeMaximo = current.PorcentajeMaximo;
+            model.PorcentajePlataforma = current.PorcentajePlataforma;
             return View(model);
         }
     }
