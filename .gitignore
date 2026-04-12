@@ -16,6 +16,7 @@ appsettings.*.local.json
 secrets.json
 *.pfx
 *.env
+.atl/
 
 # OS
 .DS_Store

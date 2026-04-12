@@ -1,7 +1,7 @@
 # Gentleman Guardian Angel Configuration
 # https://github.com/Gentleman-Programming/gentleman-guardian-angel
 
-PROVIDER="claude"
+PROVIDER="opencode"
 
 # .NET 10 + C# + Razor Views
 FILE_PATTERNS="*.cs,*.razor,*.cshtml,*.json,*.yaml,*.yml,*.md"
@@ -12,6 +12,6 @@ RULES_FILE="AGENTS.md"
 
 STRICT_MODE="true"
 
-TIMEOUT="300"
+TIMEOUT="600"
 
 PR_BASE_BRANCH="main"
