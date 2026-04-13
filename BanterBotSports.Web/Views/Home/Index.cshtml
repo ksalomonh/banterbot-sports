@@ -1,4 +1,5 @@
 @{
+    Layout = "_LandingLayout";
     ViewData["Title"] = "BanterBot Sports — El Coliseo Digital";
 }
 
@@ -22,9 +23,14 @@
 </style>
 }
 
-<main class="pt-4 pb-24 md:pb-12">
+<main>
     <!-- Hero Section -->
-    <section class="relative overflow-hidden min-h-[80vh] md:min-h-[70vh] flex flex-col items-center justify-center text-center px-4 py-16 md:py-24">
+    <section class="relative overflow-hidden min-h-screen flex flex-col items-center justify-center text-center px-4 py-16 md:py-24">
+        <!-- Floating logo overlay -->
+        <a asp-controller="Home" asp-action="Index"
+           class="fixed top-4 left-4 z-50">
+            <img src="~/images/logo-icon.png" alt="BanterBot Sports" class="w-10 h-10 rounded-lg" onerror="this.style.display='none'">
+        </a>
         <!-- Stadium hero background -->
         <img src="~/images/stadium-hero.png" alt="" class="absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'">
         <!-- Background glow orbs -->
