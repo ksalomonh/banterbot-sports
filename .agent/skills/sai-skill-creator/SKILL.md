@@ -6,7 +6,7 @@ description: >
 license: Apache-2.0
 metadata:
   author: salomon-ai
-  version: "2.0"
+  version: "2.1"
 allowed-tools: Read, Edit, Write, Bash
 ---
 
@@ -52,33 +52,92 @@ skill_path: ".agent/skills/{name}/SKILL.md"
 
 ### Step 2B: Agent-Linked Skill
 
-#### Step 2B.1: Get Models from Orchestrator
+#### Step 2B.1: Dynamic Model Discovery
 
 **REQUEST from orchestrator:**
-> "Provide list of available AI models from ~/.config/opencode/opencode.json"
+> "Discover available AI models from all connected providers"
+
+**Orchestrator queries runtime providers:**
+- Checks OpenCode provider connection
+- Checks OpenAI provider connection (if configured)
+- Checks Anthropic provider connection (if configured)
+- Checks Google provider connection (if configured)
+- Queries each provider's `/models` endpoint
+- Filters by user's permissions and quotas
 
 **Orchestrator returns:**
-```json
-{
-  "models": [
-    {"id": "opencode/claude-sonnet-4-6", "type": "orchestrator"},
-    {"id": "opencode-go/glm-5.1", "type": "coding"},
-    {"id": "opencode-go/kimi-k2.5", "type": "fast-analysis"},
-    {"id": "opencode-go/minimax-m2.7", "type": "simple-ops"}
-  ]
-}
+```yaml
+provider: opencode
+  models:
+    - id: opencode/claude-sonnet-4-6
+      capabilities: [orchestration, complex-reasoning]
+      context_window: 200000
+      cost_tier: high
+    - id: opencode-go/glm-5.1
+      capabilities: [coding, implementation]
+      context_window: 128000
+      cost_tier: medium
+    - id: opencode-go/kimi-k2.5
+      capabilities: [fast-analysis, reading]
+      context_window: 200000
+      cost_tier: low
+
+provider: openai
+  models:
+    - id: gpt-4-turbo
+      capabilities: [coding, reasoning]
+      context_window: 128000
+      cost_tier: high
+    - id: gpt-3.5-turbo
+      capabilities: [simple-tasks]
+      context_window: 16000
+      cost_tier: low
 ```
 
 **PRESENT to user:**
 ```
-Available Models:
-1. opencode/claude-sonnet-4-6 (complex reasoning, orchestration)
-2. opencode-go/glm-5.1 (coding, implementation)
-3. opencode-go/kimi-k2.5 (fast analysis, reading)
-4. opencode-go/minimax-m2.7 (simple operations)
+Connected Providers: 2 (OpenCode, OpenAI)
 
-Select (1-4):
+Available Models:
+┌─ OpenCode ──────────────────────────────────────┐
+│ 1. opencode/claude-sonnet-4-6                    │
+│    Complex reasoning, orchestration (200k ctx)   │
+│ 2. opencode-go/glm-5.1 ← RECOMMENDED             │
+│    Coding, implementation (128k ctx)             │
+│ 3. opencode-go/kimi-k2.5                         │
+│    Fast analysis, reading (200k ctx)             │
+├─ OpenAI ────────────────────────────────────────┤
+│ 4. gpt-4-turbo                                   │
+│    Coding, reasoning (128k ctx)                  │
+│ 5. gpt-3.5-turbo                                 │
+│    Simple tasks (16k ctx)                        │
+└──────────────────────────────────────────────────┘
+
+Select (1-5) or filter by capability [coding/fast/reasoning]:
 ```
+
+#### Provider Discovery Rules
+
+**Orchestrator MUST:**
+1. Query runtime provider connections (not static config)
+2. Call provider APIs to get live model lists:
+   - OpenCode: `GET /v1/models`
+   - OpenAI: `GET /v1/models`
+   - Anthropic: `GET /v1/models`
+3. Filter out:
+   - Deprecated models
+   - Models user lacks permission for
+   - Models over quota limit
+4. Cache results for 5 minutes to avoid rate limits
+5. Include metadata:
+   - Context window size
+   - Capabilities/tags
+   - Cost tier (low/medium/high)
+   - Provider name
+
+**Fallback:**
+If provider query fails → show error and retry once
+If all providers fail → fallback to local cache (last known good)
 
 #### Step 2B.2: Collect Details
 
@@ -134,6 +193,7 @@ allowed-tools: {tools}
   "description": "{description}",
   "mode": "{subagent|primary}",
   "model": "{selected-model}",
+  "provider": "{selected-provider}",
   "prompt": "file:{project}/.agent/skills/{name}/SKILL.md",
   "tools": {
     "bash": true,
@@ -173,6 +233,8 @@ registration:
     description: "{description}"
     mode: "{mode}"
     model: "{selected-model}"
+    provider: "{selected-provider}"
+    discovered_at: "{timestamp}"
     prompt: "file:{absolute-path}/.agent/skills/{name}/SKILL.md"
     tools: {tools}
 validation:
@@ -219,8 +281,10 @@ Files:
 
 Configuration:
   Model: opencode-go/kimi-k2.5
+  Provider: opencode
   Mode: subagent
   Tools: bash, read, write, edit
+  Discovered: 2026-04-14T20:45:00Z
 
 Ready to use: task(subagent_type: "sai-db-migrator", ...)
 ```
@@ -242,3 +306,6 @@ Suggestion: {how to fix}
 5. **Atomic operations** — Either all files created + registered, or nothing
 6. **Backup before edit** — Orchestrator backs up opencode.json before modification
 7. **Conflict detection** — Check if agent name already exists before creating
+8. **Dynamic discovery** — Models discovered from runtime providers, not static config
+9. **Multi-provider support** — OpenCode, OpenAI, Anthropic, Google, etc.
+10. **Live metadata** — Context window, capabilities, cost tier from provider APIs
