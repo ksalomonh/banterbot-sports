@@ -251,9 +251,59 @@ When orchestrator receives `status: agent-created` with `auto_register: true`:
 1. **Read** `~/.config/opencode/opencode.json`
 2. **Validate** JSON syntax
 3. **Insert** agent entry under `"agent"` section
-4. **Validate** resulting JSON
-5. **Write** file
-6. **Confirm** to user
+4. **Update permissions** for all orchestrator profiles (see Permission Configuration below)
+5. **Validate** resulting JSON
+6. **Write** file
+7. **Confirm** to user
+
+### Permission Configuration
+
+**CRITICAL:** For the new agent to be delegable, permissions must be updated in ALL orchestrator profiles.
+
+**For each profile** (`sdd-orchestrator`, `sdd-orchestrator-opencode-go`, etc.):
+
+Locate the profile's permission block:
+```json
+"permission": {
+  "task": {
+    "*": "deny",
+    "sdd-*": "allow"
+  }
+}
+```
+
+Add the new agent pattern:
+```json
+"permission": {
+  "task": {
+    "*": "deny",
+    "sdd-*": "allow",
+    "{agent-name}": "allow"
+  }
+}
+```
+
+**Example for `sai-migration-validator`:**
+```json
+"permission": {
+  "task": {
+    "*": "deny",
+    "sdd-*": "allow",
+    "sai-migration-validator": "allow"
+  }
+}
+```
+
+**Wildcard option** (for all `sai-*` agents):
+```json
+"permission": {
+  "task": {
+    "*": "deny",
+    "sdd-*": "allow",
+    "sai-*": "allow"
+  }
+}
+```
 
 ### Error Handling
 - File locked → Retry 3x with delay
@@ -286,6 +336,13 @@ Configuration:
   Tools: bash, read, write, edit
   Discovered: 2026-04-14T20:45:00Z
 
+⚠️  PERMISSION SETUP REQUIRED:
+Add to ~/.config/opencode/opencode.json in ALL orchestrator profiles:
+
+  "sai-db-migrator": "allow"
+
+Or use wildcard: "sai-*": "allow"
+
 Ready to use: task(subagent_type: "sai-db-migrator", ...)
 ```
 
@@ -309,3 +366,4 @@ Suggestion: {how to fix}
 8. **Dynamic discovery** — Models discovered from runtime providers, not static config
 9. **Multi-provider support** — OpenCode, OpenAI, Anthropic, Google, etc.
 10. **Live metadata** — Context window, capabilities, cost tier from provider APIs
+11. **Permission configuration REQUIRED** — Agent WON'T WORK until permissions added to ALL orchestrator profiles in opencode.json
