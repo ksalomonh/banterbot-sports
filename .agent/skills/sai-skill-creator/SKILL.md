@@ -283,24 +283,24 @@ Add the new agent pattern:
 }
 ```
 
-**Example for `sai-migration-validator`:**
+**Example for `{name}`:**
 ```json
 "permission": {
   "task": {
     "*": "deny",
     "sdd-*": "allow",
-    "sai-migration-validator": "allow"
+    "{name}": "allow"
   }
 }
 ```
 
-**Wildcard option** (for all `sai-*` agents):
+**Wildcard option** (if you have multiple custom agents with same prefix):
 ```json
 "permission": {
   "task": {
     "*": "deny",
     "sdd-*": "allow",
-    "sai-*": "allow"
+    "{prefix}-*": "allow"
   }
 }
 ```
@@ -339,11 +339,12 @@ Configuration:
 ⚠️  PERMISSION SETUP REQUIRED:
 Add to ~/.config/opencode/opencode.json in ALL orchestrator profiles:
 
-  "sai-db-migrator": "allow"
+  "{name}": "allow"
 
-Or use wildcard: "sai-*": "allow"
+Or use wildcard if you have multiple custom agents with same prefix:
+  "{prefix}-*": "allow"
 
-Ready to use: task(subagent_type: "sai-db-migrator", ...)
+Ready to use: task(subagent_type: "{name}", ...)
 ```
 
 ### Error
