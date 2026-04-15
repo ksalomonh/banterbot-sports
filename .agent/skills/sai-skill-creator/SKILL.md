@@ -1,7 +1,7 @@
 ---
 name: sai-skill-creator
 description: >
-  Creates new AI skills or agents following Agent Teams spec. SDD-style execution with real-time visibility.
+  Creates new AI skills or agents following Agent Teams spec.
   Trigger: When user asks to create a skill, agent, or document AI patterns.
 license: Apache-2.0
 metadata:
@@ -9,10 +9,6 @@ metadata:
   version: "2.1"
 allowed-tools: Read, Edit, Write, Bash
 ---
-
-## SDD Execution Mode
-
-This skill runs as a **visible sub-agent** — user sees real-time output via Ctrl+O.
 
 ## Storage Locations
 
@@ -172,6 +168,10 @@ metadata:
   agent-linked: true
 allowed-tools: {tools}
 ---
+
+## SDD Execution Mode
+
+This skill runs as a **visible sub-agent** — user sees real-time output via Ctrl+O for Claude and Ctrl+x down for OpenCode.
 
 ## When to Use
 
