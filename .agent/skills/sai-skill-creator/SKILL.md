@@ -1,159 +1,244 @@
 ---
 name: sai-skill-creator
 description: >
-  Creates new AI agent skills following the Agent Skills spec.
-  Trigger: When user asks to create a new skill, add agent instructions, or document patterns for AI.
+  Creates new AI skills or agents following Agent Teams spec. SDD-style execution with real-time visibility.
+  Trigger: When user asks to create a skill, agent, or document AI patterns.
 license: Apache-2.0
 metadata:
   author: salomon-ai
-  version: "1.0"
-allowed-tools: Read, Edit, Write, Glob, Grep, Bash, WebFetch, WebSearch, Task
+  version: "2.0"
+allowed-tools: Read, Edit, Write, Bash
 ---
 
-## When to Create a Skill
+## SDD Execution Mode
 
-Create a skill when:
-- A pattern is used repeatedly and AI needs guidance
-- Project-specific conventions differ from generic best practices
-- Complex workflows need step-by-step instructions
-- Decision trees help AI choose the right approach
+This skill runs as a **visible sub-agent** — user sees real-time output via Ctrl+O.
 
-**Don't create a skill when:**
-- Documentation already exists (create a reference instead)
-- Pattern is trivial or self-explanatory
-- It's a one-off task
+## Storage Locations
 
----
+| Type | Location | Purpose |
+|------|----------|---------|
+| Skill | `.agent/skills/{name}/SKILL.md` | Skill definition, instructions |
+| Agent | `.agent/agents/{name}.json` | Agent configuration, model, tools |
+| Global | `~/.config/opencode/opencode.json` | System agent registry |
 
-## Skill Structure
+## Creation Flow
 
+### Step 1: Determine Type
+
+**PROMPT USER:**
 ```
-skills/{skill-name}/
-├── SKILL.md              # Required - main skill file
-├── assets/               # Optional - templates, schemas, examples
-│   ├── template.py
-│   └── schema.json
-└── references/           # Optional - links to local docs
-    └── docs.md           # Points to docs/developer-guide/*.mdx
+Create:
+[1] Normal skill (guidance only)
+[2] Agent-linked skill (skill + dedicated AI model)
+
+Selection:
 ```
 
----
+### Step 2A: Normal Skill
 
-## SKILL.md Template
+**EXECUTE (visible to user):**
+```bash
+mkdir -p .agent/skills/{name}/assets .agent/skills/{name}/references
+# Create SKILL.md
+```
 
-```markdown
+**RETURN:**
+```yaml
+status: created
+type: skill-only
+skill_path: ".agent/skills/{name}/SKILL.md"
+```
+
+### Step 2B: Agent-Linked Skill
+
+#### Step 2B.1: Get Models from Orchestrator
+
+**REQUEST from orchestrator:**
+> "Provide list of available AI models from ~/.config/opencode/opencode.json"
+
+**Orchestrator returns:**
+```json
+{
+  "models": [
+    {"id": "opencode/claude-sonnet-4-6", "type": "orchestrator"},
+    {"id": "opencode-go/glm-5.1", "type": "coding"},
+    {"id": "opencode-go/kimi-k2.5", "type": "fast-analysis"},
+    {"id": "opencode-go/minimax-m2.7", "type": "simple-ops"}
+  ]
+}
+```
+
+**PRESENT to user:**
+```
+Available Models:
+1. opencode/claude-sonnet-4-6 (complex reasoning, orchestration)
+2. opencode-go/glm-5.1 (coding, implementation)
+3. opencode-go/kimi-k2.5 (fast analysis, reading)
+4. opencode-go/minimax-m2.7 (simple operations)
+
+Select (1-4):
+```
+
+#### Step 2B.2: Collect Details
+
+**ASK:**
+- Skill name: (auto-kebab-case)
+- Description:
+- Mode: [1] subagent (default) [2] primary (orchestrator)
+- Tools needed: [list checkboxes]
+
+#### Step 2B.3: Create Files (Visible Execution)
+
+**OUTPUT to user:**
+```
+Creating skill files...
+✓ .agent/skills/sai-db-migrator/SKILL.md
+✓ .agent/skills/sai-db-migrator/assets/
+✓ .agent/skills/sai-db-migrator/references/
+✓ .agent/agents/sai-db-migrator.json
+```
+
+**File: `.agent/skills/{name}/SKILL.md`**
+```yaml
 ---
-name: {skill-name}
+name: {name}
 description: >
-  {One-line description of what this skill does}.
-  Trigger: {When the AI should load this skill}.
+  {description}.
+  Trigger: {trigger keywords}.
 license: Apache-2.0
 metadata:
   author: salomon-ai
   version: "1.0"
+  agent-linked: true
+allowed-tools: {tools}
 ---
 
 ## When to Use
 
-{Bullet points of when to use this skill}
+{context}
 
 ## Critical Patterns
 
-{The most important rules - what AI MUST know}
-
-## Code Examples
-
-{Minimal, focused examples}
+{rules}
 
 ## Commands
 
-```bash
-{Common commands}
+{bash commands}
 ```
 
-## Resources
-
-- **Templates**: See [assets/](assets/) for {description}
-- **Documentation**: See [references/](references/) for local docs
+**File: `.agent/agents/{name}.json`**
+```json
+{
+  "name": "{name}",
+  "description": "{description}",
+  "mode": "{subagent|primary}",
+  "model": "{selected-model}",
+  "prompt": "file:{project}/.agent/skills/{name}/SKILL.md",
+  "tools": {
+    "bash": true,
+    "read": true,
+    "write": true,
+    "edit": true
+  }
+}
 ```
 
----
+#### Step 2B.4: Validation
 
-## Naming Conventions
+**VALIDATE agent.json:**
+- [ ] All required fields present
+- [ ] Model exists in system
+- [ ] Mode is valid (subagent/primary)
+- [ ] Tools list valid
+- [ ] Prompt path is absolute
 
-| Type | Pattern | Examples |
-|------|---------|----------|
-| Generic skill | `{technology}` | `pytest`, `playwright`, `typescript` |
-| Project-specific | `{project}-{component}` | `myapp-api`, `myapp-ui` |
-| Testing skill | `{project}-test-{component}` | `myapp-test-sdk`, `myapp-test-api` |
-| Workflow skill | `{action}-{target}` | `skill-creator`, `jira-task` |
+**If invalid → ERROR with details**
 
----
+**If valid → CONTINUE**
 
-## Decision: assets/ vs references/
+#### Step 2B.5: Return Registration Payload
 
-```
-Need code templates?        → assets/
-Need JSON schemas?          → assets/
-Need example configs?       → assets/
-Link to existing docs?      → references/
-Link to external guides?    → references/ (with local path)
-```
-
-**Key Rule**: `references/` should point to LOCAL files, not web URLs.
-
----
-
-## Frontmatter Fields
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| `name` | Yes | Skill identifier (lowercase, hyphens) |
-| `description` | Yes | What + Trigger in one block |
-| `license` | Yes | Always `Apache-2.0` |
-| `metadata.author` | Yes | `salomon-ai` |
-| `metadata.version` | Yes | Semantic version as string |
-
----
-
-## Content Guidelines
-
-### DO
-- Start with the most critical patterns
-- Use tables for decision trees
-- Keep code examples minimal and focused
-- Include Commands section with copy-paste commands
-
-### DON'T
-- Add Keywords section (agent searches frontmatter, not body)
-- Duplicate content from existing docs (reference instead)
-- Include lengthy explanations (link to docs)
-- Add troubleshooting sections (keep focused)
-- Use web URLs in references (use local paths)
-
----
-
-## Registering the Skill
-
-After creating the skill, add it to `AGENTS.md`:
-
-```markdown
-| `{skill-name}` | {Description} | [SKILL.md](skills/{skill-name}/SKILL.md) |
+**RETURN to orchestrator:**
+```yaml
+status: agent-created
+type: agent-linked
+files_created:
+  - .agent/skills/{name}/SKILL.md
+  - .agent/agents/{name}.json
+registration:
+  target: "~/.config/opencode/opencode.json"
+  entry:
+    name: "{name}"
+    description: "{description}"
+    mode: "{mode}"
+    model: "{selected-model}"
+    prompt: "file:{absolute-path}/.agent/skills/{name}/SKILL.md"
+    tools: {tools}
+validation:
+  status: passed
+  checks: 5/5
+auto_register: true
 ```
 
----
+## Orchestrator Post-Processing
 
-## Checklist Before Creating
+When orchestrator receives `status: agent-created` with `auto_register: true`:
 
-- [ ] Skill doesn't already exist (check `skills/`)
-- [ ] Pattern is reusable (not one-off)
-- [ ] Name follows conventions
-- [ ] Frontmatter is complete (description includes trigger keywords)
-- [ ] Critical patterns are clear
-- [ ] Code examples are minimal
-- [ ] Commands section exists
-- [ ] Added to AGENTS.md
+### Auto-Edit Flow
+1. **Read** `~/.config/opencode/opencode.json`
+2. **Validate** JSON syntax
+3. **Insert** agent entry under `"agent"` section
+4. **Validate** resulting JSON
+5. **Write** file
+6. **Confirm** to user
 
-## Resources
+### Error Handling
+- File locked → Retry 3x with delay
+- Permission denied → Inform user to run with elevated permissions
+- JSON parse error → Rollback and error
+- Validation fail → Show details, abort
 
-- **Templates**: See [assets/](assets/) for SKILL.md template
+## Output Format
+
+### Success — Normal Skill
+```
+[SUCCESS] Skill created: sai-validator
+Location: .agent/skills/sai-validator/SKILL.md
+Type: Standalone skill
+```
+
+### Success — Agent-Linked
+```
+[SUCCESS] Agent created: sai-db-migrator
+
+Files:
+  ✓ .agent/skills/sai-db-migrator/SKILL.md
+  ✓ .agent/agents/sai-db-migrator.json
+  ✓ ~/.config/opencode/opencode.json (auto-registered)
+
+Configuration:
+  Model: opencode-go/kimi-k2.5
+  Mode: subagent
+  Tools: bash, read, write, edit
+
+Ready to use: task(subagent_type: "sai-db-migrator", ...)
+```
+
+### Error
+```
+[ERROR] Failed to create agent: sai-db-migrator
+
+Reason: {error details}
+Suggestion: {how to fix}
+```
+
+## Critical Rules
+
+1. **SDD-style visibility** — All output visible to user in real-time
+2. **Separation of concerns** — Skills in `skills/`, agents in `agents/`
+3. **Validation mandatory** — JSON validated before and after edits
+4. **Auto-registration** — No confirmation, orchestrator edits opencode.json immediately
+5. **Atomic operations** — Either all files created + registered, or nothing
+6. **Backup before edit** — Orchestrator backs up opencode.json before modification
+7. **Conflict detection** — Check if agent name already exists before creating
