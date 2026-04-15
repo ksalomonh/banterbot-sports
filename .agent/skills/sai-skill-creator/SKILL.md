@@ -251,10 +251,14 @@ When orchestrator receives `status: agent-created` with `auto_register: true`:
 1. **Read** `~/.config/opencode/opencode.json`
 2. **Validate** JSON syntax
 3. **Insert** agent entry under `"agent"` section
-4. **Update permissions** for all orchestrator profiles (see Permission Configuration below)
-5. **Validate** resulting JSON
-6. **Write** file
-7. **Confirm** to user
+4. **CHECK** if permissions already exist:
+   - Check for exact match: `"{name}": "allow"` → skip
+   - Check for wildcard match: `"{prefix}-*": "allow"` (if {name} starts with {prefix}-) → skip
+   - If no match → add `"{name}": "allow"`
+5. **Update permissions** only if needed (see Permission Configuration below)
+6. **Validate** resulting JSON
+7. **Write** file
+8. **Confirm** to user
 
 ### Permission Configuration
 
@@ -272,16 +276,34 @@ Locate the profile's permission block:
 }
 ```
 
-Add the new agent pattern:
+**Check existing permissions first:**
+
+1. If wildcard pattern already covers this agent (e.g., `{prefix}-*` exists and agent name starts with `{prefix}-`), **no action needed**
+2. If specific permission `"{name}": "allow"` already exists, **no action needed**
+3. Otherwise, add specific permission:
+
 ```json
 "permission": {
   "task": {
     "*": "deny",
     "sdd-*": "allow",
-    "{agent-name}": "allow"
+    "{name}": "allow"
   }
 }
 ```
+
+**Wildcard option** (recommended if creating multiple custom agents with same prefix):
+```json
+"permission": {
+  "task": {
+    "*": "deny",
+    "sdd-*": "allow",
+    "{prefix}-*": "allow"
+  }
+}
+```
+
+**Orchestrator MUST check** `~/.config/opencode/opencode.json` for existing patterns before showing permission instructions.
 
 **Example for `{name}`:**
 ```json
@@ -321,20 +343,43 @@ Type: Standalone skill
 ```
 
 ### Success — Agent-Linked
+
+**IF permissions already configured (wildcard covers agent):**
 ```
-[SUCCESS] Agent created: sai-db-migrator
+[SUCCESS] Agent created: {name}
 
 Files:
-  ✓ .agent/skills/sai-db-migrator/SKILL.md
-  ✓ .agent/agents/sai-db-migrator.json
+  ✓ .agent/skills/{name}/SKILL.md
+  ✓ .agent/agents/{name}.json
   ✓ ~/.config/opencode/opencode.json (auto-registered)
 
 Configuration:
-  Model: opencode-go/kimi-k2.5
-  Provider: opencode
-  Mode: subagent
-  Tools: bash, read, write, edit
-  Discovered: 2026-04-14T20:45:00Z
+  Model: {selected-model}
+  Provider: {selected-provider}
+  Mode: {mode}
+  Tools: {tools}
+  Discovered: {timestamp}
+
+✅ Permissions already configured (wildcard pattern detected)
+
+Ready to use: task(subagent_type: "{name}", ...)
+```
+
+**IF permissions NOT configured:**
+```
+[SUCCESS] Agent created: {name}
+
+Files:
+  ✓ .agent/skills/{name}/SKILL.md
+  ✓ .agent/agents/{name}.json
+  ✓ ~/.config/opencode/opencode.json (auto-registered)
+
+Configuration:
+  Model: {selected-model}
+  Provider: {selected-provider}
+  Mode: {mode}
+  Tools: {tools}
+  Discovered: {timestamp}
 
 ⚠️  PERMISSION SETUP REQUIRED:
 Add to ~/.config/opencode/opencode.json in ALL orchestrator profiles:
