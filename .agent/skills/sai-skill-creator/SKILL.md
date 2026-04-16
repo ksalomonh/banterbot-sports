@@ -1,7 +1,7 @@
 ---
 name: sai-skill-creator
 description: >
-  Creates new AI skills or agents following Agent Teams spec.
+  Creates new AI skills or agents following Agent Teams spec. SDD-style execution with real-time visibility.
   Trigger: When user asks to create a skill, agent, or document AI patterns.
 license: Apache-2.0
 metadata:
