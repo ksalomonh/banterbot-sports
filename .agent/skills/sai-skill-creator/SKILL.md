@@ -7,7 +7,7 @@ license: Apache-2.0
 metadata:
   author: salomon-ai
   version: "3.0"
-allowed-tools: Read, Edit, Write, Bash
+allowed-tools: Read, Edit, Write, Glob, Grep, Bash, WebFetch, WebSearch, 
 ---
 
 ## Storage Locations
@@ -114,7 +114,7 @@ Tools needed:
 
 **ORCHESTRATOR delegates to sub-agent with ALL parameters:**
 
-```yaml
+```markdown
 task: create-agent-linked-skill
 parameters:
   name: "{user-provided-name}"
@@ -141,12 +141,12 @@ mkdir -p .agent/skills/{name}/assets .agent/skills/{name}/references
 ```
 
 **Create: `.agent/skills/{name}/SKILL.md`**
-```yaml
+```markdown
 ---
-name: {name}
+name: {skill-name}
 description: >
-  {description}.
-  Trigger: {trigger keywords}.
+  {One-line description of what this skill does}.
+  Trigger: {When the AI should load this skill}.
 license: Apache-2.0
 metadata:
   author: salomon-ai
@@ -155,7 +155,7 @@ metadata:
 
 ## When to Use
 
-{context}
+{Bullet points of when to use this skill}
 
 ## Critical Patterns
 
@@ -167,7 +167,7 @@ metadata:
 ```
 
 **RETURN to orchestrator:**
-```yaml
+```markdown
 status: created
 type: skill-only
 skill_path: ".agent/skills/{name}/SKILL.md"
@@ -178,7 +178,7 @@ skill_path: ".agent/skills/{name}/SKILL.md"
 **EXECUTE (sub-agent creates files):**
 
 **Create: `.agent/skills/{name}/SKILL.md`**
-```yaml
+```markdown
 ---
 name: {name}
 description: >
@@ -235,7 +235,7 @@ This skill runs as a **visible sub-agent** — user sees real-time output.
 - [ ] Prompt path is absolute
 
 **If invalid → RETURN error:**
-```yaml
+```markdown
 status: validation-failed
 errors:
   - "Field 'model' missing"
@@ -243,7 +243,7 @@ errors:
 ```
 
 **If valid → RETURN success:**
-```yaml
+```markdown
 status: agent-created
 type: agent-linked
 files_created:
