@@ -1,0 +1,13 @@
+{
+  "name": "sai-git-commit",
+  "description": "Automates git workflow: stage files, review changes, generate conventional commit message, commit, and push",
+  "mode": "subagent",
+  "model": "opencode-go/minimax-m2.7",
+  "provider": "opencode",
+  "prompt": "file:/home/kevinsalomon/salomonai/customers/banterbot-sports/.agent/skills/sai-git-commit/SKILL.md",
+  "tools": {
+    "bash": true,
+    "read": true,
+    "write": true
+  }
+}
