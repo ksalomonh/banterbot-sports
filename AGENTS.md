@@ -1,4 +1,15 @@
+# Father AGENTS.md
+
+## Rules
+- Go to global configuration
+- Perform the instructions of AGENTS.md in global configuration
+- Provide to user the Father AGENTS.md path
+- Continue with the rest of instructions in this file
+
 # BanterBot Sports — Coding Standards
+
+## Rules
+- Provide to user the current AGENTS.md path
 
 ## Stack
 - .NET 10 LTS
@@ -76,3 +87,5 @@ Layered architecture inherited from legacy app:
 | `cert-service` | Service/API testing toolbox — curl, httpie, grpcurl, response validation | [SKILL.md](~/.claude/skills/cert-service/SKILL.md) |
 | `cert-console` | Console/CLI testing toolbox — stdin/stdout/exit codes, workers, log validation | [SKILL.md](~/.claude/skills/cert-console/SKILL.md) |
 | `ss-continue` | Session-safe continue — audits git worktrees + engram after a session cut, reconciles both sources, identifies continuation point without duplicating work | [SKILL.md](~/.claude/skills/ss-continue/SKILL.md) |
+| `sai-agent-skill-creator` | Creates agent-linked skills: generates SKILL.md (dual-purpose prompt) + opencode.json patch + Claude Code agent file, with multi-variant model pattern | [SKILL.md](~/.config/opencode/skills/sai-agent-skill-creator/SKILL.md) |
+| `sai-git-commit` | Creates a conventional commit — analyzes staged changes, crafts a structured multi-line message, gates --no-verify behind explicit user consent | [SKILL.md](~/.config/opencode/skills/sai-git-commit/SKILL.md) |
